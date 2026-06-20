@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam Result</title>
+  <style>
+    :root{
+      --bg:#eef5fb;
+      --panel:#ffffff;
+      --text:#152238;
+      --muted:#6c7a8a;
+      --line:#dbe5ef;
+      --primary:#1485e0;
+      --primary-2:#19c37d;
+      --shadow:0 14px 34px rgba(19, 52, 82, .10);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Segoe UI,sans-serif;
+      color:var(--text);
+      background:radial-gradient(circle at 15% 15%, #dcecff 0, #eef5fb 28%, #eef5fb 100%);
+      min-height:100vh;
+    }
+    .app{display:flex; min-height:100vh}
+    .sidebar{
+      width:260px;background:#fff;border-right:1px solid #e6edf5;
+      padding:18px 14px;display:flex;flex-direction:column;gap:14px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;padding:8px 8px 18px}
+    .logo{
+      width:42px;height:42px;border-radius:50%;
+      background:linear-gradient(135deg,#1ca7ff,#0d7dd7);
+      display:grid;place-items:center;color:#fff;font-size:20px;font-weight:700;
+      box-shadow:var(--shadow)
+    }
+    .brand h1{margin:0;font-size:15px}
+    .brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+    .nav{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+    .nav a{
+      text-decoration:none;color:#253649;padding:12px 14px;border-radius:16px;
+      display:flex;align-items:center;gap:10px;font-size:14px
+    }
+    .nav a.active{
+      background:linear-gradient(135deg,#25a6ef,#1283df);
+      color:#fff;box-shadow:0 10px 20px rgba(20,133,224,.2)
+    }
+    .tip{
+      margin-top:auto;background:linear-gradient(135deg,#25a6ef,#1283df);
+      color:#fff;border-radius:18px;padding:16px;box-shadow:var(--shadow);font-size:13px
+    }
+    .signout{margin-top:6px;color:#66798d;padding:10px 14px;text-decoration:none;font-size:14px}
+    .main{flex:1;display:flex;flex-direction:column;min-width:0}
+    .topbar{
+      background:rgba(255,255,255,.72);backdrop-filter:blur(10px);
+      border-bottom:1px solid #dfe8f2;padding:16px 22px;
+      display:flex;align-items:center;gap:16px
+    }
+    .title{flex:1;min-width:0}
+    .title h2{margin:0;font-size:22px}
+    .title p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .search{
+      width:280px;background:#fff;border:1px solid #dbe5ef;border-radius:16px;
+      padding:10px 14px;color:#8b97a6;font-size:14px
+    }
+    .avatar{
+      display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #dbe5ef;
+      padding:6px 10px;border-radius:16px
+    }
+    .avatar .circle{
+      width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1ca7ff,#0d7dd7);
+      color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px
+    }
+    .avatar small{display:block;color:var(--muted)}
+    .content{padding:24px 22px 28px}
+    .grid{
+      display:grid;gap:18px;grid-template-columns:420px 1fr;align-items:start
+    }
+    .card{
+      background:var(--panel);border:1px solid #e6edf5;border-radius:var(--radius);
+      box-shadow:var(--shadow)
+    }
+    .score-card{padding:28px;text-align:center}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      background:#e8f8ef;color:#15945d;padding:6px 12px;border-radius:999px;
+      font-size:12px;font-weight:700
+    }
+    .ring-wrap{position:relative;width:220px;height:220px;margin:18px auto 0}
+    .ring-center{position:absolute;inset:0;display:grid;place-items:center}
+    .score{font-size:56px;line-height:1;font-weight:800}
+    .score-sub{font-size:14px;color:var(--muted);margin-top:3px}
+    .stats{
+      margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px
+    }
+    .mini{
+      border:1px solid #e5ecf4;border-radius:16px;padding:14px 10px;background:#fff
+    }
+    .ic{
+      width:30px;height:30px;border-radius:50%;display:grid;place-items:center;margin:0 auto 8px;
+      font-size:16px;font-weight:700
+    }
+    .ok{background:#e8f8ef;color:#15945d}
+    .bad{background:#ffecec;color:#d94b45}
+    .skip{background:#eef2f7;color:#7a8794}
+    .mini strong{display:block;font-size:22px}
+    .mini span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+    .btns{display:flex;gap:10px;margin-top:18px}
+    .btn{
+      border:none;border-radius:14px;padding:12px 16px;font-size:14px;font-weight:700;
+      cursor:pointer
+    }
+    .btn-primary{flex:1;background:linear-gradient(135deg,#1a98ee,#1280de);color:#fff}
+    .btn-secondary{background:#fff;border:1px solid #dbe5ef;color:#253649}
+    .chart-card{padding:18px 18px 22px}
+    .chart-head h3{margin:0;font-size:16px}
+    .chart-head p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+    .chart-container{
+      display:flex;gap:12px;margin-top:16px;height:320px;align-items:stretch
+    }
+    .y-axis{
+      width:34px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      align-items:flex-end;
+      padding:8px 0 28px;
+      color:var(--muted);
+      font-size:11px;
+      user-select:none
+    }
+    .chart{
+      flex:1;
+      height:100%;
+      display:flex;
+      align-items:flex-end;
+      gap:18px;
+      padding:12px 12px 8px;
+      border-left:1px solid #eef2f7;
+      border-bottom:1px solid #eef2f7;
+      background:
+        linear-gradient(to top,
+          rgba(0,0,0,0) 0 24%,
+          #f2f6fb 24% 25%,
+          rgba(0,0,0,0) 25% 49%,
+          #f2f6fb 49% 50%,
+          rgba(0,0,0,0) 50% 74%,
+          #f2f6fb 74% 75%,
+          rgba(0,0,0,0) 75% 99%,
+          #f2f6fb 99% 100%);
+      border-radius:0 0 14px 0
+    }
+    .bar-col{
+      flex:1;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      align-items:center;
+      min-width:0
+    }
+    .bar{
+      width:100%;
+      max-width:84px;
+      height:0;
+      min-height:0;
+      border-radius:10px 10px 0 0;
+      background:linear-gradient(180deg,#1a7be0,#1b74d8);
+      box-shadow:0 8px 18px rgba(25,118,210,.18);
+      transition:height 1.1s cubic-bezier(.2,.8,.2,1),transform .25s ease,filter .25s ease;
+      position:relative;
+      overflow:hidden
+    }
+    .bar::after{
+      content:"";
+      position:absolute;inset:0;
+      background:linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0))
+    }
+    .bar:hover{filter:brightness(1.05);transform:translateY(-2px)}
+    .bar-label{
+      margin-top:10px;font-size:12px;color:var(--muted);text-align:center;
+      line-height:1.2;min-height:28px
+    }
+    .summary{
+      margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px
+    }
+    .stat-card{padding:18px 16px}
+    .stat-card .label{font-size:11px;text-transform:uppercase;color:var(--muted);font-weight:800}
+    .stat-card .value{margin-top:8px;font-size:28px;font-weight:800}
+    @media (max-width:1100px){
+      .grid{grid-template-columns:1fr}
+      .search{display:none}
+      .sidebar{display:none}
+    }
+    @media (max-width:700px){
+      .content{padding:16px}
+      .topbar{padding:14px 16px}
+      .summary,.stats{grid-template-columns:1fr}
+      .btns{flex-direction:column}
+      .chart-container{height:340px}
+      .chart{gap:10px}
+      .bar-label{font-size:10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">🎓</div>
+        <div>
+          <h1>ExamPortal</h1>
+          <p>Lecturer</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="#">Dashboard</a>
+        <a href="#">Users</a>
+        <a href="#">Subjects</a>
+        <a href="#">Questions</a>
+        <a href="#">Quizzes</a>
+        <a href="auto-marking.html">Auto Marking</a>
+        <a class="active" href="#">Results</a>
+        <a href="#">Analytics</a>
+      </nav>
+
+      <div class="tip">
+        <div style="font-size:12px;font-weight:700;opacity:.85">Pro Tip</div>
+        <div style="margin-top:6px;line-height:1.35">Schedule exams in batches to reduce server load.</div>
+      </div>
+
+      <a class="signout" href="#">Sign out</a>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title">
+          <h2>Exam Result</h2>
+          <p>Sarah Chen · CS101 Data Structures Final · Dec 12, 2026</p>
+        </div>
+        <input class="search" type="text" placeholder="Search anything..." />
+        <div class="avatar">
+          <div class="circle">AD</div>
+          <div>
+            <strong style="font-size:13px">Dr. A. Davis</strong>
+            <small style="font-size:10px">Administrator</small>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="grid">
+          <div class="card score-card">
+            <div class="badge">🏆 Passed with distinction</div>
+
+            <div class="ring-wrap">
+              <svg viewBox="0 0 220 220" width="220" height="220">
+                <circle cx="110" cy="110" r="90" stroke="#dde7f1" stroke-width="18" fill="none"></circle>
+                <circle id="progressRing" cx="110" cy="110" r="90" stroke="url(#g)" stroke-width="18" fill="none"
+                        stroke-linecap="round" stroke-dasharray="565.49" stroke-dashoffset="565.49"
+                        transform="rotate(-90 110 110)"></circle>
+                <defs>
+                  <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#1485e0"></stop>
+                    <stop offset="100%" stop-color="#19c37d"></stop>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="ring-center">
+                <div>
+                  <div class="score">84</div>
+                  <div class="score-sub">out of 100</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="mini">
+                <div class="ic ok">✓</div>
+                <strong>50</strong>
+                <span>Correct</span>
+              </div>
+              <div class="mini">
+                <div class="ic bad">✕</div>
+                <strong>8</strong>
+                <span>Incorrect</span>
+              </div>
+              <div class="mini">
+                <div class="ic skip">✕</div>
+                <strong>2</strong>
+                <span>Skipped</span>
+              </div>
+            </div>
+
+            <div class="btns">
+              <button class="btn btn-primary">⬇ Download PDF</button>
+              <button class="btn btn-secondary">Share</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="card chart-card">
+              <div class="chart-head">
+                <h3>Topic-wise performance</h3>
+                <p>Mastery across the 6 topics covered</p>
+              </div>
+
+              <div class="chart-container">
+                <div class="y-axis">
+                  <span>100</span>
+                  <span>75</span>
+                  <span>50</span>
+                  <span>25</span>
+                  <span>0</span>
+                </div>
+
+                <div class="chart" id="chart"></div>
+              </div>
+            </div>
+
+            <div class="summary">
+              <div class="card stat-card">
+                <div class="label">Rank</div>
+                <div class="value">12 / 248</div>
+              </div>
+              <div class="card stat-card">
+                <div class="label">Percentile</div>
+                <div class="value">94.7</div>
+              </div>
+              <div class="card stat-card">
+                <div class="label">Time Taken</div>
+                <div class="value">01:48:22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const topics = [
+      { label: 'Arrays', value: 92 },
+      { label: 'Linked Lists', value: 78 },
+      { label: 'Trees', value: 88 },
+      { label: 'Graphs', value: 64 },
+      { label: 'Sorting', value: 82 },
+      { label: 'Hashing', value: 95 }
+    ];
+
+    const chart = document.getElementById('chart');
+    chart.innerHTML = '';
+
+    topics.forEach(t => {
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      col.innerHTML = `
+        <div class="bar" data-value="${t.value}"></div>
+        <div class="bar-label">${t.label}</div>
+      `;
+      chart.appendChild(col);
+    });
+
+    const ring = document.getElementById('progressRing');
+    const progress = 84;
+    const radius = 90;
+    const circumference = 2 * Math.PI * radius;
+    ring.style.strokeDasharray = circumference;
+    requestAnimationFrame(() => {
+      ring.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)';
+      ring.style.strokeDashoffset = circumference - (progress / 100) * circumference;
+    });
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.querySelectorAll('.bar').forEach((bar, i) => {
+          setTimeout(() => {
+            bar.style.height = bar.dataset.value + '%';
+          }, i * 120);
+        });
+      }, 200);
+    });
+  </script>
+</body>
+</html>
