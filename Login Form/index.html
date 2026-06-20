@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — ExamPortal | Sabaragamuwa University of Sri Lanka</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 8l10-5 10 5-10 5-10-5z"/>
+            <path d="M2 12l10 5 10-5"/>
+            <path d="M2 16l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">ExamPortal</span>
+          <span class="brand-sub">Sabaragamuwa University of Sri Lanka</span>
+        </div>
+      </div>
+
+      <div class="welcome">
+        <h1>Welcome back</h1>
+        <p>Choose your role and sign in to access your dashboard.</p>
+      </div>
+
+      <!-- Role Cards -->
+      <div class="role-cards">
+        <div class="role-card active" id="card-admin" onclick="selectRole('admin')">
+          <div class="rc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <h3>Administrator</h3>
+          <p>Full system control</p>
+        </div>
+
+        <div class="role-card" id="card-lecturer" onclick="selectRole('lecturer')">
+          <div class="rc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18"/>
+              <path d="M9 21V9"/>
+            </svg>
+          </div>
+          <h3>Lecturer</h3>
+          <p>Manage exams &amp; students</p>
+        </div>
+
+        <div class="role-card" id="card-student" onclick="selectRole('student')">
+          <div class="rc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3>Student</h3>
+          <p>Take quizzes &amp; view results</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="form-group anim-email">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="admin@sab.ac.lk" value="admin@sab.ac.lk" autocomplete="email" />
+      </div>
+
+      <div class="form-group anim-password">
+        <label for="password">Password</label>
+        <div class="pwd-wrap">
+          <input type="password" id="password" value="Admin@SUSL2026" autocomplete="current-password" />
+          <button class="pwd-toggle" type="button" onclick="togglePassword()" aria-label="Toggle password visibility">
+            <svg id="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg id="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-footer anim-footer">
+        <label class="remember-label">
+          <input type="checkbox" id="remember" checked />
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button class="btn-signin anim-btn" onclick="handleSignIn()">Sign in securely</button>
+
+      <div class="secure-note anim-secure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Protected with end-to-end encryption
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div class="badge anim-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        Trusted by Sri Lankan Universities
+      </div>
+
+      <h2>
+        <span class="anim-headline-1" style="display:block">The complete platform for</span>
+        <span class="anim-headline-2" style="display:block">modern university</span>
+        <span class="anim-headline-3" style="display:block">examinations.</span>
+      </h2>
+      <p class="hero-desc anim-desc">Conduct secure online examinations, automatically evaluate results, and gain powerful academic insights.</p>
+
+      <div class="feature-card anim-feat-1">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <span>Secure examination sessions</span>
+      </div>
+
+      <div class="feature-card anim-feat-2">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+          </svg>
+        </div>
+        <span>AI-powered automatic marking</span>
+      </div>
+
+      <div class="feature-card anim-feat-3">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <span>UGC &amp; SUSL academic compliant</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
