@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question Management</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,sans-serif;
+}
+
+body{
+    background:#dff5f7;
+}
+
+.container{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:220px;
+    background:#fff;
+    padding:20px;
+    border-right:1px solid #ddd;
+}
+
+.sidebar h2{
+    margin-bottom:30px;
+}
+
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar li{
+    padding:12px;
+    margin-bottom:5px;
+    border-radius:10px;
+}
+
+.sidebar .active{
+    background:#0ea5e9;
+    color:white;
+}
+
+.main{
+    flex:1;
+    padding:25px;
+}
+
+.header{
+    margin-bottom:20px;
+}
+
+.content{
+    display:flex;
+    gap:20px;
+}
+
+.editor{
+    flex:1;
+    background:white;
+    padding:20px;
+    border-radius:20px;
+}
+
+.preview{
+    width:350px;
+    background:#e7fdff;
+    padding:20px;
+    border-radius:20px;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:5px;
+    font-weight:600;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:10px;
+}
+
+.row{
+    display:flex;
+    gap:10px;
+}
+
+.option{
+    margin-top:10px;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.publish{
+    background:#0ea5e9;
+    color:white;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:15px;
+}
+
+.badge{
+    background:#dbeafe;
+    color:#2563eb;
+    padding:5px 10px;
+    border-radius:10px;
+    font-size:12px;
+}
+
+.preview-option{
+    border:1px solid #ddd;
+    padding:12px;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+.success{
+    margin-top:15px;
+    padding:12px;
+    border-radius:10px;
+    background:#dcfce7;
+    color:#15803d;
+    display:none;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="sidebar">
+        <h2>ExamPortal</h2>
+
+        <ul>
+            <li>Dashboard</li>
+            <li>Users</li>
+            <li>Subjects</li>
+            <li class="active">Questions</li>
+            <li>Quizzes</li>
+            <li>Results</li>
+        </ul>
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+            <h1>Question Management</h1>
+            <p>Create and preview MCQs</p>
+        </div>
+
+        <div class="content">
+
+            <!-- LEFT SIDE -->
+            <div class="editor">
+
+                <h3>New MCQ Question</h3>
+
+                <div class="row">
+
+                    <div style="flex:1;">
+                        <label>Category</label>
+                        <select id="category">
+                            <option>Data Structures</option>
+                            <option>Programming</option>
+                            <option>Database</option>
+                        </select>
+                    </div>
+
+                    <div style="flex:1;">
+                        <label>Difficulty</label>
+                        <select id="difficulty">
+                            <option>Easy</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+
+                    <div style="flex:1;">
+                        <label>Marks</label>
+                        <input type="number" id="marks" value="4">
+                    </div>
+
+                </div>
+
+                <label>Question</label>
+
+                <textarea id="question"
+                rows="5"
+                placeholder="Enter question"></textarea>
+
+                <label>Option A</label>
+                <input type="text" id="optionA">
+
+                <label>Option B</label>
+                <input type="text" id="optionB">
+
+                <label>Option C</label>
+                <input type="text" id="optionC">
+
+                <label>Option D</label>
+                <input type="text" id="optionD">
+
+                <label>Correct Answer</label>
+
+                <select id="correctAnswer">
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                    <option>D</option>
+                </select>
+
+                <br><br>
+
+                <button class="publish"
+                onclick="publishQuestion()">
+                    Publish
+                </button>
+
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="preview">
+
+                <h3>Live Preview</h3>
+
+                <div class="card">
+
+                    <p>
+                        <span class="badge"
+                        id="previewDifficulty">
+                        EASY
+                        </span>
+                    </p>
+
+                    <br>
+
+                    <p>
+                        Category:
+                        <span id="previewCategory">
+                        Data Structures
+                        </span>
+                    </p>
+
+                    <p>
+                        Marks:
+                        <span id="previewMarks">4</span>
+                    </p>
+
+                    <br>
+
+                    <h4 id="previewQuestion">
+                        Question will appear here
+                    </h4>
+
+                    <div class="preview-option">
+                        A. <span id="previewA"></span>
+                    </div>
+
+                    <div class="preview-option">
+                        B. <span id="previewB"></span>
+                    </div>
+
+                    <div class="preview-option">
+                        C. <span id="previewC"></span>
+                    </div>
+
+                    <div class="preview-option">
+                        D. <span id="previewD"></span>
+                    </div>
+
+                </div>
+
+                <div
+                class="success"
+                id="successBox">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const category =
+document.getElementById("category");
+
+const difficulty =
+document.getElementById("difficulty");
+
+const marks =
+document.getElementById("marks");
+
+const question =
+document.getElementById("question");
+
+const optionA =
+document.getElementById("optionA");
+
+const optionB =
+document.getElementById("optionB");
+
+const optionC =
+document.getElementById("optionC");
+
+const optionD =
+document.getElementById("optionD");
+
+function updatePreview(){
+
+    document.getElementById(
+    "previewCategory").innerText =
+    category.value;
+
+    document.getElementById(
+    "previewDifficulty").innerText =
+    difficulty.value.toUpperCase();
+
+    document.getElementById(
+    "previewMarks").innerText =
+    marks.value;
+
+    document.getElementById(
+    "previewQuestion").innerText =
+    question.value;
+
+    document.getElementById(
+    "previewA").innerText =
+    optionA.value;
+
+    document.getElementById(
+    "previewB").innerText =
+    optionB.value;
+
+    document.getElementById(
+    "previewC").innerText =
+    optionC.value;
+
+    document.getElementById(
+    "previewD").innerText =
+    optionD.value;
+}
+
+category.addEventListener("change",updatePreview);
+difficulty.addEventListener("change",updatePreview);
+marks.addEventListener("input",updatePreview);
+
+question.addEventListener("input",updatePreview);
+
+optionA.addEventListener("input",updatePreview);
+optionB.addEventListener("input",updatePreview);
+optionC.addEventListener("input",updatePreview);
+optionD.addEventListener("input",updatePreview);
+
+function publishQuestion(){
+
+    let data = {
+
+        category:category.value,
+        difficulty:difficulty.value,
+        marks:marks.value,
+        question:question.value,
+
+        optionA:optionA.value,
+        optionB:optionB.value,
+        optionC:optionC.value,
+        optionD:optionD.value,
+
+        correctAnswer:
+        document.getElementById(
+        "correctAnswer").value
+    };
+
+    let questions =
+    JSON.parse(
+    localStorage.getItem(
+    "questions")) || [];
+
+    questions.push(data);
+
+    localStorage.setItem(
+    "questions",
+    JSON.stringify(questions));
+
+    let successBox =
+    document.getElementById(
+    "successBox");
+
+    successBox.style.display =
+    "block";
+
+    successBox.innerHTML =
+    "✔ Correct Answer : Option "
+    + data.correctAnswer;
+
+    alert(
+    "Question Published Successfully!");
+}
+
+updatePreview();
+
+</script>
+
+</body>
+</html>
