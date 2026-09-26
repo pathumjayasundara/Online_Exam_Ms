@@ -1,0 +1,6178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamPortal — Lecturer Module</title>
+<link rel="icon" href="../assets/susl-logo.png">
+<script src="../assets/config.js"></script>
+<script src="../assets/session.js"></script>
+<script>SUSLSession.require("lecturer");</script>
+
+<style>
+:root{
+  --maroon-900:#5c0f1f;
+  --maroon-800:#7a1329;
+  --maroon-700:#8f1731;
+  --maroon-600:#a51b39;
+  --maroon-500:#c41e3a;
+
+  --cream:#fbf7f5;
+  --paper:#ffffff;
+  --ink:#241417;
+  --ink-soft:#6b5a5e;
+  --line:#ecdfe1;
+
+  --green-bg:#e6f4ea;
+  --green-fg:#1e7d3a;
+
+  --amber-bg:#fdf1de;
+  --amber-fg:#b06a13;
+
+  --red-bg:#fbe7e9;
+  --red-fg:#b32436;
+
+  --blue-bg:#e8f0fb;
+  --blue-fg:#1c5fad;
+
+  --shadow:0 1px 2px rgba(92,15,31,.06),
+           0 8px 24px -12px rgba(92,15,31,.18);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:"Iowan Old Style","Georgia",serif;
+  background:var(--cream);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+  width:260px;
+  flex:none;
+  background:linear-gradient(185deg,var(--maroon-800),var(--maroon-900) 78%);
+  color:#f6e9ec;
+  padding:26px 18px;
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:0;
+  height:100vh;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:32px;
+}
+
+.brand-badge{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:none;
+  overflow:hidden;
+  border:2px solid #f4d9de;
+}
+
+.brand-badge img{
+  width:66px;
+  height:66px;
+  object-fit:contain;
+  display:block;
+}
+
+.brand-text{
+  line-height:1.15;
+}
+
+.brand-text .name{
+  font-weight:700;
+  font-size:18px;
+  letter-spacing:.2px;
+  margin-bottom:4px;
+}
+
+.brand-text .sub{
+  font-size:11.5px;
+  line-height:1.35;
+  color:#e8c6cd;
+  font-family:Arial,sans-serif;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  margin-top:6px;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:#f1d9dd;
+  text-decoration:none;
+  cursor:pointer;
+  padding:11px 14px;
+  border-radius:8px;
+  font-size:14.5px;
+  opacity:.86;
+  user-select:none;
+}
+
+.nav a.active{
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  opacity:1;
+  font-weight:600;
+}
+
+.nav a:hover{
+  background:rgba(255,255,255,.08);
+  opacity:1;
+}
+
+.sidebar-foot{
+  margin-top:auto;
+  font-size:10.5px;
+  color:#d9a8b1;
+  font-family:Arial,sans-serif;
+  line-height:1.5;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+  flex:1;
+  min-width:0;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 32px;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+
+.topbar h1{
+  margin:0;
+  font-size:22px;
+  color:var(--maroon-700);
+}
+
+.topbar p{
+  margin:2px 0 0;
+  font-size:12.5px;
+  color:var(--ink-soft);
+  font-family:Arial,sans-serif;
+}
+
+.who{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:Arial,sans-serif;
+}
+
+.who .avatar{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:var(--maroon-600);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:700;
+}
+
+.who .meta{
+  line-height:1.2;
+  text-align:right;
+}
+
+.who .meta .n{
+  font-size:13.5px;
+  font-weight:700;
+}
+
+.who .meta .r{
+  font-size:11.5px;
+  color:var(--ink-soft);
+}
+
+.content{
+  padding:28px 34px 60px;
+  max-width:1500px;
+}
+
+.view{
+  display:none;
+}
+
+.view.active{
+  display:block;
+}
+
+/* ================= PANELS ================= */
+
+.panel{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  margin-bottom:28px;
+  overflow:hidden;
+}
+
+.panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 22px;
+  border-bottom:1px solid var(--line);
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.panel-head h2{
+  margin:0;
+  font-size:19px;
+  color:var(--maroon-700);
+}
+
+.panel-body{
+  padding:20px 22px 24px;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:13.5px;
+  font-weight:600;
+  border-radius:7px;
+  padding:9px 16px;
+  cursor:pointer;
+  border:1px solid transparent;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+
+.btn-primary{
+  background:var(--maroon-600);
+  color:#fff;
+}
+
+.btn-primary:hover{
+  filter:brightness(1.07);
+}
+
+.btn-outline{
+  background:#fff;
+  color:var(--maroon-700);
+  border-color:var(--maroon-600);
+}
+
+.btn-outline:hover{
+  background:#fdf1f3;
+}
+
+.btn-ghost{
+  background:transparent;
+  color:var(--ink-soft);
+  border-color:var(--line);
+}
+
+.btn-danger{
+  background:var(--red-bg);
+  color:var(--red-fg);
+  border-color:#efc8cd;
+}
+
+.icon-btn{
+  width:30px;
+  height:30px;
+  border-radius:7px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  background:#fff;
+  cursor:pointer;
+  color:var(--maroon-600);
+}
+
+.icon-btn.danger{
+  color:var(--red-fg);
+}
+
+/* ================= FILTERS ================= */
+
+.filters{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  font-family:Arial,sans-serif;
+}
+
+select,
+input[type=text],
+input[type=password],
+input[type=number],
+input[type=datetime-local],
+textarea{
+  font-family:Arial,sans-serif;
+  font-size:13.5px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px 11px;
+  background:#fff;
+  color:var(--ink);
+  outline:none;
+}
+
+textarea{
+  width:100%;
+  min-height:100px;
+  resize:vertical;
+}
+
+select:focus,
+input:focus,
+textarea:focus{
+  border-color:var(--maroon-500);
+  box-shadow:0 0 0 3px rgba(196,30,58,.12);
+}
+
+.search-wrap{
+  position:relative;
+}
+
+.search-wrap input{
+  padding-left:32px;
+  width:240px;
+}
+
+.search-wrap svg{
+  position:absolute;
+  left:10px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:.45;
+  width:14px;
+  height:14px;
+}
+
+/* ================= TABLE ================= */
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-family:Arial,sans-serif;
+  font-size:13.5px;
+}
+
+thead th{
+  text-align:left;
+  font-size:11.5px;
+  color:#fff;
+  background:var(--maroon-700);
+  padding:11px 14px;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+tbody td{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  vertical-align:top;
+}
+
+tbody tr:hover{
+  background:#fbf3f4;
+}
+
+.empty-row td{
+  text-align:center;
+  padding:34px;
+  color:var(--ink-soft);
+  font-style:italic;
+}
+
+.row-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.table-foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 4px 2px;
+  font-family:Arial,sans-serif;
+  font-size:12.5px;
+  color:var(--ink-soft);
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard-welcome{
+  background:linear-gradient(135deg,#fff,#fdf1f3);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:20px 24px;
+  margin-bottom:24px;
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.dashboard-logo{
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  background:white;
+  border:2px solid #f0d5da;
+  padding:4px;
+  object-fit:contain;
+  flex:none;
+}
+
+.dashboard-welcome h2{
+  margin:0 0 5px;
+  color:var(--maroon-700);
+  font-size:21px;
+}
+
+.dashboard-welcome p{
+  margin:0;
+  font-family:Arial,sans-serif;
+  color:var(--ink-soft);
+  font-size:13px;
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+  margin-bottom:30px;
+}
+
+.stat-card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  padding:22px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:10px;
+}
+
+.stat-icon{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:#fdeef0;
+  color:var(--maroon-600);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.stat-num{
+  font-size:26px;
+  font-weight:700;
+  color:var(--maroon-700);
+  font-family:Arial,sans-serif;
+}
+
+.stat-label{
+  font-size:12.5px;
+  color:var(--ink-soft);
+  font-family:Arial,sans-serif;
+}
+
+.two-col{
+  display:grid;
+  grid-template-columns:1.3fr 1fr;
+  gap:22px;
+}
+
+.mini-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  font-family:Arial,sans-serif;
+  font-size:13.5px;
+}
+
+.mini-list li{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.mini-list li:last-child{
+  border-bottom:none;
+}
+
+.mini-list .t{
+  color:var(--ink-soft);
+  font-size:12px;
+}
+
+/* ================= SUBJECTS ================= */
+
+.subject-count{
+  color:var(--ink-soft);
+  font-family:Arial,sans-serif;
+  font-size:13px;
+  margin-bottom:15px;
+}
+
+.subject-code{
+  font-weight:700;
+  color:var(--maroon-700);
+}
+
+.subject-title{
+  font-weight:600;
+}
+
+.subject-meta{
+  color:var(--ink-soft);
+  font-size:12px;
+  margin-top:4px;
+}
+
+.type-compulsory{
+  background:var(--red-bg);
+  color:var(--red-fg);
+}
+
+.type-elective{
+  background:var(--blue-bg);
+  color:var(--blue-fg);
+}
+
+.subject-pill{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.added-pill{
+  background:var(--green-bg);
+  color:var(--green-fg);
+}
+
+/* ================= QUESTION BANK ================= */
+
+.q-preview{
+  color:var(--ink-soft);
+  font-size:12.5px;
+  margin-top:3px;
+  max-width:400px;
+}
+
+.pill{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:999px;
+  font-size:11.5px;
+  font-weight:700;
+}
+
+.pill-easy{
+  background:var(--green-bg);
+  color:var(--green-fg);
+}
+
+.pill-medium{
+  background:var(--amber-bg);
+  color:var(--amber-fg);
+}
+
+.pill-hard{
+  background:var(--red-bg);
+  color:var(--red-fg);
+}
+
+/* ================= CREATE EXAM ================= */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px 20px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-family:Arial,sans-serif;
+}
+
+.field label{
+  font-size:12.5px;
+  font-weight:700;
+}
+
+.field label .req{
+  color:var(--maroon-600);
+}
+
+.field select,
+.field input{
+  width:100%;
+}
+
+.subhead{
+  margin:22px 0 12px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.subhead h3{
+  margin:0;
+  font-size:15px;
+  color:var(--maroon-700);
+  font-family:Arial,sans-serif;
+}
+
+.marks-badge{
+  font-family:Arial,sans-serif;
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--maroon-700);
+  background:#fdf1f3;
+  padding:6px 12px;
+  border-radius:999px;
+}
+
+.select-all-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 4px;
+  font-family:Arial,sans-serif;
+}
+
+.qs-list{
+  max-height:280px;
+  overflow-y:auto;
+  border:1px solid var(--line);
+  border-radius:9px;
+}
+
+.qs-item{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  font-family:Arial,sans-serif;
+}
+
+.qs-item:last-child{
+  border-bottom:none;
+}
+
+.qs-item input{
+  margin-top:3px;
+}
+
+.qtxt{
+  flex:1;
+}
+
+.qtxt .code{
+  color:var(--ink-soft);
+  font-size:12px;
+  margin-right:6px;
+}
+
+.qmarks{
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--maroon-700);
+  white-space:nowrap;
+}
+
+.qs-empty{
+  padding:26px;
+  text-align:center;
+  color:var(--ink-soft);
+  font-style:italic;
+  font-family:Arial,sans-serif;
+}
+
+.form-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:22px;
+}
+
+/* ================= MODAL ================= */
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(60,15,22,.42);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+  padding:20px;
+}
+
+.modal-backdrop.open{
+  display:flex;
+}
+
+.modal{
+  background:#fff;
+  border-radius:12px;
+  width:100%;
+  max-width:600px;
+  max-height:90vh;
+  overflow-y:auto;
+  box-shadow:0 20px 60px -12px rgba(60,15,22,.35);
+  overflow-x:hidden;
+}
+
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 22px;
+  border-bottom:1px solid var(--line);
+}
+
+.modal-head h3{
+  margin:0;
+  color:var(--maroon-700);
+  font-family:Arial,sans-serif;
+}
+
+.modal-close{
+  background:none;
+  border:none;
+  font-size:19px;
+  color:var(--ink-soft);
+  cursor:pointer;
+}
+
+.modal-body{
+  padding:20px 22px;
+  font-family:Arial,sans-serif;
+}
+
+.modal-foot{
+  padding:16px 22px;
+  border-top:1px solid var(--line);
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+.opt-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:9px;
+}
+
+.opt-row span{
+  width:20px;
+  font-weight:700;
+  color:var(--maroon-700);
+}
+
+.opt-row input[type=text]{
+  flex:1;
+}
+
+/* ================= LOGIN ================= */
+
+.login-backdrop{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,rgba(92,15,31,.96),rgba(122,19,41,.94));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:100;
+  padding:20px;
+}
+
+.login-backdrop.hidden{
+  display:none;
+}
+
+.login-card{
+  width:100%;
+  max-width:450px;
+  background:#fff;
+  border-radius:16px;
+  padding:32px;
+  box-shadow:0 24px 70px rgba(0,0,0,.28);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+.login-card .brand-badge{
+  width:95px;
+  height:95px;
+  margin:0 auto 16px;
+}
+
+.login-card .brand-badge img{
+  width:91px;
+  height:91px;
+}
+
+.login-card h2{
+  margin:0 0 6px;
+  color:var(--maroon-700);
+  font-size:24px;
+}
+
+.login-card p{
+  margin:0 0 22px;
+  color:var(--ink-soft);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.login-error{
+  display:none;
+  margin:0 0 14px;
+  padding:10px 12px;
+  border-radius:7px;
+  background:var(--red-bg);
+  color:var(--red-fg);
+  font-size:12.5px;
+}
+
+.login-error.show{
+  display:block;
+}
+
+.login-btn{
+  width:100%;
+  justify-content:center;
+  margin-top:6px;
+}
+
+.api-status{
+  margin-top:14px;
+  text-align:center;
+  color:var(--ink-soft);
+  font-size:11px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  background:var(--maroon-700);
+  color:#fff;
+  padding:13px 20px;
+  border-radius:9px;
+  font-family:Arial,sans-serif;
+  font-size:13.5px;
+  box-shadow:0 12px 30px -8px rgba(60,15,22,.45);
+  transform:translateY(16px);
+  opacity:0;
+  transition:all .25s ease;
+  z-index:200;
+}
+
+.toast.show{
+  transform:translateY(0);
+  opacity:1;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+  .stat-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .two-col{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:880px){
+  .sidebar{
+    display:none;
+  }
+
+  .content{
+    padding:20px;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:600px){
+  .stat-grid{
+    grid-template-columns:1fr;
+  }
+
+  .topbar{
+    padding:15px;
+  }
+
+  .topbar .who{
+    display:none;
+  }
+
+  .dashboard-welcome{
+    align-items:flex-start;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     LOGIN
+========================================================= -->
+
+<div class="login-backdrop" id="loginBackdrop">
+
+  <div class="login-card">
+
+    <div class="brand-badge">
+      <img src="../assets/susl-logo.png" alt="Sabaragamuwa University">
+    </div>
+
+    <h2>ExamPortal</h2>
+
+    <p>
+      Lecturer login. Sign in with your ExamPortal account
+      to manage subjects, questions, examinations and results.
+    </p>
+
+    <div class="login-error" id="loginError"></div>
+
+    <div class="field">
+      <label>Email</label>
+
+      <input
+        type="text"
+        id="loginEmail"
+        placeholder="Enter your email"
+      >
+    </div>
+
+    <div class="field" style="margin-top:14px;">
+      <label>Password</label>
+
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Enter your password"
+      >
+    </div>
+
+    <button
+      class="btn btn-primary login-btn"
+      id="loginBtn"
+      onclick="login()"
+    >
+      Sign In
+    </button>
+
+    <div class="api-status">
+      API: <span id="apiBaseLabel"></span>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     APPLICATION
+========================================================= -->
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar">
+
+    <div class="brand">
+
+      <div class="brand-badge">
+        <img src="../assets/susl-logo.png" alt="SUSL">
+      </div>
+
+      <div class="brand-text">
+
+        <div class="name">
+          ExamPortal
+        </div>
+
+        <div class="sub">
+          Sabaragamuwa University of Sri Lanka
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <nav class="nav">
+
+      <a
+        data-view="dashboard"
+        class="active"
+        onclick="showView('dashboard')"
+      >
+        🏠 Dashboard
+      </a>
+
+      <a
+        data-view="allsubjects"
+        onclick="showView('allsubjects')"
+      >
+        📚 All Subjects
+      </a>
+
+      <a
+        data-view="subjects"
+        onclick="showView('subjects')"
+      >
+        📘 My Subjects
+      </a>
+
+      <a
+        data-view="questions"
+        onclick="showView('questions')"
+      >
+        ❓ Question Bank
+      </a>
+
+      <a
+        data-view="createexam"
+        onclick="showView('createexam')"
+      >
+        📝 Create Exam
+      </a>
+
+      <a
+        data-view="results"
+        onclick="showView('results')"
+      >
+        📊 View Results
+      </a>
+
+      <a onclick="logout()">
+        🚪 Logout
+      </a>
+
+    </nav>
+
+    <div class="sidebar-foot">
+      Lecturer Module<br>
+      ExamPortal • SUSL
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+      <div>
+        <h1 id="pageTitle">Lecturer Dashboard</h1>
+
+        <p id="pageSubtitle">
+          Manage your subjects, questions, examinations and results.
+        </p>
+      </div>
+
+      <div class="who">
+
+        <div class="meta">
+          <div class="n" id="lecturerName">
+            Lecturer
+          </div>
+
+          <div class="r">
+            Lecturer
+          </div>
+        </div>
+
+        <div class="avatar" id="lecturerAvatar">
+          L
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+
+      <!-- =====================================================
+           DASHBOARD
+      ====================================================== -->
+
+      <section
+        class="view active"
+        id="view-dashboard"
+      >
+
+        <div class="dashboard-welcome">
+
+          <img
+            src="../assets/susl-logo.png"
+            alt="SUSL"
+            class="dashboard-logo"
+          >
+
+          <div>
+
+            <h2>
+              Welcome, <span id="welcomeName">Lecturer</span>
+            </h2>
+
+            <p>
+              Manage your selected subjects, question bank,
+              examinations and student results from one place.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="stat-grid">
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              📚
+            </div>
+
+            <div
+              class="stat-num"
+              id="statSubjects"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              My Subjects
+            </div>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              ❓
+            </div>
+
+            <div
+              class="stat-num"
+              id="statQuestions"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              Total Questions
+            </div>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              📝
+            </div>
+
+            <div
+              class="stat-num"
+              id="statExams"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              Active Exams
+            </div>
+
+          </div>
+
+
+          <div class="stat-card">
+
+            <div class="stat-icon">
+              📊
+            </div>
+
+            <div
+              class="stat-num"
+              id="statAverage"
+            >
+              0.0%
+            </div>
+
+            <div class="stat-label">
+              Average Score
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="two-col">
+
+          <div class="panel">
+
+            <div class="panel-head">
+
+              <h2>
+                Quick Actions
+              </h2>
+
+            </div>
+
+            <div class="panel-body">
+
+              <div
+                style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                font-family:Arial,sans-serif;
+                "
+              >
+
+                <button
+                  class="btn btn-primary"
+                  onclick="showView('allsubjects')"
+                >
+                  📚 Choose Subjects
+                </button>
+
+                <button
+                  class="btn btn-outline"
+                  onclick="showView('questions')"
+                >
+                  ❓ Question Bank
+                </button>
+
+                <button
+                  class="btn btn-outline"
+                  onclick="showView('createexam')"
+                >
+                  📝 Create Exam
+                </button>
+
+                <button
+                  class="btn btn-outline"
+                  onclick="showView('results')"
+                >
+                  📊 View Results
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="panel">
+
+            <div class="panel-head">
+
+              <h2>
+                System Information
+              </h2>
+
+            </div>
+
+            <div class="panel-body">
+
+              <ul class="mini-list">
+
+                <li>
+                  <span class="t">University</span>
+                  <strong>SUSL</strong>
+                </li>
+
+                <li>
+                  <span class="t">Module</span>
+                  <strong>Lecturer</strong>
+                </li>
+
+                <li>
+                  <span class="t">API Status</span>
+                  <strong id="apiConnectionStatus">
+                    Checking...
+                  </strong>
+                </li>
+
+              </ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           ALL SUBJECTS
+      ====================================================== -->
+
+      <section
+        class="view"
+        id="view-allsubjects"
+      >
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <div>
+
+              <h2>
+                All Subjects
+              </h2>
+
+              <div
+                style="
+                margin-top:5px;
+                color:var(--ink-soft);
+                font-family:Arial,sans-serif;
+                font-size:12px;
+                "
+              >
+                Select the subjects you teach. All handbook subjects
+                are available here.
+              </div>
+
+            </div>
+
+            <button
+              class="btn btn-outline"
+              onclick="loadAllSubjects()"
+            >
+              ↻ Refresh
+            </button>
+
+          </div>
+
+
+          <div class="panel-body">
+
+            <div class="filters">
+
+              <select id="subjectProgramme">
+                <option value="">
+                  All Programmes
+                </option>
+              </select>
+
+              <select id="subjectStream">
+                <option value="">
+                  All Streams
+                </option>
+              </select>
+
+              <select id="subjectYear">
+                <option value="">
+                  All Years
+                </option>
+              </select>
+
+              <select id="subjectSemester">
+                <option value="">
+                  All Semesters
+                </option>
+              </select>
+
+              <div class="search-wrap">
+
+                <input
+                  type="text"
+                  id="subjectSearch"
+                  placeholder="Search subject..."
+                >
+
+              </div>
+
+              <button
+                class="btn btn-ghost"
+                onclick="clearSubjectFilters()"
+              >
+                Clear
+              </button>
+
+            </div>
+
+            <br>
+
+            <div
+              class="subject-count"
+              id="subjectCount"
+            >
+              Loading subjects...
+            </div>
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Code</th>
+                    <th>Subject</th>
+                    <th>Programme</th>
+                    <th>Stream</th>
+                    <th>Year</th>
+                    <th>Semester</th>
+                    <th>Credits</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="allSubjectsBody">
+
+                  <tr class="empty-row">
+                    <td colspan="9">
+                      Loading subjects...
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           MY SUBJECTS
+      ====================================================== -->
+
+      <section
+        class="view"
+        id="view-subjects"
+      >
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <div>
+
+              <h2>
+                My Subjects
+              </h2>
+
+              <div
+                style="
+                margin-top:5px;
+                color:var(--ink-soft);
+                font-family:Arial,sans-serif;
+                font-size:12px;
+                "
+              >
+                Only subjects selected by the logged-in lecturer
+                are shown here.
+              </div>
+
+            </div>
+
+            <button
+              class="btn btn-outline"
+              onclick="loadMySubjects()"
+            >
+              ↻ Refresh
+            </button>
+
+          </div>
+
+          <div class="panel-body">
+
+            <div
+              class="subject-count"
+              id="mySubjectCount"
+            >
+              Loading...
+            </div>
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Code</th>
+                    <th>Subject</th>
+                    <th>Programme</th>
+                    <th>Stream</th>
+                    <th>Year</th>
+                    <th>Semester</th>
+                    <th>Questions</th>
+                    <th>Actions</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="mySubjectsBody">
+
+                  <tr class="empty-row">
+                    <td colspan="8">
+                      Loading...
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           QUESTION BANK
+      ====================================================== -->
+
+      <section
+        class="view"
+        id="view-questions"
+      >
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <div>
+
+              <h2>
+                Question Bank
+              </h2>
+
+              <div
+                style="
+                margin-top:5px;
+                color:var(--ink-soft);
+                font-family:Arial,sans-serif;
+                font-size:12px;
+                "
+              >
+                Manage questions belonging to your subjects.
+              </div>
+
+            </div>
+
+            <button
+              class="btn btn-primary"
+              onclick="openQuestionModal()"
+            >
+              + Add Question
+            </button>
+
+          </div>
+
+          <div class="panel-body">
+
+            <div class="filters">
+
+              <select id="questionSubjectFilter">
+                <option value="">
+                  All My Subjects
+                </option>
+              </select>
+
+              <select id="questionTypeFilter">
+                <option value="">
+                  All Question Types
+                </option>
+                <option value="Multiple Choice">
+                  Multiple Choice
+                </option>
+                <option value="True/False">
+                  True/False
+                </option>
+                <option value="Short Answer">
+                  Short Answer
+                </option>
+                <option value="Essay/Long Answer">
+                  Essay/Long Answer
+                </option>
+                <option value="Fill in the Blank">
+                  Fill in the Blank
+                </option>
+                <option value="Matching">
+                  Matching
+                </option>
+                <option value="Scenario/Structured">
+                  Scenario/Structured
+                </option>
+              </select>
+
+              <select id="questionDifficultyFilter">
+                <option value="">
+                  All Difficulties
+                </option>
+                <option value="Easy">
+                  Easy
+                </option>
+                <option value="Medium">
+                  Medium
+                </option>
+                <option value="Hard">
+                  Hard
+                </option>
+              </select>
+
+              <div class="search-wrap">
+
+                <input
+                  type="text"
+                  id="questionSearch"
+                  placeholder="Search questions..."
+                >
+
+              </div>
+
+              <button
+                class="btn btn-ghost"
+                onclick="loadQuestions()"
+              >
+                Search
+              </button>
+
+            </div>
+
+            <br>
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Subject</th>
+                    <th>Question</th>
+                    <th>Type</th>
+                    <th>Marks</th>
+                    <th>Difficulty</th>
+                    <th>Actions</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="questionsBody">
+
+                  <tr class="empty-row">
+                    <td colspan="6">
+                      Loading questions...
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           CREATE EXAM
+      ====================================================== -->
+
+      <section
+        class="view"
+        id="view-createexam"
+      >
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <div>
+
+              <h2>
+                Create Examination
+              </h2>
+
+              <div
+                style="
+                margin-top:5px;
+                color:var(--ink-soft);
+                font-family:Arial,sans-serif;
+                font-size:12px;
+                "
+              >
+                Create an examination using questions from your
+                selected subjects.
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="panel-body">
+
+            <div class="form-grid">
+
+              <div class="field">
+
+                <label>
+                  Examination Title
+                  <span class="req">*</span>
+                </label>
+
+                <input
+                  type="text"
+                  id="examTitle"
+                  placeholder="Example: Mid Semester Examination"
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Subject
+                  <span class="req">*</span>
+                </label>
+
+                <select id="examSubject">
+
+                  <option value="">
+                    Select Subject
+                  </option>
+
+                </select>
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Duration (minutes)
+                </label>
+
+                <input
+                  type="number"
+                  id="examDuration"
+                  value="60"
+                  min="1"
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label>
+                  Examination Date
+                </label>
+
+                <input
+                  type="datetime-local"
+                  id="examDate"
+                >
+
+              </div>
+
+            </div>
+
+
+            <div class="subhead">
+
+              <h3>
+                Select Questions
+              </h3>
+
+              <div
+                class="marks-badge"
+                id="selectedMarks"
+              >
+                0 marks
+              </div>
+
+            </div>
+
+
+            <div class="select-all-row">
+
+              <input
+                type="checkbox"
+                id="selectAllQuestions"
+                onchange="toggleAllExamQuestions()"
+              >
+
+              <label for="selectAllQuestions">
+                Select all questions
+              </label>
+
+            </div>
+
+
+            <div
+              class="qs-list"
+              id="examQuestionsList"
+            >
+
+              <div class="qs-empty">
+                Select a subject to load questions.
+              </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+              <button
+                class="btn btn-ghost"
+                onclick="clearExamForm()"
+              >
+                Clear
+              </button>
+
+              <button
+                class="btn btn-primary"
+                onclick="createExam()"
+              >
+                Create Examination
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- EXISTING EXAMS -->
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <h2>
+              My Examinations
+            </h2>
+
+            <button
+              class="btn btn-outline"
+              onclick="loadExams()"
+            >
+              ↻ Refresh
+            </button>
+
+          </div>
+
+          <div class="panel-body">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Title</th>
+                    <th>Subject</th>
+                    <th>Duration</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Questions</th>
+                    <th>Action</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="examsBody">
+
+                  <tr class="empty-row">
+                    <td colspan="7">
+                      Loading examinations...
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           RESULTS
+      ====================================================== -->
+
+      <section
+        class="view"
+        id="view-results"
+      >
+
+        <div class="panel">
+
+          <div class="panel-head">
+
+            <div>
+
+              <h2>
+                View Results
+              </h2>
+
+              <div
+                style="
+                margin-top:5px;
+                color:var(--ink-soft);
+                font-family:Arial,sans-serif;
+                font-size:12px;
+                "
+              >
+                View student results for examinations created by you.
+              </div>
+
+            </div>
+
+            <button
+              class="btn btn-outline"
+              onclick="loadResultsExams()"
+            >
+              ↻ Refresh
+            </button>
+
+          </div>
+
+          <div class="panel-body">
+
+            <div class="field">
+
+              <label>
+                Select Examination
+              </label>
+
+              <select
+                id="resultExam"
+                onchange="loadExamResults()"
+              >
+
+                <option value="">
+                  Select Examination
+                </option>
+
+              </select>
+
+            </div>
+
+            <br>
+
+            <div
+              id="resultSummary"
+              style="
+              display:none;
+              margin-bottom:18px;
+              font-family:Arial,sans-serif;
+              "
+            ></div>
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                    <th>Score</th>
+                    <th>Total Marks</th>
+                    <th>Percentage</th>
+                    <th>Submitted</th>
+                  </tr>
+
+                </thead>
+
+                <tbody id="resultsBody">
+
+                  <tr class="empty-row">
+                    <td colspan="6">
+                      Select an examination.
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<!-- =========================================================
+     QUESTION MODAL
+========================================================= -->
+
+<div
+  class="modal-backdrop"
+  id="qModalBackdrop"
+>
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <h3 id="questionModalTitle">
+        Add Question
+      </h3>
+
+      <button
+        class="modal-close"
+        onclick="closeQuestionModal()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="modal-body">
+
+      <input
+        type="hidden"
+        id="editingQuestionId"
+      >
+
+
+      <div class="field">
+
+        <label>
+          Subject
+          <span class="req">*</span>
+        </label>
+
+        <select id="questionSubject">
+
+          <option value="">
+            Select Subject
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div
+        class="field"
+        style="margin-top:14px;"
+      >
+
+        <label>
+          Question Type
+          <span class="req">*</span>
+        </label>
+
+        <select
+          id="questionType"
+          onchange="updateQuestionFields()"
+        >
+
+          <option value="Multiple Choice">
+            Multiple Choice
+          </option>
+
+          <option value="True/False">
+            True/False
+          </option>
+
+          <option value="Short Answer">
+            Short Answer
+          </option>
+
+          <option value="Essay/Long Answer">
+            Essay/Long Answer
+          </option>
+
+          <option value="Fill in the Blank">
+            Fill in the Blank
+          </option>
+
+          <option value="Matching">
+            Matching
+          </option>
+
+          <option value="Scenario/Structured">
+            Scenario/Structured
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div
+        class="field"
+        style="margin-top:14px;"
+      >
+
+        <label>
+          Question
+          <span class="req">*</span>
+        </label>
+
+        <textarea
+          id="questionText"
+          placeholder="Enter your question..."
+        ></textarea>
+
+      </div>
+
+
+      <!-- MCQ OPTIONS -->
+
+      <div id="mcqFields">
+
+        <div
+          class="field"
+          style="margin-top:14px;"
+        >
+
+          <label>
+            Options
+          </label>
+
+          <div class="opt-row">
+            <span>A</span>
+            <input
+              type="text"
+              id="optionA"
+              placeholder="Option A"
+            >
+          </div>
+
+          <div class="opt-row">
+            <span>B</span>
+            <input
+              type="text"
+              id="optionB"
+              placeholder="Option B"
+            >
+          </div>
+
+          <div class="opt-row">
+            <span>C</span>
+            <input
+              type="text"
+              id="optionC"
+              placeholder="Option C"
+            >
+          </div>
+
+          <div class="opt-row">
+            <span>D</span>
+            <input
+              type="text"
+              id="optionD"
+              placeholder="Option D"
+            >
+          </div>
+
+        </div>
+
+
+        <div
+          class="field"
+          style="margin-top:14px;"
+        >
+
+          <label>
+            Correct Answer
+          </label>
+
+          <select id="correctAnswer">
+
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- TRUE/FALSE -->
+
+      <div
+        id="trueFalseFields"
+        style="display:none;"
+      >
+
+        <div
+          class="field"
+          style="margin-top:14px;"
+        >
+
+          <label>
+            Correct Answer
+          </label>
+
+          <select id="trueFalseAnswer">
+
+            <option value="True">
+              True
+            </option>
+
+            <option value="False">
+              False
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- OTHER QUESTIONS -->
+
+      <div
+        id="expectedAnswerFields"
+        style="display:none;"
+      >
+
+        <div
+          class="field"
+          style="margin-top:14px;"
+        >
+
+          <label>
+            Expected Answer
+            <span class="req">*</span>
+          </label>
+
+          <textarea
+            id="expectedAnswer"
+            placeholder="Enter the expected answer..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="form-grid"
+        style="margin-top:14px;"
+      >
+
+        <div class="field">
+
+          <label>
+            Marks
+          </label>
+
+          <input
+            type="number"
+            id="questionMarks"
+            min="1"
+            value="1"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Difficulty
+          </label>
+
+          <select id="questionDifficulty">
+
+            <option value="Easy">
+              Easy
+            </option>
+
+            <option value="Medium" selected>
+              Medium
+            </option>
+
+            <option value="Hard">
+              Hard
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-foot">
+
+      <button
+        class="btn btn-ghost"
+        onclick="closeQuestionModal()"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-primary"
+        onclick="saveQuestion()"
+      >
+        Save Question
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
+<script>
+
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const API_BASE = (window.EXAMPORTAL_CONFIG || {}).LECTURER_API || "http://127.0.0.1:5001";
+
+let authToken = localStorage.getItem("examportal_token") || "";
+
+let currentUser = JSON.parse(
+  localStorage.getItem("examportal_user") || "null"
+);
+
+document.addEventListener("DOMContentLoaded",()=>{const l=document.getElementById("apiBaseLabel");if(l)l.textContent=API_BASE;});
+
+let allSubjects = [];
+let mySubjects = [];
+let allQuestions = [];
+let allExams = [];
+let editingQuestion = null;
+
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
+
+function escapeHtml(value){
+
+  if(value === null || value === undefined){
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+function firstValue(obj, keys, fallback=""){
+
+  for(const key of keys){
+
+    const value = obj?.[key];
+
+    if(
+      value !== undefined &&
+      value !== null &&
+      String(value).trim() !== ""
+    ){
+      return value;
+    }
+
+  }
+
+  return fallback;
+}
+
+
+function extractArray(data, keys=[]){
+
+  if(Array.isArray(data)){
+    return data;
+  }
+
+  for(const key of keys){
+
+    if(Array.isArray(data?.[key])){
+      return data[key];
+    }
+
+  }
+
+  if(Array.isArray(data?.data)){
+    return data.data;
+  }
+
+  if(Array.isArray(data?.data?.subjects)){
+    return data.data.subjects;
+  }
+
+  if(Array.isArray(data?.result)){
+    return data.result;
+  }
+
+  if(Array.isArray(data?.result?.subjects)){
+    return data.result.subjects;
+  }
+
+  return [];
+}
+
+
+/* =========================================================
+   SUBJECT NORMALIZATION
+========================================================= */
+
+function normalizeSubject(raw){
+
+  return {
+
+    id:Number(
+      firstValue(
+        raw,
+        ["id","subject_id"],
+        0
+      )
+    ),
+
+    code:String(
+      firstValue(
+        raw,
+        ["code","subject_code"],
+        ""
+      )
+    ),
+
+    title:String(
+      firstValue(
+        raw,
+        ["title","name","subject_name"],
+        ""
+      )
+    ),
+
+    programme:String(
+      firstValue(
+        raw,
+        [
+          "programme",
+          "program",
+          "programme_name"
+        ],
+        ""
+      )
+    ),
+
+    stream:String(
+      firstValue(
+        raw,
+        [
+          "stream",
+          "stream_name"
+        ],
+        ""
+      )
+    ),
+
+    year:firstValue(
+      raw,
+      [
+        "year",
+        "academic_year",
+        "year_level"
+      ],
+      ""
+    ),
+
+    semester:firstValue(
+      raw,
+      [
+        "semester",
+        "semester_no",
+        "semester_number"
+      ],
+      ""
+    ),
+
+    credits:firstValue(
+      raw,
+      [
+        "credits",
+        "credit",
+        "credit_hours"
+      ],
+      ""
+    ),
+
+    subject_type:String(
+      firstValue(
+        raw,
+        [
+          "subject_type",
+          "type",
+          "category"
+        ],
+        "Compulsory"
+      )
+    ),
+
+    already_added:Boolean(
+      Number(
+        firstValue(
+          raw,
+          [
+            "already_added",
+            "is_added"
+          ],
+          0
+        )
+      )
+    )
+
+  };
+
+}
+
+
+/* =========================================================
+   API REQUEST
+========================================================= */
+
+async function apiFetch(
+  endpoint,
+  options={}
+){
+
+  const headers = {
+    "Content-Type":"application/json",
+    ...(options.headers || {})
+  };
+
+  if(authToken){
+
+    headers["Authorization"] =
+      "Bearer " + authToken;
+
+  }
+
+  let response;
+
+  try{
+
+    response = await fetch(
+      API_BASE + endpoint,
+      {
+        ...options,
+        headers
+      }
+    );
+
+  }catch(error){
+
+    throw new Error(
+      "Cannot connect to the Flask backend. Make sure app.py is running on port 5001."
+    );
+
+  }
+
+
+  let data = null;
+
+  try{
+
+    data = await response.json();
+
+  }catch(error){
+
+    data = {};
+
+  }
+
+
+  if(
+    response.status === 401 ||
+    response.status === 403
+  ){
+
+    if(response.status === 401){
+
+      authToken = "";
+      localStorage.removeItem("examportal_token");
+      SUSLSession.signOut();
+
+    }
+
+    throw new Error(
+      data.message ||
+      "Authentication failed."
+    );
+
+  }
+
+
+  if(!response.ok){
+
+    throw new Error(
+      data.message ||
+      "Request failed."
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+function showToast(
+  message,
+  type="normal"
+){
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent = message;
+
+  toast.style.background =
+    type === "error"
+      ? "var(--red-fg)"
+      : "var(--maroon-700)";
+
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(
+    ()=>{
+      toast.classList.remove("show");
+    },
+    3000
+  );
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function login(){
+
+  const email =
+    document.getElementById("loginEmail")
+      .value
+      .trim();
+
+  const password =
+    document.getElementById("loginPassword")
+      .value;
+
+  const errorBox =
+    document.getElementById("loginError");
+
+  const button =
+    document.getElementById("loginBtn");
+
+
+  errorBox.classList.remove("show");
+  errorBox.textContent = "";
+
+
+  if(!email || !password){
+
+    errorBox.textContent =
+      "Please enter your email and password.";
+
+    errorBox.classList.add("show");
+
+    return;
+
+  }
+
+
+  button.disabled = true;
+  button.textContent = "Signing In...";
+
+
+  try{
+
+    const response =
+      await fetch(
+        API_BASE + "/api/auth/login",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            email:email,
+            password:password
+          })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!response.ok){
+
+      throw new Error(
+        data.message ||
+        "Login failed."
+      );
+
+    }
+
+
+    const token =
+      data.token ||
+      data.access_token ||
+      data.jwt ||
+      data.data?.token ||
+      data.data?.access_token;
+
+
+    if(!token){
+
+      throw new Error(
+        "Login succeeded, but no authentication token was returned by the server."
+      );
+
+    }
+
+
+    authToken = token;
+
+    currentUser =
+      data.user ||
+      data.data?.user ||
+      data.lecturer ||
+      null;
+
+
+    localStorage.setItem(
+      "examportal_token",
+      authToken
+    );
+
+
+    if(currentUser){
+
+      localStorage.setItem(
+        "examportal_user",
+        JSON.stringify(currentUser)
+      );
+
+    }
+
+
+    document
+      .getElementById("loginBackdrop")
+      .classList.add("hidden");
+
+
+    updateUserInformation();
+
+    showToast(
+      "Login successful."
+    );
+
+
+    await loadInitialData();
+
+
+  }catch(error){
+
+    errorBox.textContent =
+      error.message;
+
+    errorBox.classList.add("show");
+
+  }finally{
+
+    button.disabled = false;
+    button.textContent = "Sign In";
+
+  }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout(){
+
+  authToken = "";
+  currentUser = null;
+  SUSLSession.signOut();
+
+}
+
+
+/* =========================================================
+   USER INFORMATION
+========================================================= */
+
+function updateUserInformation(){
+
+  const name =
+    firstValue(
+      currentUser || {},
+      [
+        "name",
+        "full_name",
+        "username",
+        "email"
+      ],
+      "Lecturer"
+    );
+
+
+  document
+    .getElementById("lecturerName")
+    .textContent = name;
+
+
+  document
+    .getElementById("welcomeName")
+    .textContent = name;
+
+
+  document
+    .getElementById("lecturerAvatar")
+    .textContent =
+      name
+        .charAt(0)
+        .toUpperCase();
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showView(viewName){
+
+  document
+    .querySelectorAll(".view")
+    .forEach(
+      view=>{
+        view.classList.remove("active");
+      }
+    );
+
+
+  const target =
+    document.getElementById(
+      "view-" + viewName
+    );
+
+
+  if(target){
+
+    target.classList.add("active");
+
+  }
+
+
+  document
+    .querySelectorAll(".nav a[data-view]")
+    .forEach(
+      link=>{
+        link.classList.toggle(
+          "active",
+          link.dataset.view === viewName
+        );
+      }
+    );
+
+
+  const titles = {
+
+    dashboard:[
+      "Lecturer Dashboard",
+      "Manage your subjects, questions, examinations and results."
+    ],
+
+    allsubjects:[
+      "All Subjects",
+      "Choose the subjects you teach."
+    ],
+
+    subjects:[
+      "My Subjects",
+      "Manage your selected subjects."
+    ],
+
+    questions:[
+      "Question Bank",
+      "Create and manage examination questions."
+    ],
+
+    createexam:[
+      "Create Examination",
+      "Create examinations from your own questions."
+    ],
+
+    results:[
+      "View Results",
+      "View results for your examinations."
+    ]
+
+  };
+
+
+  if(titles[viewName]){
+
+    document
+      .getElementById("pageTitle")
+      .textContent =
+        titles[viewName][0];
+
+    document
+      .getElementById("pageSubtitle")
+      .textContent =
+        titles[viewName][1];
+
+  }
+
+
+  if(viewName === "dashboard"){
+    loadDashboard();
+  }
+
+  if(viewName === "allsubjects"){
+    loadAllSubjects();
+  }
+
+  if(viewName === "subjects"){
+    loadMySubjects();
+  }
+
+  if(viewName === "questions"){
+    loadQuestionSubjects();
+    loadQuestions();
+  }
+
+  if(viewName === "createexam"){
+    loadExamSubjects();
+    loadExams();
+  }
+
+  if(viewName === "results"){
+    loadResultsExams();
+  }
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+async function loadDashboard(){
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/dashboard"
+      );
+
+
+    const dashboard =
+      data.data || data;
+
+
+    document
+      .getElementById("statSubjects")
+      .textContent =
+        dashboard.my_subjects ?? 0;
+
+
+    document
+      .getElementById("statQuestions")
+      .textContent =
+        dashboard.total_questions ?? 0;
+
+
+    document
+      .getElementById("statExams")
+      .textContent =
+        dashboard.active_exams ?? 0;
+
+
+    document
+      .getElementById("statAverage")
+      .textContent =
+        Number(
+          dashboard.average_score ?? 0
+        ).toFixed(1) + "%";
+
+
+    document
+      .getElementById("apiConnectionStatus")
+      .textContent =
+        "Connected";
+
+
+  }catch(error){
+
+    document
+      .getElementById("apiConnectionStatus")
+      .textContent =
+        "Error";
+
+    console.error(
+      "Dashboard error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ALL SUBJECTS
+========================================================= */
+
+async function loadAllSubjects(){
+
+  const body =
+    document.getElementById(
+      "allSubjectsBody"
+    );
+
+  body.innerHTML = `
+    <tr class="empty-row">
+      <td colspan="9">
+        Loading all subjects...
+      </td>
+    </tr>
+  `;
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/available-subjects"
+      );
+
+
+    const rawSubjects =
+      extractArray(
+        data,
+        [
+          "subjects",
+          "data",
+          "result",
+          "items"
+        ]
+      );
+
+
+    allSubjects =
+      rawSubjects
+        .map(normalizeSubject)
+        .filter(
+          subject => subject.id > 0
+        );
+
+
+    populateSubjectFilters();
+
+    renderAllSubjects();
+
+
+  }catch(error){
+
+    console.error(
+      "Available subjects error:",
+      error
+    );
+
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="9">
+          ${escapeHtml(error.message)}
+        </td>
+      </tr>
+    `;
+
+
+    document
+      .getElementById("subjectCount")
+      .textContent =
+        "Unable to load subjects.";
+
+  }
+
+}
+
+
+/* =========================================================
+   FILTER VALUES
+========================================================= */
+
+function uniqueValues(field){
+
+  return [
+    ...new Set(
+      allSubjects
+        .map(
+          subject =>
+            subject[field]
+        )
+        .filter(
+          value =>
+            value !== null &&
+            value !== undefined &&
+            String(value).trim() !== ""
+        )
+    )
+  ].sort(
+    (a,b)=>
+      String(a).localeCompare(
+        String(b),
+        undefined,
+        {numeric:true}
+      )
+  );
+
+}
+
+
+function setSelectOptions(
+  elementId,
+  values,
+  defaultText
+){
+
+  const select =
+    document.getElementById(
+      elementId
+    );
+
+
+  const oldValue =
+    select.value;
+
+
+  select.innerHTML =
+    `<option value="">
+      ${defaultText}
+    </option>`;
+
+
+  values.forEach(
+    value=>{
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value = value;
+      option.textContent = value;
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  if(
+    values.some(
+      value =>
+        String(value) ===
+        String(oldValue)
+    )
+  ){
+
+    select.value = oldValue;
+
+  }
+
+}
+
+
+function populateSubjectFilters(){
+
+  setSelectOptions(
+    "subjectProgramme",
+    uniqueValues("programme"),
+    "All Programmes"
+  );
+
+
+  setSelectOptions(
+    "subjectStream",
+    uniqueValues("stream"),
+    "All Streams"
+  );
+
+
+  setSelectOptions(
+    "subjectYear",
+    uniqueValues("year"),
+    "All Years"
+  );
+
+
+  setSelectOptions(
+    "subjectSemester",
+    uniqueValues("semester"),
+    "All Semesters"
+  );
+
+}
+
+
+/* =========================================================
+   RENDER ALL SUBJECTS
+========================================================= */
+
+function renderAllSubjects(){
+
+  const programme =
+    document
+      .getElementById("subjectProgramme")
+      .value;
+
+  const stream =
+    document
+      .getElementById("subjectStream")
+      .value;
+
+  const year =
+    document
+      .getElementById("subjectYear")
+      .value;
+
+  const semester =
+    document
+      .getElementById("subjectSemester")
+      .value;
+
+  const search =
+    document
+      .getElementById("subjectSearch")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const filtered =
+    allSubjects.filter(
+      subject => {
+
+        if(
+          programme &&
+          String(subject.programme) !==
+          String(programme)
+        ){
+          return false;
+        }
+
+        if(
+          stream &&
+          String(subject.stream) !==
+          String(stream)
+        ){
+          return false;
+        }
+
+        if(
+          year &&
+          String(subject.year) !==
+          String(year)
+        ){
+          return false;
+        }
+
+        if(
+          semester &&
+          String(subject.semester) !==
+          String(semester)
+        ){
+          return false;
+        }
+
+        if(search){
+
+          const text = [
+            subject.code,
+            subject.title,
+            subject.programme,
+            subject.stream,
+            subject.year,
+            subject.semester
+          ]
+          .join(" ")
+          .toLowerCase();
+
+
+          if(!text.includes(search)){
+            return false;
+          }
+
+        }
+
+        return true;
+
+      }
+    );
+
+
+  const body =
+    document.getElementById(
+      "allSubjectsBody"
+    );
+
+
+  document
+    .getElementById("subjectCount")
+    .textContent =
+      `${filtered.length} subject(s) found`;
+
+
+  if(filtered.length === 0){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="9">
+          No subjects match the selected filters.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    filtered
+      .map(
+        subject => {
+
+          const typeClass =
+            String(
+              subject.subject_type
+            ).toLowerCase()
+              .includes("elective")
+              ? "type-elective"
+              : "type-compulsory";
+
+
+          const action =
+            subject.already_added
+              ? `
+                <span class="subject-pill added-pill">
+                  ✓ Added
+                </span>
+              `
+              : `
+                <button
+                  class="btn btn-primary"
+                  onclick="addSubject(${subject.id})"
+                >
+                  + Add
+                </button>
+              `;
+
+
+          return `
+            <tr>
+
+              <td>
+                <span class="subject-code">
+                  ${escapeHtml(subject.code)}
+                </span>
+              </td>
+
+              <td>
+                <div class="subject-title">
+                  ${escapeHtml(subject.title)}
+                </div>
+              </td>
+
+              <td>
+                ${escapeHtml(subject.programme)}
+              </td>
+
+              <td>
+                ${escapeHtml(subject.stream || "—")}
+              </td>
+
+              <td>
+                ${escapeHtml(subject.year)}
+              </td>
+
+              <td>
+                ${escapeHtml(subject.semester)}
+              </td>
+
+              <td>
+                ${escapeHtml(subject.credits)}
+              </td>
+
+              <td>
+                <span
+                  class="subject-pill ${typeClass}"
+                >
+                  ${escapeHtml(subject.subject_type)}
+                </span>
+              </td>
+
+              <td>
+                ${action}
+              </td>
+
+            </tr>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   CLEAR SUBJECT FILTERS
+========================================================= */
+
+function clearSubjectFilters(){
+
+  document
+    .getElementById("subjectProgramme")
+    .value = "";
+
+  document
+    .getElementById("subjectStream")
+    .value = "";
+
+  document
+    .getElementById("subjectYear")
+    .value = "";
+
+  document
+    .getElementById("subjectSemester")
+    .value = "";
+
+  document
+    .getElementById("subjectSearch")
+    .value = "";
+
+  renderAllSubjects();
+
+}
+
+
+/* =========================================================
+   ADD SUBJECT
+========================================================= */
+
+async function addSubject(
+  subjectId
+){
+
+  if(!subjectId){
+    return;
+  }
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/my-subjects",
+        {
+          method:"POST",
+
+          body:JSON.stringify({
+            subject_id:subjectId
+          })
+        }
+      );
+
+
+    showToast(
+      data.message ||
+      "Subject added successfully."
+    );
+
+
+    await loadAllSubjects();
+
+    await loadMySubjects();
+
+    await loadDashboard();
+
+
+  }catch(error){
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   MY SUBJECTS
+========================================================= */
+
+async function loadMySubjects(){
+
+  const body =
+    document.getElementById(
+      "mySubjectsBody"
+    );
+
+
+  body.innerHTML = `
+    <tr class="empty-row">
+      <td colspan="8">
+        Loading your subjects...
+      </td>
+    </tr>
+  `;
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/subjects"
+      );
+
+
+    mySubjects =
+      extractArray(
+        data,
+        [
+          "subjects",
+          "data",
+          "result"
+        ]
+      )
+      .map(normalizeSubject);
+
+
+    document
+      .getElementById(
+        "mySubjectCount"
+      )
+      .textContent =
+        `${mySubjects.length} subject(s) selected`;
+
+
+    if(mySubjects.length === 0){
+
+      body.innerHTML = `
+        <tr class="empty-row">
+          <td colspan="8">
+            You have not selected any subjects yet.
+            Go to All Subjects to choose your subjects.
+          </td>
+        </tr>
+      `;
+
+      return;
+
+    }
+
+
+    body.innerHTML =
+      mySubjects
+        .map(
+          subject => `
+            <tr>
+
+              <td>
+                <span class="subject-code">
+                  ${escapeHtml(subject.code)}
+                </span>
+              </td>
+
+              <td>
+                <div class="subject-title">
+                  ${escapeHtml(subject.title)}
+                </div>
+              </td>
+
+              <td>
+                ${escapeHtml(subject.programme)}
+              </td>
+
+              <td>
+                ${escapeHtml(subject.stream || "—")}
+              </td>
+
+              <td>
+                ${escapeHtml(subject.year)}
+              </td>
+
+              <td>
+                ${escapeHtml(subject.semester)}
+              </td>
+
+              <td>
+                ${escapeHtml(
+                  firstValue(
+                    subject,
+                    [
+                      "question_count"
+                    ],
+                    0
+                  )
+                )}
+              </td>
+
+              <td>
+
+                <div class="row-actions">
+
+                  <button
+                    class="btn btn-outline"
+                    onclick="viewSubjectQuestions(${subject.id})"
+                  >
+                    Questions
+                  </button>
+
+                  <button
+                    class="btn btn-primary"
+                    onclick="openQuestionModal(${subject.id})"
+                  >
+                    + Question
+                  </button>
+
+                  <button
+                    class="icon-btn danger"
+                    title="Remove Subject"
+                    onclick="removeSubject(${subject.id})"
+                  >
+                    🗑
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+          `
+        )
+        .join("");
+
+
+  }catch(error){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="8">
+          ${escapeHtml(error.message)}
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   REMOVE SUBJECT
+========================================================= */
+
+async function removeSubject(
+  subjectId
+){
+
+  if(
+    !confirm(
+      "Remove this subject from My Subjects?"
+    )
+  ){
+    return;
+  }
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        `/api/lecturer/my-subjects/${subjectId}`,
+        {
+          method:"DELETE"
+        }
+      );
+
+
+    showToast(
+      data.message ||
+      "Subject removed."
+    );
+
+
+    await loadMySubjects();
+
+    await loadAllSubjects();
+
+    await loadDashboard();
+
+
+  }catch(error){
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   VIEW SUBJECT QUESTIONS
+========================================================= */
+
+function viewSubjectQuestions(
+  subjectId
+){
+
+  showView("questions");
+
+  setTimeout(
+    ()=>{
+      const select =
+        document.getElementById(
+          "questionSubjectFilter"
+        );
+
+      select.value =
+        String(subjectId);
+
+      loadQuestions();
+    },
+    50
+  );
+
+}
+
+
+/* =========================================================
+   QUESTION SUBJECTS
+========================================================= */
+
+async function loadQuestionSubjects(){
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/subject-options"
+      );
+
+
+    const subjects =
+      extractArray(
+        data,
+        [
+          "subjects",
+          "data",
+          "result"
+        ]
+      );
+
+
+    const filter =
+      document.getElementById(
+        "questionSubjectFilter"
+      );
+
+    const modalSelect =
+      document.getElementById(
+        "questionSubject"
+      );
+
+
+    const oldFilter =
+      filter.value;
+
+    const oldModal =
+      modalSelect.value;
+
+
+    filter.innerHTML =
+      `<option value="">
+        All My Subjects
+      </option>`;
+
+
+    modalSelect.innerHTML =
+      `<option value="">
+        Select Subject
+      </option>`;
+
+
+    subjects.forEach(
+      raw=>{
+
+        const subject =
+          normalizeSubject(raw);
+
+
+        const option1 =
+          document.createElement(
+            "option"
+          );
+
+        option1.value =
+          subject.id;
+
+        option1.textContent =
+          `${subject.code} — ${subject.title}`;
+
+        filter.appendChild(
+          option1
+        );
+
+
+        const option2 =
+          option1.cloneNode(true);
+
+        modalSelect.appendChild(
+          option2
+        );
+
+      }
+    );
+
+
+    if(
+      [...filter.options]
+        .some(
+          option =>
+            option.value === oldFilter
+        )
+    ){
+      filter.value = oldFilter;
+    }
+
+
+    if(
+      [...modalSelect.options]
+        .some(
+          option =>
+            option.value === oldModal
+        )
+    ){
+      modalSelect.value = oldModal;
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Question subject error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+async function loadQuestions(){
+
+  const body =
+    document.getElementById(
+      "questionsBody"
+    );
+
+
+  body.innerHTML = `
+    <tr class="empty-row">
+      <td colspan="6">
+        Loading questions...
+      </td>
+    </tr>
+  `;
+
+
+  const subjectId =
+    document
+      .getElementById(
+        "questionSubjectFilter"
+      )
+      .value;
+
+
+  const type =
+    document
+      .getElementById(
+        "questionTypeFilter"
+      )
+      .value;
+
+
+  const difficulty =
+    document
+      .getElementById(
+        "questionDifficultyFilter"
+      )
+      .value;
+
+
+  const search =
+    document
+      .getElementById(
+        "questionSearch"
+      )
+      .value
+      .trim();
+
+
+  const params =
+    new URLSearchParams();
+
+
+  if(subjectId){
+    params.set(
+      "subject_id",
+      subjectId
+    );
+  }
+
+  if(type){
+    params.set(
+      "question_type",
+      type
+    );
+  }
+
+  if(difficulty){
+    params.set(
+      "difficulty",
+      difficulty
+    );
+  }
+
+  if(search){
+    params.set(
+      "search",
+      search
+    );
+  }
+
+
+  try{
+
+    const query =
+      params.toString()
+        ? "?" + params.toString()
+        : "";
+
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/questions" +
+        query
+      );
+
+
+    allQuestions =
+      extractArray(
+        data,
+        [
+          "questions",
+          "data",
+          "result"
+        ]
+      );
+
+
+    renderQuestions();
+
+
+  }catch(error){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="6">
+          ${escapeHtml(error.message)}
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER QUESTIONS
+========================================================= */
+
+function renderQuestions(){
+
+  const body =
+    document.getElementById(
+      "questionsBody"
+    );
+
+
+  if(
+    allQuestions.length === 0
+  ){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="6">
+          No questions found.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    allQuestions
+      .map(
+        question => {
+
+          const difficulty =
+            String(
+              question.difficulty ||
+              "Medium"
+            );
+
+
+          const difficultyClass =
+            difficulty.toLowerCase() === "easy"
+              ? "pill-easy"
+              : difficulty.toLowerCase() === "hard"
+                ? "pill-hard"
+                : "pill-medium";
+
+
+          return `
+            <tr>
+
+              <td>
+
+                <strong
+                  class="subject-code"
+                >
+                  ${escapeHtml(
+                    question.subject_code || ""
+                  )}
+                </strong>
+
+                <div class="subject-meta">
+                  ${escapeHtml(
+                    question.subject_title || ""
+                  )}
+                </div>
+
+              </td>
+
+
+              <td>
+
+                <div class="subject-title">
+                  ${escapeHtml(
+                    question.question_text || ""
+                  )}
+                </div>
+
+                ${
+                  question.option_a
+                    ? `
+                      <div class="q-preview">
+                        A. ${escapeHtml(question.option_a)}
+                        &nbsp; B. ${escapeHtml(question.option_b)}
+                        &nbsp; C. ${escapeHtml(question.option_c)}
+                        &nbsp; D. ${escapeHtml(question.option_d)}
+                      </div>
+                    `
+                    : ""
+                }
+
+              </td>
+
+
+              <td>
+                ${escapeHtml(
+                  question.question_type || ""
+                )}
+              </td>
+
+
+              <td>
+                ${escapeHtml(
+                  question.marks ?? 1
+                )}
+              </td>
+
+
+              <td>
+
+                <span
+                  class="pill ${difficultyClass}"
+                >
+                  ${escapeHtml(difficulty)}
+                </span>
+
+              </td>
+
+
+              <td>
+
+                <div class="row-actions">
+
+                  <button
+                    class="icon-btn"
+                    title="Edit"
+                    onclick="editQuestion(${question.id})"
+                  >
+                    ✏
+                  </button>
+
+                  <button
+                    class="icon-btn danger"
+                    title="Delete"
+                    onclick="deleteQuestion(${question.id})"
+                  >
+                    🗑
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+          `;
+
+        }
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   QUESTION MODAL
+========================================================= */
+
+async function openQuestionModal(
+  subjectId = ""
+){
+
+  editingQuestion = null;
+
+
+  document
+    .getElementById(
+      "editingQuestionId"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "questionModalTitle"
+    )
+    .textContent =
+      "Add Question";
+
+
+  clearQuestionForm();
+
+
+  await loadQuestionSubjects();
+
+
+  if(subjectId){
+
+    document
+      .getElementById(
+        "questionSubject"
+      )
+      .value =
+        String(subjectId);
+
+  }
+
+
+  updateQuestionFields();
+
+
+  document
+    .getElementById(
+      "qModalBackdrop"
+    )
+    .classList.add("open");
+
+}
+
+
+function closeQuestionModal(){
+
+  document
+    .getElementById(
+      "qModalBackdrop"
+    )
+    .classList.remove("open");
+
+}
+
+
+/* =========================================================
+   CLEAR QUESTION FORM
+========================================================= */
+
+function clearQuestionForm(){
+
+  document
+    .getElementById(
+      "questionSubject"
+    )
+    .value = "";
+
+  document
+    .getElementById(
+      "questionType"
+    )
+    .value =
+      "Multiple Choice";
+
+  document
+    .getElementById(
+      "questionText"
+    )
+    .value = "";
+
+  document
+    .getElementById("optionA")
+    .value = "";
+
+  document
+    .getElementById("optionB")
+    .value = "";
+
+  document
+    .getElementById("optionC")
+    .value = "";
+
+  document
+    .getElementById("optionD")
+    .value = "";
+
+  document
+    .getElementById("correctAnswer")
+    .value = "A";
+
+  document
+    .getElementById("trueFalseAnswer")
+    .value = "True";
+
+  document
+    .getElementById("expectedAnswer")
+    .value = "";
+
+  document
+    .getElementById("questionMarks")
+    .value = "1";
+
+  document
+    .getElementById("questionDifficulty")
+    .value = "Medium";
+
+}
+
+
+/* =========================================================
+   QUESTION TYPE FIELDS
+========================================================= */
+
+function updateQuestionFields(){
+
+  const type =
+    document
+      .getElementById(
+        "questionType"
+      )
+      .value;
+
+
+  const mcq =
+    document.getElementById(
+      "mcqFields"
+    );
+
+  const tf =
+    document.getElementById(
+      "trueFalseFields"
+    );
+
+  const expected =
+    document.getElementById(
+      "expectedAnswerFields"
+    );
+
+
+  mcq.style.display =
+    type === "Multiple Choice"
+      ? "block"
+      : "none";
+
+
+  tf.style.display =
+    type === "True/False"
+      ? "block"
+      : "none";
+
+
+  expected.style.display =
+    (
+      type !== "Multiple Choice" &&
+      type !== "True/False"
+    )
+      ? "block"
+      : "none";
+
+}
+
+
+/* =========================================================
+   SAVE QUESTION
+========================================================= */
+
+async function saveQuestion(){
+
+  const questionId =
+    document
+      .getElementById(
+        "editingQuestionId"
+      )
+      .value;
+
+
+  const subjectId =
+    document
+      .getElementById(
+        "questionSubject"
+      )
+      .value;
+
+
+  const questionType =
+    document
+      .getElementById(
+        "questionType"
+      )
+      .value;
+
+
+  const questionText =
+    document
+      .getElementById(
+        "questionText"
+      )
+      .value
+      .trim();
+
+
+  const marks =
+    document
+      .getElementById(
+        "questionMarks"
+      )
+      .value;
+
+
+  const difficulty =
+    document
+      .getElementById(
+        "questionDifficulty"
+      )
+      .value;
+
+
+  if(!subjectId){
+
+    showToast(
+      "Please select a subject.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!questionText){
+
+    showToast(
+      "Please enter the question.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const payload = {
+
+    subject_id:Number(subjectId),
+
+    question_type:questionType,
+
+    question_text:questionText,
+
+    option_a:
+      document
+        .getElementById("optionA")
+        .value
+        .trim(),
+
+    option_b:
+      document
+        .getElementById("optionB")
+        .value
+        .trim(),
+
+    option_c:
+      document
+        .getElementById("optionC")
+        .value
+        .trim(),
+
+    option_d:
+      document
+        .getElementById("optionD")
+        .value
+        .trim(),
+
+    correct_answer:
+      questionType === "True/False"
+        ? document
+            .getElementById(
+              "trueFalseAnswer"
+            )
+            .value
+        : document
+            .getElementById(
+              "correctAnswer"
+            )
+            .value,
+
+    expected_answer:
+      document
+        .getElementById(
+          "expectedAnswer"
+        )
+        .value
+        .trim(),
+
+    marks:Number(marks) || 1,
+
+    difficulty:difficulty
+
+  };
+
+
+  try{
+
+    let data;
+
+
+    if(questionId){
+
+      data =
+        await apiFetch(
+          `/api/lecturer/questions/${questionId}`,
+          {
+            method:"PUT",
+            body:JSON.stringify(payload)
+          }
+        );
+
+    }else{
+
+      data =
+        await apiFetch(
+          "/api/lecturer/questions",
+          {
+            method:"POST",
+            body:JSON.stringify(payload)
+          }
+        );
+
+    }
+
+
+    showToast(
+      data.message ||
+      "Question saved successfully."
+    );
+
+
+    closeQuestionModal();
+
+    await loadQuestions();
+
+    await loadDashboard();
+
+
+  }catch(error){
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   EDIT QUESTION
+========================================================= */
+
+async function editQuestion(
+  questionId
+){
+
+  const question =
+    allQuestions.find(
+      q =>
+        Number(q.id) ===
+        Number(questionId)
+    );
+
+
+  if(!question){
+
+    showToast(
+      "Question could not be found.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  await loadQuestionSubjects();
+
+
+  editingQuestion =
+    question;
+
+
+  document
+    .getElementById(
+      "editingQuestionId"
+    )
+    .value =
+      question.id;
+
+
+  document
+    .getElementById(
+      "questionModalTitle"
+    )
+    .textContent =
+      "Edit Question";
+
+
+  document
+    .getElementById(
+      "questionSubject"
+    )
+    .value =
+      String(question.subject_id);
+
+
+  document
+    .getElementById(
+      "questionType"
+    )
+    .value =
+      question.question_type;
+
+
+  document
+    .getElementById(
+      "questionText"
+    )
+    .value =
+      question.question_text || "";
+
+
+  document
+    .getElementById("optionA")
+    .value =
+      question.option_a || "";
+
+
+  document
+    .getElementById("optionB")
+    .value =
+      question.option_b || "";
+
+
+  document
+    .getElementById("optionC")
+    .value =
+      question.option_c || "";
+
+
+  document
+    .getElementById("optionD")
+    .value =
+      question.option_d || "";
+
+
+  document
+    .getElementById("correctAnswer")
+    .value =
+      question.correct_answer || "A";
+
+
+  document
+    .getElementById("trueFalseAnswer")
+    .value =
+      question.correct_answer || "True";
+
+
+  document
+    .getElementById("expectedAnswer")
+    .value =
+      question.expected_answer || "";
+
+
+  document
+    .getElementById("questionMarks")
+    .value =
+      question.marks || 1;
+
+
+  document
+    .getElementById("questionDifficulty")
+    .value =
+      question.difficulty || "Medium";
+
+
+  updateQuestionFields();
+
+
+  document
+    .getElementById(
+      "qModalBackdrop"
+    )
+    .classList.add("open");
+
+}
+
+
+/* =========================================================
+   DELETE QUESTION
+========================================================= */
+
+async function deleteQuestion(
+  questionId
+){
+
+  if(
+    !confirm(
+      "Delete this question?"
+    )
+  ){
+    return;
+  }
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        `/api/lecturer/questions/${questionId}`,
+        {
+          method:"DELETE"
+        }
+      );
+
+
+    showToast(
+      data.message ||
+      "Question deleted successfully."
+    );
+
+
+    await loadQuestions();
+
+    await loadDashboard();
+
+
+  }catch(error){
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   EXAM SUBJECTS
+========================================================= */
+
+async function loadExamSubjects(){
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/subject-options"
+      );
+
+
+    const subjects =
+      extractArray(
+        data,
+        [
+          "subjects",
+          "data",
+          "result"
+        ]
+      );
+
+
+    const select =
+      document.getElementById(
+        "examSubject"
+      );
+
+
+    const oldValue =
+      select.value;
+
+
+    select.innerHTML =
+      `<option value="">
+        Select Subject
+      </option>`;
+
+
+    subjects.forEach(
+      raw=>{
+
+        const subject =
+          normalizeSubject(raw);
+
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          subject.id;
+
+
+        option.textContent =
+          `${subject.code} — ${subject.title}`;
+
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+    if(
+      [...select.options]
+        .some(
+          option =>
+            option.value === oldValue
+        )
+    ){
+
+      select.value =
+        oldValue;
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Exam subjects error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD EXAM QUESTIONS
+========================================================= */
+
+async function loadExamQuestions(){
+
+  const subjectId =
+    document
+      .getElementById(
+        "examSubject"
+      )
+      .value;
+
+
+  const list =
+    document.getElementById(
+      "examQuestionsList"
+    );
+
+
+  document
+    .getElementById(
+      "selectAllQuestions"
+    )
+    .checked = false;
+
+
+  updateSelectedMarks();
+
+
+  if(!subjectId){
+
+    list.innerHTML = `
+      <div class="qs-empty">
+        Select a subject to load questions.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  list.innerHTML = `
+    <div class="qs-empty">
+      Loading questions...
+    </div>
+  `;
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        `/api/lecturer/questions?subject_id=${encodeURIComponent(subjectId)}`
+      );
+
+
+    const questions =
+      extractArray(
+        data,
+        [
+          "questions",
+          "data",
+          "result"
+        ]
+      );
+
+
+    if(questions.length === 0){
+
+      list.innerHTML = `
+        <div class="qs-empty">
+          No questions available for this subject.
+          Add questions to the Question Bank first.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    list.innerHTML =
+      questions
+        .map(
+          question => `
+
+            <label class="qs-item">
+
+              <input
+                type="checkbox"
+                class="exam-question-checkbox"
+                value="${question.id}"
+                data-marks="${question.marks || 1}"
+                onchange="updateSelectedMarks()"
+              >
+
+              <div class="qtxt">
+
+                <span class="code">
+                  ${escapeHtml(
+                    question.question_type
+                  )}
+                </span>
+
+                ${escapeHtml(
+                  question.question_text
+                )}
+
+              </div>
+
+              <div class="qmarks">
+                ${escapeHtml(
+                  question.marks || 1
+                )} marks
+              </div>
+
+            </label>
+
+          `
+        )
+        .join("");
+
+
+  }catch(error){
+
+    list.innerHTML = `
+      <div class="qs-empty">
+        ${escapeHtml(error.message)}
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   SELECT ALL EXAM QUESTIONS
+========================================================= */
+
+function toggleAllExamQuestions(){
+
+  const checked =
+    document
+      .getElementById(
+        "selectAllQuestions"
+      )
+      .checked;
+
+
+  document
+    .querySelectorAll(
+      ".exam-question-checkbox"
+    )
+    .forEach(
+      checkbox=>{
+        checkbox.checked =
+          checked;
+      }
+    );
+
+
+  updateSelectedMarks();
+
+}
+
+
+/* =========================================================
+   SELECTED MARKS
+========================================================= */
+
+function updateSelectedMarks(){
+
+  let total = 0;
+
+
+  document
+    .querySelectorAll(
+      ".exam-question-checkbox:checked"
+    )
+    .forEach(
+      checkbox=>{
+
+        total +=
+          Number(
+            checkbox.dataset.marks
+          ) || 0;
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "selectedMarks"
+    )
+    .textContent =
+      `${total} mark${total === 1 ? "" : "s"}`;
+
+}
+
+
+/* =========================================================
+   CREATE EXAM
+========================================================= */
+
+async function createExam(){
+
+  const title =
+    document
+      .getElementById(
+        "examTitle"
+      )
+      .value
+      .trim();
+
+
+  const subjectId =
+    document
+      .getElementById(
+        "examSubject"
+      )
+      .value;
+
+
+  const duration =
+    document
+      .getElementById(
+        "examDuration"
+      )
+      .value;
+
+
+  const examDate =
+    document
+      .getElementById(
+        "examDate"
+      )
+      .value;
+
+
+  const questionIds =
+    [
+      ...document
+        .querySelectorAll(
+          ".exam-question-checkbox:checked"
+        )
+    ]
+    .map(
+      checkbox =>
+        Number(checkbox.value)
+    );
+
+
+  if(!title){
+
+    showToast(
+      "Please enter an examination title.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!subjectId){
+
+    showToast(
+      "Please select a subject.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(questionIds.length === 0){
+
+    showToast(
+      "Select at least one question.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/exams",
+        {
+          method:"POST",
+
+          body:JSON.stringify({
+
+            title:title,
+
+            subject_id:Number(
+              subjectId
+            ),
+
+            duration:
+              Number(duration) || 60,
+
+            exam_date:
+              examDate,
+
+            status:"Draft",
+
+            question_ids:
+              questionIds
+
+          })
+        }
+      );
+
+
+    showToast(
+      data.message ||
+      "Exam created successfully."
+    );
+
+
+    clearExamForm();
+
+    await loadExams();
+
+    await loadDashboard();
+
+
+  }catch(error){
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   CLEAR EXAM FORM
+========================================================= */
+
+function clearExamForm(){
+
+  document
+    .getElementById(
+      "examTitle"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "examSubject"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "examDuration"
+    )
+    .value = "60";
+
+
+  document
+    .getElementById(
+      "examDate"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "selectAllQuestions"
+    )
+    .checked = false;
+
+
+  document
+    .getElementById(
+      "examQuestionsList"
+    )
+    .innerHTML = `
+      <div class="qs-empty">
+        Select a subject to load questions.
+      </div>
+    `;
+
+
+  updateSelectedMarks();
+
+}
+
+
+/* =========================================================
+   EXAMS
+========================================================= */
+
+async function loadExams(){
+
+  const body =
+    document.getElementById(
+      "examsBody"
+    );
+
+
+  body.innerHTML = `
+    <tr class="empty-row">
+      <td colspan="7">
+        Loading examinations...
+      </td>
+    </tr>
+  `;
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/exams"
+      );
+
+
+    allExams =
+      extractArray(
+        data,
+        [
+          "exams",
+          "data",
+          "result"
+        ]
+      );
+
+
+    renderExams();
+
+
+  }catch(error){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="7">
+          ${escapeHtml(error.message)}
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER EXAMS
+========================================================= */
+
+function renderExams(){
+
+  const body =
+    document.getElementById(
+      "examsBody"
+    );
+
+
+  if(allExams.length === 0){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="7">
+          No examinations have been created yet.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML =
+    allExams
+      .map(
+        exam => `
+
+          <tr>
+
+            <td>
+              <strong>
+                ${escapeHtml(exam.title)}
+              </strong>
+            </td>
+
+            <td>
+              <span class="subject-code">
+                ${escapeHtml(
+                  exam.subject_code || ""
+                )}
+              </span>
+
+              <div class="subject-meta">
+                ${escapeHtml(
+                  exam.subject_title || ""
+                )}
+              </div>
+            </td>
+
+            <td>
+              ${escapeHtml(
+                exam.duration || 60
+              )} min
+            </td>
+
+            <td>
+              ${formatDate(
+                exam.exam_date
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                exam.status || "Draft"
+              )}
+            </td>
+
+            <td>
+              ${escapeHtml(
+                exam.question_count || 0
+              )}
+            </td>
+
+            <td>
+
+              <button
+                class="icon-btn danger"
+                title="Delete Exam"
+                onclick="deleteExam(${exam.id})"
+              >
+                🗑
+              </button>
+
+            </td>
+
+          </tr>
+
+        `
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   DELETE EXAM
+========================================================= */
+
+async function deleteExam(
+  examId
+){
+
+  if(
+    !confirm(
+      "Delete this examination?"
+    )
+  ){
+    return;
+  }
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        `/api/lecturer/exams/${examId}`,
+        {
+          method:"DELETE"
+        }
+      );
+
+
+    showToast(
+      data.message ||
+      "Examination deleted."
+    );
+
+
+    await loadExams();
+
+    await loadResultsExams();
+
+    await loadDashboard();
+
+
+  }catch(error){
+
+    showToast(
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RESULTS EXAM LIST
+========================================================= */
+
+async function loadResultsExams(){
+
+  try{
+
+    const data =
+      await apiFetch(
+        "/api/lecturer/exams"
+      );
+
+
+    allExams =
+      extractArray(
+        data,
+        [
+          "exams",
+          "data",
+          "result"
+        ]
+      );
+
+
+    const select =
+      document.getElementById(
+        "resultExam"
+      );
+
+
+    const oldValue =
+      select.value;
+
+
+    select.innerHTML =
+      `<option value="">
+        Select Examination
+      </option>`;
+
+
+    allExams.forEach(
+      exam=>{
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          exam.id;
+
+
+        option.textContent =
+          `${exam.title} — ${exam.subject_code || ""}`;
+
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+    if(
+      [...select.options]
+        .some(
+          option =>
+            option.value ===
+            oldValue
+        )
+    ){
+
+      select.value =
+        oldValue;
+
+    }
+
+
+  }catch(error){
+
+    console.error(
+      "Results exam error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD EXAM RESULTS
+========================================================= */
+
+async function loadExamResults(){
+
+  const examId =
+    document
+      .getElementById(
+        "resultExam"
+      )
+      .value;
+
+
+  const body =
+    document.getElementById(
+      "resultsBody"
+    );
+
+
+  const summary =
+    document.getElementById(
+      "resultSummary"
+    );
+
+
+  summary.style.display =
+    "none";
+
+
+  if(!examId){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="6">
+          Select an examination.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  body.innerHTML = `
+    <tr class="empty-row">
+      <td colspan="6">
+        Loading results...
+      </td>
+    </tr>
+  `;
+
+
+  try{
+
+    const data =
+      await apiFetch(
+        `/api/lecturer/exams/${examId}/results`
+      );
+
+
+    const results =
+      extractArray(
+        data,
+        [
+          "results",
+          "data",
+          "result"
+        ]
+      );
+
+
+    const exam =
+      data.exam || {};
+
+
+    summary.style.display =
+      "block";
+
+
+    summary.innerHTML = `
+      <strong>
+        ${escapeHtml(exam.title || "")}
+      </strong>
+
+      &nbsp; | &nbsp;
+
+      ${escapeHtml(
+        exam.subject_code || ""
+      )}
+
+      &nbsp; | &nbsp;
+
+      ${results.length}
+      result(s)
+    `;
+
+
+    if(results.length === 0){
+
+      body.innerHTML = `
+        <tr class="empty-row">
+          <td colspan="6">
+            No student results are available for this examination yet.
+          </td>
+        </tr>
+      `;
+
+      return;
+
+    }
+
+
+    body.innerHTML =
+      results
+        .map(
+          result => {
+
+            const score =
+              Number(
+                result.score || 0
+              );
+
+            const total =
+              Number(
+                result.total_marks || 0
+              );
+
+
+            const percentage =
+              total > 0
+                ? (
+                    score /
+                    total *
+                    100
+                  ).toFixed(1)
+                : "0.0";
+
+
+            return `
+              <tr>
+
+                <td>
+                  ${escapeHtml(
+                    result.student_id || ""
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(
+                    result.student_name || ""
+                  )}
+                </td>
+
+                <td>
+                  ${escapeHtml(score)}
+                </td>
+
+                <td>
+                  ${escapeHtml(total)}
+                </td>
+
+                <td>
+                  ${percentage}%
+                </td>
+
+                <td>
+                  ${formatDate(
+                    result.submitted_at
+                  )}
+                </td>
+
+              </tr>
+            `;
+
+          }
+        )
+        .join("");
+
+
+  }catch(error){
+
+    body.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="6">
+          ${escapeHtml(error.message)}
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
+function formatDate(
+  value
+){
+
+  if(!value){
+    return "—";
+  }
+
+
+  try{
+
+    const date =
+      new Date(value);
+
+
+    if(
+      Number.isNaN(
+        date.getTime()
+      )
+    ){
+
+      return escapeHtml(
+        value
+      );
+
+    }
+
+
+    return date.toLocaleString();
+
+  }catch(error){
+
+    return escapeHtml(
+      value
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIAL DATA
+========================================================= */
+
+async function loadInitialData(){
+
+  updateUserInformation();
+
+  await loadDashboard();
+
+}
+
+
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function(){
+
+    /* SUBJECT FILTERS */
+
+    document
+      .getElementById(
+        "subjectProgramme"
+      )
+      .addEventListener(
+        "change",
+        renderAllSubjects
+      );
+
+
+    document
+      .getElementById(
+        "subjectStream"
+      )
+      .addEventListener(
+        "change",
+        renderAllSubjects
+      );
+
+
+    document
+      .getElementById(
+        "subjectYear"
+      )
+      .addEventListener(
+        "change",
+        renderAllSubjects
+      );
+
+
+    document
+      .getElementById(
+        "subjectSemester"
+      )
+      .addEventListener(
+        "change",
+        renderAllSubjects
+      );
+
+
+    document
+      .getElementById(
+        "subjectSearch"
+      )
+      .addEventListener(
+        "input",
+        renderAllSubjects
+      );
+
+
+    /* EXAM SUBJECT */
+
+    document
+      .getElementById(
+        "examSubject"
+      )
+      .addEventListener(
+        "change",
+        loadExamQuestions
+      );
+
+
+    /* QUESTION FILTERS */
+
+    document
+      .getElementById(
+        "questionSubjectFilter"
+      )
+      .addEventListener(
+        "change",
+        loadQuestions
+      );
+
+
+    document
+      .getElementById(
+        "questionTypeFilter"
+      )
+      .addEventListener(
+        "change",
+        loadQuestions
+      );
+
+
+    document
+      .getElementById(
+        "questionDifficultyFilter"
+      )
+      .addEventListener(
+        "change",
+        loadQuestions
+      );
+
+
+    document
+      .getElementById(
+        "questionSearch"
+      )
+      .addEventListener(
+        "keydown",
+        event=>{
+
+          if(
+            event.key === "Enter"
+          ){
+
+            loadQuestions();
+
+          }
+
+        }
+      );
+
+
+    /* ENTER LOGIN */
+
+    document
+      .getElementById(
+        "loginPassword"
+      )
+      .addEventListener(
+        "keydown",
+        event=>{
+
+          if(
+            event.key === "Enter"
+          ){
+
+            login();
+
+          }
+
+        }
+      );
+
+
+    /* CLOSE MODAL WHEN CLICKING BACKDROP */
+
+    document
+      .getElementById(
+        "qModalBackdrop"
+      )
+      .addEventListener(
+        "click",
+        event=>{
+
+          if(
+            event.target.id ===
+            "qModalBackdrop"
+          ){
+
+            closeQuestionModal();
+
+          }
+
+        }
+      );
+
+
+    /* EXISTING LOGIN */
+
+    if(authToken){
+
+      document
+        .getElementById(
+          "loginBackdrop"
+        )
+        .classList.add("hidden");
+
+
+      updateUserInformation();
+
+
+      try{
+
+        await loadInitialData();
+
+      }catch(error){
+
+        console.error(error);
+
+      }
+
+    }else{
+
+      document
+        .getElementById(
+          "loginBackdrop"
+        )
+        .classList.remove("hidden");
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>

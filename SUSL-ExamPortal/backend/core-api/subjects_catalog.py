@@ -1,0 +1,80 @@
+"""
+Subject catalogue — official curriculum handbook (BSc Hons in Computer
+Science & Technology stream). Consumed by database.py's seed step.
+"""
+
+SUBJECTS = [
+    # Year 1 Sem I
+    ("PST 11201", "Mechanics and Properties of Matter", 2, "Compulsory", "y1s1"),
+    ("PST 11202", "Introduction to Electricity and Magnetism", 2, "Compulsory", "y1s1"),
+    ("PST 11103", "Physics Laboratory 1-I", 1, "Compulsory", "y1s1"),
+    ("PST 11204", "General Chemistry", 2, "Compulsory", "y1s1"),
+    ("PST 11205", "Fundamentals of Organic Chemistry", 2, "Compulsory", "y1s1"),
+    ("PST 11106", "Inorganic Chemistry Laboratory I", 1, "Compulsory", "y1s1"),
+    ("PST 11107", "Structured Programming", 1, "Compulsory", "y1s1"),
+    ("PST 11208", "Computer Hardware and Software", 2, "Compulsory", "y1s1"),
+    ("PST 11109", "Computer Laboratory 1-I", 1, "Compulsory", "y1s1"),
+    ("PST 11210", "Calculus and Differential Equations", 2, "Compulsory", "y1s1"),
+    ("PST-EGP-1101", "General English I", 2, "Compulsory (Non-GPA)", "y1s1"),
+    # Year 1 Sem II
+    ("PST 12201", "Physics of Heat and Waves", 2, "Compulsory", "y1s2"),
+    ("PST 12102", "Semi-Conductor Physics", 1, "Compulsory", "y1s2"),
+    ("PST 12103", "AC Theory & Circuits", 1, "Compulsory", "y1s2"),
+    ("PST 12104", "Physics Laboratory 1-II", 1, "Compulsory", "y1s2"),
+    ("PST 12205", "Fundamentals of Physical Chemistry", 2, "Compulsory", "y1s2"),
+    ("PST 12206", "Fundamentals of Analytical Chemistry", 2, "Compulsory", "y1s2"),
+    ("PST 12107", "Organic Chemistry Laboratory I", 1, "Compulsory", "y1s2"),
+    ("PST 12108", "Object Oriented Programming", 1, "Compulsory", "y1s2"),
+    ("PST 12209", "Fundamentals of Statistics", 2, "Compulsory", "y1s2"),
+    ("PST 12110", "Computer Laboratory 1-II", 1, "Compulsory", "y1s2"),
+    ("PST 12211", "Database Management Systems", 2, "Compulsory", "y1s2"),
+    ("PST-EGP-1201", "General English II", 2, "Compulsory (Non-GPA)", "y1s2"),
+    # Year 2 Sem I
+    ("PST 21201", "Electronics", 2, "Compulsory", "y2s1"),
+    ("PST 21202", "Geometrical and Physical Optics", 2, "Compulsory", "y2s1"),
+    ("PST 21103", "Physics Laboratory 2-I", 1, "Compulsory", "y2s1"),
+    ("PST 21207", "Data Structures & Algorithms", 2, "Compulsory", "y2s1"),
+    ("PST 21208", "Computer Architecture and Assembly Language", 2, "Compulsory", "y2s1"),
+    ("PST 21209", "Statistics for Experimental Analysis", 2, "Compulsory", "y2s1"),
+    ("PST 21110", "Computer Laboratory 2-I", 1, "Compulsory", "y2s1"),
+    ("PST-EAP-2101", "Academic English I", 2, "Compulsory (Non-GPA)", "y2s1"),
+    # Year 2 Sem II
+    ("PST 22208", "Software Engineering", 2, "Compulsory", "y2s2"),
+    ("PST 22209", "Statistical Methodology", 2, "Compulsory", "y2s2"),
+    ("PST 22110", "Computer Laboratory 2-II", 1, "Compulsory", "y2s2"),
+    ("PST 22211", "Operating Systems", 2, "Compulsory", "y2s2"),
+    ("PST 22218", "Management Information Systems", 2, "Compulsory (CST)", "y2s2"),
+    ("PST-EAP-2201", "Academic English II", 2, "Compulsory (Non-GPA)", "y2s2"),
+    # Year 3 Sem I — CST
+    ("PST 31210", "Multimedia and Hypermedia Systems Development", 2, "Compulsory", "y3s1"),
+    ("PST 31211", "Mathematical Programming", 2, "Elective", "y3s1"),
+    ("PST 31212", "Numerical Methods", 2, "Elective", "y3s1"),
+    ("PST 31014", "Industrial Visit", 0, "Compulsory", "y3s1"),
+    ("PST 31215", "Agile Software Development", 2, "Elective", "y3s1"),
+    ("PST 31224", "Artificial Intelligence & Expert Systems", 2, "Compulsory", "y3s1"),
+    ("PST 31225", "Software Project Management", 2, "Compulsory", "y3s1"),
+    ("PST 31226", "Software Quality Assurances", 2, "Compulsory", "y3s1"),
+    ("PST 31227", "Object Oriented Analysis and Design", 2, "Compulsory", "y3s1"),
+    ("PST 31128", "Computer Laboratory 3-I", 1, "Compulsory", "y3s1"),
+    ("PST 31229", "Advanced Database Management Systems", 2, "Compulsory", "y3s1"),
+    ("PST 31230", "Social and Professional Issues in Computing", 2, "Elective", "y3s1"),
+    ("PST-EBP-3101", "Business English", 2, "Compulsory (Non-GPA)", "y3s1"),
+    # Year 3 Sem II — CST
+    ("PST 32803", "Project Work (Industrial Exposure): BSc Thesis in Physical Sciences (CST)", 8, "Compulsory", "y3s2"),
+    # Year 4 Sem I — CST
+    ("PST 41201", "Research Methodology and Scientific Communication", 2, "Compulsory", "y4s1"),
+    ("PST 41203", "Robotics", 2, "Elective", "y4s1"),
+    ("PST 41215", "Industrial Management", 2, "Elective", "y4s1"),
+    ("PST 41227", "Web Services", 2, "Compulsory", "y4s1"),
+    ("PST 41228", "Computer System Security", 2, "Compulsory", "y4s1"),
+    ("PST 41229", "Advanced Computer Networks", 2, "Compulsory", "y4s1"),
+    ("PST 41230", "Internet of Things (IoT)", 2, "Elective", "y4s1"),
+    ("PST 41231", "Natural Language Processing", 2, "Elective", "y4s1"),
+    ("PST 41232", "Cloud Computing", 2, "Compulsory", "y4s1"),
+    ("PST 41233", "Business Process Management Systems", 2, "Elective", "y4s1"),
+    ("PST 41234", "Mobile Computing", 2, "Elective", "y4s1"),
+    ("PST 41235", "Critical Thinking", 2, "Elective", "y4s1"),
+    # Year 4 Sem II — CST
+    ("PST 41805", "Project: BSc Thesis in Computer Science & Technology", 8, "Compulsory", "y4s2"),
+    ("PST 42606", "Industrial Training", 6, "Compulsory", "y4s2"),
+]

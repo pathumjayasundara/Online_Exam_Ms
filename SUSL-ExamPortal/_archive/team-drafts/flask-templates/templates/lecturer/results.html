@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>View Results - ExamPortal</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+
+        body {
+
+            background: #f5f5f5;
+
+            color: #333;
+        }
+
+
+        /* =========================
+           SIDEBAR
+        ========================== */
+
+        .sidebar {
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+
+            width: 220px;
+
+            height: 100vh;
+
+            background: #b00000;
+
+            color: white;
+        }
+
+
+        .logo {
+
+            padding: 25px 15px;
+
+            text-align: center;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.2);
+        }
+
+
+        .logo-circle {
+
+            width: 70px;
+            height: 70px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            color: #b00000;
+
+            margin: auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: bold;
+        }
+
+
+        .logo h2 {
+
+            margin-top: 10px;
+
+            font-size: 20px;
+        }
+
+
+        .logo p {
+
+            font-size: 11px;
+
+            margin-top: 4px;
+        }
+
+
+        .menu {
+
+            margin-top: 20px;
+        }
+
+
+        .menu a {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 15px 20px;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 14px;
+        }
+
+
+        .menu a:hover {
+
+            background: #8f0000;
+        }
+
+
+        .menu a.active {
+
+            background: white;
+
+            color: #b00000;
+
+            border-radius:
+                0 8px 8px 0;
+
+            font-weight: bold;
+        }
+
+
+        .menu-icon {
+
+            width: 22px;
+
+            text-align: center;
+
+            font-size: 18px;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================== */
+
+        .main {
+
+            margin-left: 220px;
+
+            min-height: 100vh;
+        }
+
+
+        .topbar {
+
+            height: 75px;
+
+            background: white;
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            align-items: center;
+
+            padding: 0 30px;
+
+            border-bottom:
+                1px solid #ddd;
+        }
+
+
+        .profile {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .profile-icon {
+
+            width: 45px;
+            height: 45px;
+
+            border: 2px solid #b00000;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #b00000;
+        }
+
+
+        .profile-info strong {
+
+            display: block;
+
+            font-size: 14px;
+        }
+
+
+        .profile-info span {
+
+            color: #777;
+
+            font-size: 12px;
+        }
+
+
+        /* =========================
+           CONTENT
+        ========================== */
+
+        .content {
+
+            padding: 30px;
+        }
+
+
+        .page-title {
+
+            margin-bottom: 25px;
+        }
+
+
+        .page-title h1 {
+
+            color: #a00000;
+
+            margin-bottom: 8px;
+        }
+
+
+        .page-title p {
+
+            color: #777;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           FILTER
+        ========================== */
+
+        .filter-box {
+
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+
+        .filter-box label {
+
+            font-weight: bold;
+
+            margin-right: 12px;
+        }
+
+
+        .filter-box select {
+
+            min-width: 300px;
+
+            padding: 11px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 5px;
+
+            background: white;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           TABLE
+        ========================== */
+
+        .table-box {
+
+            background: white;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        thead {
+
+            background: #b00000;
+
+            color: white;
+        }
+
+
+        th {
+
+            padding: 15px;
+
+            text-align: left;
+
+            font-size: 13px;
+        }
+
+
+        td {
+
+            padding: 15px;
+
+            border-bottom:
+                1px solid #eee;
+
+            font-size: 14px;
+        }
+
+
+        tr:hover {
+
+            background: #fafafa;
+        }
+
+
+        .grade {
+
+            display: inline-block;
+
+            padding: 5px 12px;
+
+            border-radius: 5px;
+
+            font-weight: bold;
+
+            background: #eee;
+        }
+
+
+        .score {
+
+            font-weight: bold;
+        }
+
+
+        .no-results {
+
+            text-align: center;
+
+            padding: 40px;
+
+            color: #777;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+
+                width: 70px;
+            }
+
+
+            .logo h2,
+            .logo p,
+            .menu-text {
+
+                display: none;
+            }
+
+
+            .logo-circle {
+
+                width: 45px;
+                height: 45px;
+
+                font-size: 11px;
+            }
+
+
+            .menu a {
+
+                justify-content: center;
+
+                padding: 15px 5px;
+            }
+
+
+            .main {
+
+                margin-left: 70px;
+            }
+
+
+            .content {
+
+                padding: 15px;
+            }
+
+
+            .filter-box select {
+
+                width: 100%;
+
+                margin-top: 10px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="logo">
+
+            <div class="logo-circle">
+                SUSL
+            </div>
+
+            <h2>ExamPortal</h2>
+
+            <p>
+                Sabaragamuwa University
+            </p>
+
+        </div>
+
+
+        <nav class="menu">
+
+
+            <a href="/lecturer/dashboard">
+
+                <span class="menu-icon">
+                    🏠
+                </span>
+
+                <span class="menu-text">
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <a href="/lecturer/subjects">
+
+                <span class="menu-icon">
+                    📖
+                </span>
+
+                <span class="menu-text">
+                    My Subjects
+                </span>
+
+            </a>
+
+
+            <a href="/lecturer/questions">
+
+                <span class="menu-icon">
+                    🗄
+                </span>
+
+                <span class="menu-text">
+                    Question Bank
+                </span>
+
+            </a>
+
+
+            <a href="/lecturer/create-exam">
+
+                <span class="menu-icon">
+                    📝
+                </span>
+
+                <span class="menu-text">
+                    Create Exam
+                </span>
+
+            </a>
+
+
+            <a href="/lecturer/results"
+               class="active">
+
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                <span class="menu-text">
+                    View Results
+                </span>
+
+            </a>
+
+
+            <a href="#"
+               onclick="logout()">
+
+                <span class="menu-icon">
+                    🚪
+                </span>
+
+                <span class="menu-text">
+                    Logout
+                </span>
+
+            </a>
+
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+
+        <!-- Top bar -->
+
+        <header class="topbar">
+
+            <div class="profile">
+
+                <div class="profile-icon">
+                    👤
+                </div>
+
+                <div class="profile-info">
+
+                    <strong id="lecturerName">
+                        Dr. A. Davis
+                    </strong>
+
+                    <span>
+                        Lecturer
+                    </span>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- Content -->
+
+        <div class="content">
+
+
+            <div class="page-title">
+
+                <h1>
+                    View Results
+                </h1>
+
+                <p>
+                    View student performance in your examinations.
+                </p>
+
+            </div>
+
+
+            <!-- Filter -->
+
+            <div class="filter-box">
+
+                <label for="examFilter">
+                    Select Exam
+                </label>
+
+
+                <select id="examFilter"
+                        onchange="filterResults()">
+
+                    <option value="all">
+                        All Exams
+                    </option>
+
+                    <option value="data">
+                        Data Structures Midterm Exam
+                    </option>
+
+                    <option value="database">
+                        Database Systems Midterm Exam
+                    </option>
+
+                    <option value="operating">
+                        Operating Systems Midterm Exam
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Results table -->
+
+            <div class="table-box">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Student Name
+                            </th>
+
+                            <th>
+                                Exam
+                            </th>
+
+                            <th>
+                                Score
+                            </th>
+
+                            <th>
+                                Grade
+                            </th>
+
+                            <th>
+                                Percentage
+                            </th>
+
+                            <th>
+                                Submitted Date
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="resultsTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+
+        /* =========================
+           TEST DATA
+           
+           This is temporary.
+           Later we replace it with
+           database data.
+        ========================== */
+
+
+        const results = [
+
+            {
+                student: "Saman Perera",
+                exam: "Data Structures Midterm Exam",
+                examType: "data",
+                score: "42 / 50",
+                grade: "A",
+                percentage: "84.0%",
+                submitted: "15 May 2025, 10:32 AM"
+            },
+
+
+            {
+                student: "Nimali Fernando",
+                exam: "Data Structures Midterm Exam",
+                examType: "data",
+                score: "38 / 50",
+                grade: "B+",
+                percentage: "76.0%",
+                submitted: "15 May 2025, 10:28 AM"
+            },
+
+
+            {
+                student: "Kasun Madushanka",
+                exam: "Data Structures Midterm Exam",
+                examType: "data",
+                score: "35 / 50",
+                grade: "B",
+                percentage: "70.0%",
+                submitted: "15 May 2025, 10:15 AM"
+            },
+
+
+            {
+                student: "Tharindu Jayawardena",
+                exam: "Data Structures Midterm Exam",
+                examType: "data",
+                score: "31 / 50",
+                grade: "C+",
+                percentage: "62.0%",
+                submitted: "15 May 2025, 10:10 AM"
+            },
+
+
+            {
+                student: "Dinithi Weerasinghe",
+                exam: "Data Structures Midterm Exam",
+                examType: "data",
+                score: "28 / 50",
+                grade: "C",
+                percentage: "56.0%",
+                submitted: "15 May 2025, 10:05 AM"
+            },
+
+
+            {
+                student: "Chamindu Silva",
+                exam: "Data Structures Midterm Exam",
+                examType: "data",
+                score: "24 / 50",
+                grade: "D",
+                percentage: "48.0%",
+                submitted: "15 May 2025, 10:01 AM"
+            },
+
+
+            {
+                student: "Rashmi Gunasekara",
+                exam: "Data Structures Midterm Exam",
+                examType: "data",
+                score: "20 / 50",
+                grade: "F",
+                percentage: "40.0%",
+                submitted: "15 May 2025, 09:58 AM"
+            }
+
+        ];
+
+
+        /* =========================
+           DISPLAY RESULTS
+        ========================== */
+
+        function displayResults(data) {
+
+
+            const table =
+                document.getElementById(
+                    "resultsTable"
+                );
+
+
+            table.innerHTML = "";
+
+
+            if (data.length === 0) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="no-results">
+
+                            No results found.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+            }
+
+
+            data.forEach(result => {
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${result.student}
+                    </td>
+
+                    <td>
+                        ${result.exam}
+                    </td>
+
+                    <td class="score">
+                        ${result.score}
+                    </td>
+
+                    <td>
+
+                        <span class="grade">
+                            ${result.grade}
+                        </span>
+
+                    </td>
+
+                    <td>
+                        ${result.percentage}
+                    </td>
+
+                    <td>
+                        ${result.submitted}
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+        }
+
+
+        /* =========================
+           FILTER
+        ========================== */
+
+        function filterResults() {
+
+
+            const selected =
+                document.getElementById(
+                    "examFilter"
+                ).value;
+
+
+            if (selected === "all") {
+
+                displayResults(results);
+
+                return;
+            }
+
+
+            const filtered =
+                results.filter(
+                    result =>
+                        result.examType === selected
+                );
+
+
+            displayResults(filtered);
+
+        }
+
+
+        /* =========================
+           LOGOUT
+        ========================== */
+
+        function logout() {
+
+            localStorage.removeItem(
+                "token"
+            );
+
+            localStorage.removeItem(
+                "lecturer_name"
+            );
+
+
+            window.location.href =
+                "/login";
+
+        }
+
+
+        /* =========================
+           INITIAL LOAD
+        ========================== */
+
+        displayResults(results);
+
+
+    </script>
+
+
+</body>
+
+</html>
