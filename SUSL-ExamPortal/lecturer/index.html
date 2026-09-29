@@ -1000,6 +1000,55 @@ tbody tr:hover{
   .dashboard-welcome{
     align-items:flex-start;
   }
+  .profile-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  padding:5px 8px;
+  border-radius:8px;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+.profile-btn:hover{
+  background:#fdf1f3;
+}
+
+.profile-btn .meta{
+  text-align:right;
+}
+
+.profile-btn .avatar{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:var(--maroon-600);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  font-weight:700;
+}
+  .account-avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:var(--maroon-600);
+  color:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:Arial,sans-serif;
+  font-size:28px;
+  font-weight:700;
+
+  margin:0 auto 20px;
+}
 }
 </style>
 </head>
@@ -1170,26 +1219,30 @@ tbody tr:hover{
 
       <div class="who">
 
-        <div class="meta">
-          <div class="n" id="lecturerName">
-            Lecturer
-          </div>
+  <!-- CLICKABLE PROFILE -->
+  <button class="profile-btn" onclick="openAccountModal()">
 
-          <div class="r">
-            Lecturer
-          </div>
-        </div>
+    <div class="meta">
+      <div class="n" id="lecturerName">
+        Lecturer
+      </div>
 
-        <div class="avatar" id="lecturerAvatar">
-          L
-        </div>
+      <div class="r">
+        Lecturer
+      </div>
+    </div>
 
-        <button class="top-logout" onclick="logout()">
+    <div class="avatar" id="lecturerAvatar">
+      L
+    </div>
+
+  </button>
+
+  <button class="top-logout" onclick="logout()">
     🚪 Logout
   </button>
 
-
-      </div>
+</div>
 
     </header>
 
@@ -2473,6 +2526,121 @@ tbody tr:hover{
 
 </div>
 
+  <!-- =========================================================
+     ACCOUNT DETAILS MODAL
+========================================================= -->
+
+<div class="modal-backdrop" id="accountModalBackdrop">
+
+  <div class="modal">
+
+    <div class="modal-head">
+
+      <h3>My Account</h3>
+
+      <button
+        class="modal-close"
+        onclick="closeAccountModal()">
+        ×
+      </button>
+
+    </div>
+
+    <div class="modal-body">
+
+      <div class="account-avatar" id="accountAvatar">
+        L
+      </div>
+
+      <div class="account-form">
+
+        <div class="field">
+
+          <label>Full Name</label>
+
+          <input
+            type="text"
+            id="accountName"
+            placeholder="Enter your name">
+
+        </div>
+
+
+        <div class="field" style="margin-top:14px;">
+
+          <label>Email</label>
+
+          <input
+            type="text"
+            id="accountEmail"
+            placeholder="Enter your email">
+
+        </div>
+
+
+        <div class="field" style="margin-top:14px;">
+
+          <label>Role</label>
+
+          <input
+            type="text"
+            id="accountRole"
+            value="Lecturer"
+            disabled>
+
+        </div>
+
+
+        <hr style="
+          margin:22px 0;
+          border:none;
+          border-top:1px solid var(--line);
+        ">
+
+
+        <h4 style="
+          margin:0 0 12px;
+          color:var(--maroon-700);
+        ">
+          Change Password
+        </h4>
+
+
+        <div class="field">
+
+          <label>New Password</label>
+
+          <input
+            type="password"
+            id="accountPassword"
+            placeholder="Leave empty to keep current password">
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="modal-foot">
+
+      <button
+        class="btn btn-ghost"
+        onclick="closeAccountModal()">
+        Cancel
+      </button>
+
+      <button
+        class="btn btn-primary"
+        onclick="saveAccountDetails()">
+        Save Changes
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
 <!-- =========================================================
      TOAST
@@ -3023,7 +3191,173 @@ function updateUserInformation(){
 
 }
 
+/* =========================================================
+   ACCOUNT DETAILS
+========================================================= */
 
+function openAccountModal(){
+
+  const user = currentUser || {};
+
+  const name = firstValue(
+    user,
+    [
+      "name",
+      "full_name",
+      "username",
+      "email"
+    ],
+    "Lecturer"
+  );
+
+  const email = firstValue(
+    user,
+    [
+      "email",
+      "email_address"
+    ],
+    ""
+  );
+
+  document.getElementById("accountName").value = name;
+
+  document.getElementById("accountEmail").value = email;
+
+  document.getElementById("accountRole").value =
+    user.role || "Lecturer";
+
+  document.getElementById("accountPassword").value = "";
+
+  document.getElementById("accountAvatar").textContent =
+    name.charAt(0).toUpperCase();
+
+  document
+    .getElementById("accountModalBackdrop")
+    .classList.add("open");
+}
+
+
+function closeAccountModal(){
+
+  document
+    .getElementById("accountModalBackdrop")
+    .classList.remove("open");
+
+}
+
+
+/* SAVE ACCOUNT DETAILS */
+
+async function saveAccountDetails(){
+
+  const name =
+    document
+      .getElementById("accountName")
+      .value
+      .trim();
+
+  const email =
+    document
+      .getElementById("accountEmail")
+      .value
+      .trim();
+
+  const password =
+    document
+      .getElementById("accountPassword")
+      .value;
+
+
+  if(!name){
+
+    showToast(
+      "Please enter your name.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(!email){
+
+    showToast(
+      "Please enter your email.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try{
+
+    const body = {
+      name: name,
+      email: email
+    };
+
+
+    /*
+       Only send password when the user
+       actually entered a new password.
+    */
+
+    if(password){
+      body.password = password;
+    }
+
+
+    const data = await apiFetch(
+      "/api/auth/profile",
+      {
+        method:"PUT",
+
+        body:JSON.stringify(body)
+      }
+    );
+
+
+    /*
+       Update local user information
+    */
+
+    currentUser =
+      data.user ||
+      data.data?.user ||
+      {
+        ...currentUser,
+        name:name,
+        email:email
+      };
+
+
+    localStorage.setItem(
+      "examportal_user",
+      JSON.stringify(currentUser)
+    );
+
+
+    updateUserInformation();
+
+    closeAccountModal();
+
+    showToast(
+      "Account details updated successfully."
+    );
+
+
+  }catch(error){
+
+    showToast(
+      error.message ||
+      "Failed to update account details.",
+      "error"
+    );
+
+  }
+
+}
 /* =========================================================
    NAVIGATION
 ========================================================= */
