@@ -218,6 +218,27 @@ button{font-family:inherit}
 .top-profile-name{font-size:13px;font-weight:700;color:var(--ink);line-height:1.2}
 .top-profile-id{font-size:11px;color:var(--muted)}
 
+/* ---------- Top profile dropdown menu ---------- */
+.top-profile-wrap{position:relative}
+.top-profile[aria-expanded="true"]{background:var(--bg)}
+.top-profile .chev{font-size:10px;color:var(--muted);margin-left:2px;transition:transform var(--ease)}
+.top-profile[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.profile-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:220px;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);padding:8px;z-index:1035;
+  opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity var(--ease),transform var(--ease)}
+.profile-menu.show{opacity:1;transform:translateY(0);pointer-events:all}
+.profile-menu-head{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.profile-menu-head .nm{font-size:13.5px;font-weight:700;color:var(--ink)}
+.profile-menu-head .id{font-size:11.5px;color:var(--muted);margin-top:1px}
+.profile-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:none;background:none;
+  border-radius:8px;font-size:13.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;text-align:left;transition:background var(--ease),color var(--ease)}
+.profile-menu-item i{width:16px;text-align:center;color:var(--muted)}
+.profile-menu-item:hover{background:var(--bg);color:var(--ink)}
+.profile-menu-item.danger{color:var(--red)}
+.profile-menu-item.danger i{color:var(--red)}
+.profile-menu-item.danger:hover{background:var(--red-tint)}
+.profile-menu-divider{height:1px;background:var(--line);margin:6px 2px}
+
 /* ============================================================
    MAIN LAYOUT
    ============================================================ */
@@ -778,9 +799,6 @@ button{font-family:inherit}
     <div class="nav-item"><button class="nav-link-item" data-page="notifications" onclick="showPage('notifications',this)"><span class="icon"><i class="fas fa-bell"></i></span>Notifications<span class="badge-count" id="navNotifCount">2</span></button></div>
     <div class="nav-item"><button class="nav-link-item" data-page="profile" onclick="showPage('profile',this)"><span class="icon"><i class="fas fa-user"></i></span>Profile</button></div>
   </nav>
-  <div class="sidebar-footer">
-    <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-arrow-right-from-bracket"></i>Logout</button>
-  </div>
 </aside>
 <div id="sidebarOverlay" onclick="closeSidebar()"></div>
 
@@ -791,13 +809,26 @@ button{font-family:inherit}
     <button class="notif-btn" onclick="showPage('notifications',null)" aria-label="Notifications">
       <i class="fas fa-bell"></i><span class="notif-badge" id="topNotifBadge">2</span>
     </button>
-    <button class="top-profile" onclick="showPage('profile',null)">
-      <div class="top-avatar" id="topAvatarInitials">WP</div>
-      <div>
-        <div class="top-profile-name" id="topProfileName">—</div>
-        <div class="top-profile-id" id="topProfileId">—</div>
+    <div class="top-profile-wrap" id="topProfileWrap">
+      <button class="top-profile" id="topProfileBtn" aria-haspopup="true" aria-expanded="false" onclick="toggleProfileMenu(event)">
+        <div class="top-avatar" id="topAvatarInitials">WP</div>
+        <div>
+          <div class="top-profile-name" id="topProfileName">—</div>
+          <div class="top-profile-id" id="topProfileId">—</div>
+        </div>
+        <i class="fas fa-chevron-down chev"></i>
+      </button>
+      <div class="profile-menu" id="profileMenu" role="menu">
+        <div class="profile-menu-head">
+          <div class="nm" id="profileMenuName">—</div>
+          <div class="id" id="profileMenuId">—</div>
+        </div>
+        <button class="profile-menu-item" role="menuitem" onclick="closeProfileMenu();showPage('profile',null)"><i class="fas fa-user"></i>My Profile</button>
+        <button class="profile-menu-item" role="menuitem" onclick="closeProfileMenu();showPage('notifications',null)"><i class="fas fa-bell"></i>Notifications</button>
+        <div class="profile-menu-divider"></div>
+        <button class="profile-menu-item danger" role="menuitem" onclick="closeProfileMenu();handleLogout()"><i class="fas fa-arrow-right-from-bracket"></i>Logout</button>
       </div>
-    </button>
+    </div>
   </div>
 </header>
 
@@ -1898,6 +1929,7 @@ function enterApp() {
 }
 
 function handleLogout() {
+  closeProfileMenu();
   // API HOOK: clear JWT / session on the backend, then redirect to login
   document.getElementById("appShell").style.display = "none";
   document.getElementById("authScreen").style.display = "flex";
@@ -2719,6 +2751,23 @@ function showPage(id, navEl) {
   closeSidebar();
   window.scrollTo(0, 0);
 }
+function toggleProfileMenu(ev) {
+  if (ev) ev.stopPropagation();
+  const menu = document.getElementById("profileMenu"), btn = document.getElementById("topProfileBtn");
+  const opening = !menu.classList.contains("show");
+  menu.classList.toggle("show", opening);
+  btn.setAttribute("aria-expanded", String(opening));
+}
+function closeProfileMenu() {
+  document.getElementById("profileMenu").classList.remove("show");
+  document.getElementById("topProfileBtn").setAttribute("aria-expanded", "false");
+}
+document.addEventListener("click", (ev) => {
+  const wrap = document.getElementById("topProfileWrap");
+  if (wrap && !wrap.contains(ev.target)) closeProfileMenu();
+});
+document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") closeProfileMenu(); });
+
 function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("sidebarOverlay").classList.toggle("show"); }
 function closeSidebar() { document.getElementById("sidebar").classList.remove("open"); document.getElementById("sidebarOverlay").classList.remove("show"); }
 
@@ -2746,6 +2795,8 @@ function renderIdentity() {
   document.getElementById("topAvatarInitials").innerHTML = avatarInner;
   document.getElementById("topProfileName").textContent = student.name;
   document.getElementById("topProfileId").textContent = student.studentId;
+  document.getElementById("profileMenuName").textContent = student.name;
+  document.getElementById("profileMenuId").textContent = student.studentId;
   document.getElementById("welcomeTitle").textContent = "Welcome back, " + firstNameOf(student.name) + "!";
   document.getElementById("welcomeSub").textContent = student.degree;
   document.getElementById("wmId").textContent = student.studentId;
