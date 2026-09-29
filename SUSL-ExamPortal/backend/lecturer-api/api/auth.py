@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 
 from database import get_db, verify_password
 from auth_utils import create_token, require_auth
@@ -143,7 +143,9 @@ def login():
             "role": user["role"],
             "department": user["department"]
         }
-        # =========================================================
+        }),200
+
+# =========================================================
 # UPDATE ACCOUNT DETAILS
 # =========================================================
 
@@ -277,5 +279,4 @@ def update_profile():
             "role": updated_user["role"],
             "department": updated_user["department"]
         }
-    }), 200
     }), 200
