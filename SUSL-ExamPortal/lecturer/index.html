@@ -201,6 +201,22 @@ body{
   font-family:Arial,sans-serif;
 }
 
+  .top-logout{
+  border:1px solid var(--maroon-600);
+  background:#fff;
+  color:var(--maroon-700);
+  padding:8px 13px;
+  border-radius:7px;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:12.5px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.top-logout:hover{
+  background:#fdf1f3;
+}
+
 .who .avatar{
   width:34px;
   height:34px;
@@ -1124,9 +1140,7 @@ tbody tr:hover{
         📊 View Results
       </a>
 
-      <a onclick="logout()">
-        🚪 Logout
-      </a>
+      
 
     </nav>
 
@@ -1169,6 +1183,11 @@ tbody tr:hover{
         <div class="avatar" id="lecturerAvatar">
           L
         </div>
+
+        <button class="top-logout" onclick="logout()">
+    🚪 Logout
+  </button>
+
 
       </div>
 
