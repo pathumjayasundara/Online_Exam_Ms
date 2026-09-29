@@ -22,9 +22,7 @@ def login():
     # GET REQUEST DATA
     # -----------------------------------------------------
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
     email = str(
         data.get("email", "")
@@ -40,6 +38,7 @@ def login():
     # -----------------------------------------------------
 
     if not email:
+
         return jsonify({
             "success": False,
             "message": "Email is required."
@@ -50,6 +49,7 @@ def login():
     # -----------------------------------------------------
 
     if not password:
+
         return jsonify({
             "success": False,
             "message": "Password is required."
@@ -143,7 +143,8 @@ def login():
             "role": user["role"],
             "department": user["department"]
         }
-        }),200
+    }), 200
+
 
 # =========================================================
 # UPDATE ACCOUNT DETAILS
@@ -165,9 +166,7 @@ def update_profile():
     # GET REQUEST DATA
     # -----------------------------------------------------
 
-    data = request.get_json(
-        silent=True
-    ) or {}
+    data = request.get_json(silent=True) or {}
 
     name = str(
         data.get("name", "")
@@ -264,6 +263,17 @@ def update_profile():
         """,
         (user_id,)
     ).fetchone()
+
+    # -----------------------------------------------------
+    # CHECK UPDATED USER
+    # -----------------------------------------------------
+
+    if updated_user is None:
+
+        return jsonify({
+            "success": False,
+            "message": "User account could not be found."
+        }), 404
 
     # -----------------------------------------------------
     # RETURN UPDATED USER
