@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Portal — Online Examination Management System | SUSL</title>
-<link rel="icon" href="../assets/susl-logo.png">
 
 <!-- ═══════════════════════════════════════════════════════════════
      TEAM 02 — STUDENT MODULE  (FRONTEND-ONLY PROTOTYPE)
@@ -540,9 +539,6 @@ button{font-family:inherit}
   .exam-header-student{display:none}
   .auth-form-panel{padding:28px 22px}
 }
-.switch-role{display:inline-block;font-size:12.5px;color:var(--ink-soft);text-decoration:none;margin-bottom:14px}
-.switch-role:hover{color:var(--red);text-decoration:underline}
-.switch-role:focus-visible{outline:2px solid var(--red);outline-offset:2px}
 </style>
 </head>
 <body>
@@ -555,7 +551,7 @@ button{font-family:inherit}
   <div class="auth-shell">
     <div class="auth-hero">
       <div>
-        <img src="../assets/susl-logo.png" alt="SUSL logo">
+        <img src="susl-logo.png" alt="SUSL logo">
         <div class="uni">Sabaragamuwa University<br>of Sri Lanka</div>
         <div class="sys">Online Examination Management System</div>
       </div>
@@ -563,7 +559,6 @@ button{font-family:inherit}
     </div>
 
     <div class="auth-form-panel">
-      <a class="switch-role" href="../index.html"><i class="fas fa-arrow-left"></i> Not a student? Choose another role</a>
 
       <!-- LOGIN -->
       <div class="auth-view active" id="view-login">
@@ -597,6 +592,11 @@ button{font-family:inherit}
           <button class="btn-red btn-block" id="loginBtn" onclick="handleLogin()">Sign In</button>
         </div>
         <div class="auth-switch">Don't have an account? <button onclick="switchAuthView('register')">Register here</button></div>
+        <div class="auth-switch" style="margin-top:4px">
+          <button onclick="resetDemoData()" style="color:var(--muted);font-weight:600;font-size:12px">
+            <i class="fas fa-rotate-left me-1"></i>Testing? Clear saved test accounts
+          </button>
+        </div>
       </div>
 
       <!-- REGISTER -->
@@ -608,6 +608,11 @@ button{font-family:inherit}
           <input type="text" class="form-input" id="regName" placeholder="W.A. Nimasha Perera" autocomplete="name" oninput="updatePwMeter('reg')">
         </div>
         <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          <input type="date" class="form-input" id="regDob">
+          <div class="form-error" id="regDobError">Please enter a valid date of birth.</div>
+        </div>
+        <div class="form-group">
           <label class="form-label">Email Address (Gmail or university email)</label>
           <input type="email" class="form-input" id="regEmail" placeholder="you@gmail.com" autocomplete="username" oninput="updatePwMeter('reg')">
         </div>
@@ -616,6 +621,15 @@ button{font-family:inherit}
           <input type="text" class="form-input" id="regStudentId" placeholder="e.g. 22APP5678" maxlength="9" oninput="updatePwMeter('reg')">
           <div class="form-hint">Format: 2-digit intake year + 3-letter programme code + 4-digit number.</div>
           <div class="form-error" id="regIdError">Student ID must look like 22APP5678 (2 digits, 3 letters, 4 digits).</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Degree Type</label>
+          <select class="form-input" id="regDegree" onchange="onRegDegreeChange()"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stream / Specialization</label>
+          <select class="form-input" id="regStream"></select>
+          <div class="form-hint">This decides which subjects, timetable and enrolment you'll see.</div>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
@@ -743,7 +757,7 @@ button{font-family:inherit}
 
 <aside id="sidebar">
   <div class="sidebar-brand">
-    <img src="../assets/susl-logo.png" alt="Sabaragamuwa University of Sri Lanka logo">
+    <img src="susl-logo.png" alt="Sabaragamuwa University of Sri Lanka logo">
     <div class="sidebar-brand-text">
       <span class="uni">Sabaragamuwa University<br>of Sri Lanka</span>
       <span class="sys">Examination Management System</span>
@@ -1034,6 +1048,7 @@ button{font-family:inherit}
           <div class="content-card-header"><div class="content-card-title"><div class="card-icon"><i class="fas fa-building-columns"></i></div>Academic Information</div></div>
           <div class="content-card-body">
             <div class="profile-row"><div class="profile-label">Degree Programme</div><div class="profile-value" id="profDegree">—</div></div>
+            <div class="profile-row"><div class="profile-label">Stream / Specialization</div><div class="profile-value" id="profStream">—</div></div>
             <div class="profile-row"><div class="profile-label">Faculty</div><div class="profile-value" id="profFaculty">—</div></div>
             <div class="profile-row"><div class="profile-label">Department</div><div class="profile-value" id="profDept">—</div></div>
             <div class="profile-row"><div class="profile-label">Year / Semester</div><div class="profile-value" id="profYearSem">—</div></div>
@@ -1071,7 +1086,7 @@ button{font-family:inherit}
 <!-- EXAM / QUIZ TAKING MODE -->
 <div id="examMode">
   <div class="exam-header">
-    <img src="../assets/susl-logo.png" alt="SUSL logo">
+    <img src="susl-logo.png" alt="SUSL logo">
     <div class="exam-header-info">
       <div class="t" id="examHeadTitle">Exam Title</div>
       <div class="s" id="examHeadSubject">Subject · Code</div>
@@ -1226,10 +1241,9 @@ button{font-family:inherit}
 </div>
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="../assets/config.js"></script>
 <script>
 /* ============================================================
-   AUTH LAYER — now wired to the real Flask backend (backend/core-api).
+   AUTH LAYER (frontend-only mock)
    API HOOKs:
      POST /api/auth/register   { name, email, studentId, password } -> sends email token
      POST /api/auth/verify     { email, token } -> activates account
@@ -1240,28 +1254,9 @@ button{font-family:inherit}
    Student ID format required by the university: 2-digit intake year +
    3-letter programme code + 4-digit number, e.g. 22APP5678
    ============================================================ */
-const CORE_API = (window.EXAMPORTAL_CONFIG || {}).CORE_API || "http://127.0.0.1:5000";
-const STUDENT_TOKEN_KEY = "examportal_student_token";
-function studentToken() { return localStorage.getItem(STUDENT_TOKEN_KEY); }
-async function apiFetch(path, options = {}) {
-  const token = studentToken();
-  const res = await fetch(CORE_API + path, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: "Bearer " + token } : {}),
-      ...(options.headers || {})
-    }
-  });
-  let data = {};
-  try { data = await res.json(); } catch (e) { /* no body */ }
-  if (!res.ok) throw Object.assign(new Error(data.error || data.message || "Request failed"), { status: res.status, data });
-  return data;
-}
 const STUDENT_ID_RE = /^(\d{2})([A-Za-z]{3})(\d{4})$/;
 let pendingRegistration = null; // { name, email, studentId } while awaiting token confirmation
 let currentToken = null;
-
 
 function switchAuthView(view) {
   document.querySelectorAll(".auth-view").forEach(v => v.classList.remove("active"));
@@ -1288,6 +1283,30 @@ function lsSet(key, val) {
 }
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+
+/* ============================================================
+   MOCK USER STORE (registered accounts) — DEMO ONLY
+   Stores a salted SHA-256 hash, never the plain password.
+   API HOOK: this whole block is replaced by the Flask backend,
+   which must hash with bcrypt/argon2 server-side.
+   ============================================================ */
+const USERS_KEY = "susl_users";
+function loadUsers() { return lsGet(USERS_KEY, []); }
+function findUser(email) { return loadUsers().find(u => u.email.toLowerCase() === email.toLowerCase()) || null; }
+function saveUser(user) {
+  const list = loadUsers().filter(u => u.email.toLowerCase() !== user.email.toLowerCase());
+  list.push(user);
+  lsSet(USERS_KEY, list);
+}
+async function hashPassword(pw, salt) {
+  const text = salt.toLowerCase() + ":" + pw;
+  if (window.crypto && crypto.subtle && window.TextEncoder) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  let h = 5381; for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) >>> 0;
+  return "f" + h.toString(16); // weak fallback for old browsers — demo only
 }
 
 /* ============================================================
@@ -1351,7 +1370,8 @@ function strengthIndex(pw, ctx) {
 // personal details the password must not contain (looked up per form)
 function pwContext(p) {
   if (p === "reg") return { email: el("regEmail").value.trim(), name: el("regName").value.trim(), sid: el("regStudentId").value.trim() };
-  return { email: resetState.email || "", name: "", sid: "" };
+  const email = resetState.email || "", u = email ? findUser(email) : null;
+  return { email, name: (u && u.name) || "", sid: (u && u.studentId) || "" };
 }
 function pwMeterHtml(p) {
   return `<div class="pw-need">Your password must have:</div>
@@ -1548,23 +1568,24 @@ async function handleLogin() {
   idErr.classList.remove("show"); idInput.classList.remove("invalid");
   if (!email || !password) { showToast("Please enter your email and password."); return; }
 
-  let data;
-  try {
-    data = await apiFetch("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ email, password, studentId: sid, role: "student" })
-    });
-  } catch (err) {
-    if (err.status) { passErr.textContent = err.message; passErr.classList.add("show"); }
-    else showToast("Cannot reach the server at " + CORE_API + ". Please start the backend first.");
-    return;
+  // API HOOK: POST /api/auth/login. In this frontend-only demo, accounts created through
+  // Register / Forgot-password are checked against the mock store below; any other
+  // well-formed email + student ID is still let in so the demo profiles can be explored.
+  const user = findUser(email);
+  if (user) {
+    if (user.studentId && user.studentId !== sid) {
+      passErr.textContent = "This Student ID does not match the account for that email.";
+      passErr.classList.add("show"); return;
+    }
+    if (await hashPassword(password, email) !== user.hash) {
+      passErr.textContent = "Incorrect password. Forgot it? Use “Forgot password?” to reset it.";
+      passErr.classList.add("show"); return;
+    }
   }
-
-  localStorage.setItem(STUDENT_TOKEN_KEY, data.token || data.access_token);
 
   const saved = findSaved(email);
   const alreadySaved = !!saved && saved.studentId === sid;
-  await applyStudentIdentity(email, sid);
+  applyStudentIdentity(email, sid);
   el("loginPassword").value = ""; // never leave the password sitting in the form
   setPwVisible("loginPassword", false);
   enterApp();
@@ -1580,67 +1601,60 @@ async function handleLogin() {
 /* ============================================================
    REGISTER (strong password required)
    ============================================================ */
-async function handleRegister() {
+function handleRegister() {
   const name = el("regName").value.trim();
+  const dob = el("regDob").value;
   const email = el("regEmail").value.trim();
   const sid = el("regStudentId").value.trim().toUpperCase();
+  const degKey = el("regDegree").value;
+  const streamKey = el("regStream").value;
+  const programme = (DEGREES[degKey] && DEGREES[degKey].progs[streamKey]) || "cst";
   const pw = el("regPassword").value;
   const pw2 = el("regPassword2").value;
   const idErr = el("regIdError"), idInput = el("regStudentId");
+  const dobErr = el("regDobError"), dobInput = el("regDob");
   const passErr = el("regPassError"), pwErr = el("regPwError");
 
   let ok = true;
   if (!name || !email) { showToast("Please fill in every field."); ok = false; }
   else if (!EMAIL_RE.test(email)) { showToast("Please enter a valid email address."); ok = false; }
+  if (!dob || new Date(dob) > new Date()) { dobErr.classList.add("show"); dobInput.classList.add("invalid"); ok = false; }
+  else { dobErr.classList.remove("show"); dobInput.classList.remove("invalid"); }
   if (!validateStudentId(sid)) { idErr.classList.add("show"); idInput.classList.add("invalid"); ok = false; }
   else { idErr.classList.remove("show"); idInput.classList.remove("invalid"); }
   if (!checkPassword(pw, { email, name, sid }).allOk) { pwErr.classList.add("show"); ok = false; } else { pwErr.classList.remove("show"); }
   if (!pw || pw !== pw2) { passErr.classList.add("show"); ok = false; } else { passErr.classList.remove("show"); }
   if (!ok) return;
 
-  let data;
-  try {
-    data = await apiFetch("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify({ name, email, studentId: sid, password: pw })
-    });
-  } catch (err) {
-    showToast(err.message || "Could not register. Please try again.");
-    return;
-  }
+  // API HOOK: the server must also enforce uniqueness + the password policy
+  if (findUser(email)) { showToast("This email is already registered. Please log in or reset your password."); return; }
+  if (loadUsers().some(u => u.studentId === sid)) { showToast("This Student ID is already registered."); return; }
 
-  pendingRegistration = { name, email, studentId: sid };
-  currentToken = data.devCode || null; // no mail server is configured — see README ("Before real use")
+  pendingRegistration = { name, email, studentId: sid, password: pw, dob, programme };
+  currentToken = String(100000 + secureRandInt(900000)); // API HOOK: server generates & emails this
 
   el("verifyNameLabel").textContent = name;
   el("verifyEmailLabel").textContent = email;
-  el("demoTokenDisplay").textContent = currentToken || "(check the backend console)";
+  el("demoTokenDisplay").textContent = currentToken;
   el("verifyTokenInput").value = "";
   el("verifyTokenError").classList.remove("show");
   switchAuthView("verify");
-  showToast("Confirmation code sent to " + email + ".");
+  showToast("Confirmation code sent to " + email + " (demo).");
 }
 
 async function handleVerifyToken() {
   const entered = el("verifyTokenInput").value.trim();
   const err = el("verifyTokenError");
-  if (!pendingRegistration) { err.classList.add("show"); return; }
-
-  try {
-    await apiFetch("/api/auth/verify", {
-      method: "POST",
-      body: JSON.stringify({ email: pendingRegistration.email, token: entered })
-    });
-  } catch (e) {
-    err.classList.add("show");
-    return;
-  }
+  if (!pendingRegistration || entered !== currentToken) { err.classList.add("show"); return; }
   err.classList.remove("show");
 
-  const { name, email, studentId } = pendingRegistration;
-  pendingRegistration = null;
+  const { name, email, studentId, password, dob, programme } = pendingRegistration;
+  // API HOOK: POST /api/auth/verify — the backend activates the account it already stored
+  saveUser({ email, name, studentId, dob, programme, hash: await hashPassword(password, email) });
+  pendingRegistration.password = null; // drop the plain password from memory
 
-  ["regName", "regEmail", "regStudentId", "regPassword", "regPassword2"].forEach(id => { el(id).value = ""; });
+  ["regName", "regDob", "regEmail", "regStudentId", "regPassword", "regPassword2"].forEach(id => { el(id).value = ""; });
+  populateRegProgrammeSelectors();
   setPwVisible("regPassword", false); setPwVisible("regPassword2", false);
   updatePwMeter("reg");
   hideSuggestion("reg");
@@ -1658,7 +1672,7 @@ async function handleVerifyToken() {
    resend allowed after 30 seconds.
    ============================================================ */
 const OTP_TTL_MS = 5 * 60 * 1000, OTP_RESEND_MS = 30 * 1000, OTP_MAX_ATTEMPTS = 5;
-let resetState = { email: null, expiresAt: 0, resendAt: 0, attempts: 0, verified: false, resetToken: null };
+let resetState = { email: null, otp: null, expiresAt: 0, resendAt: 0, attempts: 0, verified: false };
 let otpInterval = null;
 
 function openForgot() {
@@ -1667,25 +1681,22 @@ function openForgot() {
   switchAuthView("forgot");
   el("forgotEmail").focus();
 }
-async function handleForgotSend() {
+function handleForgotSend() {
   const email = el("forgotEmail").value.trim();
   const err = el("forgotEmailError");
   if (!EMAIL_RE.test(email)) { err.classList.add("show"); return; }
   err.classList.remove("show");
-  try {
-    const data = await apiFetch("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) });
-    startResetOtp(email, data.devCode);
-    showToast("OTP sent to " + email + ".");
-  } catch (e) {
-    showToast(e.message || "Something went wrong. Please try again.");
-  }
+  // API HOOK: POST /api/auth/forgot-password { email }. A real backend should answer the same
+  // way whether or not the email exists, so attackers can't discover who has an account.
+  startResetOtp(email);
+  showToast("OTP sent to " + email + " (demo).");
 }
-function startResetOtp(email, devCode) {
+function startResetOtp(email) {
   const now = Date.now();
-  resetState = { email, expiresAt: now + OTP_TTL_MS,
-                 resendAt: now + OTP_RESEND_MS, attempts: 0, verified: false, resetToken: null };
+  resetState = { email, otp: String(100000 + secureRandInt(900000)), expiresAt: now + OTP_TTL_MS,
+                 resendAt: now + OTP_RESEND_MS, attempts: 0, verified: false };
   el("otpEmailLabel").textContent = email;
-  el("otpDemoDisplay").textContent = devCode || "(check the backend console)";
+  el("otpDemoDisplay").textContent = resetState.otp;
   el("otpInput").value = "";
   el("otpError").classList.remove("show");
   switchAuthView("otp");
@@ -1710,34 +1721,30 @@ function tickOtp() {
   btn.style.opacity = wait > 0 ? ".5" : "1";
   btn.style.cursor = wait > 0 ? "not-allowed" : "pointer";
 }
-async function handleResendOtp() {
+function handleResendOtp() {
   if (!resetState.email || Date.now() < resetState.resendAt) return;
-  try {
-    const data = await apiFetch("/api/auth/forgot-password", { method: "POST", body: JSON.stringify({ email: resetState.email }) });
-    startResetOtp(resetState.email, data.devCode);
-    showToast("A new OTP has been sent.");
-  } catch (e) {
-    showToast(e.message || "Could not resend the code.");
-  }
+  // API HOOK: POST /api/auth/forgot-password again — invalidates the previous OTP
+  startResetOtp(resetState.email);
+  showToast("A new OTP has been sent (demo).");
 }
-async function handleOtpVerify() {
+function handleOtpVerify() {
   const err = el("otpError");
   const entered = el("otpInput").value.trim();
   const fail = msg => { err.textContent = msg; err.classList.add("show"); };
 
-  if (!resetState.email) return fail("Please request a new code.");
+  if (!resetState.otp) return fail("Please request a new code.");
   if (Date.now() > resetState.expiresAt) return fail("This code has expired. Please request a new one.");
   if (entered.length !== 6) return fail("Enter the 6-digit code.");
-
-  let data;
-  try {
-    data = await apiFetch("/api/auth/verify-otp", { method: "POST", body: JSON.stringify({ email: resetState.email, otp: entered }) });
-  } catch (e) {
-    return fail(e.message || "Incorrect code.");
+  // API HOOK: POST /api/auth/verify-otp { email, otp } — comparison must happen on the server
+  if (entered !== resetState.otp) {
+    resetState.attempts++;
+    const left = OTP_MAX_ATTEMPTS - resetState.attempts;
+    if (left <= 0) { resetState.otp = null; return fail("Too many incorrect attempts. Please request a new code."); }
+    return fail(`Incorrect code. ${left} attempt${left === 1 ? "" : "s"} left.`);
   }
   err.classList.remove("show");
   resetState.verified = true;
-  resetState.resetToken = data.resetToken;
+  resetState.otp = null;
   stopOtpTimer();
   el("newpassEmailLabel").textContent = resetState.email;
   ["rpNew", "rpConfirm"].forEach(id => { el(id).value = ""; setPwVisible(id, false); });
@@ -1757,16 +1764,12 @@ async function handleResetPassword() {
   if (pw !== pw2) { matchErr.classList.add("show"); return; }
 
   const email = resetState.email;
-  try {
-    await apiFetch("/api/auth/reset-password", {
-      method: "POST",
-      body: JSON.stringify({ email, resetToken: resetState.resetToken, newPassword: pw })
-    });
-  } catch (e) {
-    pwErr.textContent = e.message || "Could not reset your password.";
-    pwErr.classList.add("show");
-    return;
-  }
+  const user = findUser(email);
+  const hash = await hashPassword(pw, email);
+  if (user && user.hash === hash) { pwErr.textContent = "Your new password must be different from your old one."; pwErr.classList.add("show"); return; }
+
+  // API HOOK: POST /api/auth/reset-password { email, resetToken, newPassword }
+  saveUser({ email, name: user ? user.name : null, studentId: user ? user.studentId : null, hash });
 
   // keep a previously-saved password on this device in sync with the new one
   const saved = loadSavedAccounts();
@@ -1774,8 +1777,8 @@ async function handleResetPassword() {
   saved.forEach(a => { if (a.email.toLowerCase() === email.toLowerCase() && a.password !== undefined) { a.password = pw; changed = true; } });
   if (changed) storeSavedAccounts(saved);
 
-  const sid = (findSaved(email) || {}).studentId || "";
-  resetState = { email: null, expiresAt: 0, resendAt: 0, attempts: 0, verified: false, resetToken: null };
+  const sid = (user && user.studentId) || (findSaved(email) || {}).studentId || "";
+  resetState = { email: null, otp: null, expiresAt: 0, resendAt: 0, attempts: 0, verified: false };
   ["rpNew", "rpConfirm"].forEach(id => { el(id).value = ""; });
   hideSuggestion("reset");
   renderSavedAccounts();
@@ -1787,7 +1790,7 @@ async function handleResetPassword() {
   showToast("Password changed successfully. Please log in with your new password.");
 }
 function cancelReset() {
-  resetState = { email: null, expiresAt: 0, resendAt: 0, attempts: 0, verified: false, resetToken: null };
+  resetState = { email: null, otp: null, expiresAt: 0, resendAt: 0, attempts: 0, verified: false };
   ["rpNew", "rpConfirm"].forEach(id => { el(id).value = ""; });
   switchAuthView("login");
 }
@@ -1797,32 +1800,82 @@ function nameFromEmail(email) {
   return email.split("@")[0].replace(/\d+/g, " ").split(/[._\-\s]+/).filter(Boolean)
     .map(w => w[0].toUpperCase() + w.slice(1).toLowerCase()).join(" ") || "Student";
 }
-async function applyStudentIdentity(email, sid) {
+
+// Which DEGREES entry + stream key a given PROGRAMMES key belongs to
+// (e.g. "app" -> { degree: "hons", stream: "phys" }).
+function degreeStreamForProgramme(progKey) {
+  for (const [degKey, deg] of Object.entries(DEGREES)) {
+    for (const [streamKey, p] of Object.entries(deg.progs)) {
+      if (p === progKey) return { degree: degKey, stream: streamKey };
+    }
+  }
+  return { degree: "hons", stream: "cs" };
+}
+
+// Switches the whole app over to the student's own chosen degree/stream —
+// recomputes their subject list and default enrolment, and resets what
+// "browsing" starts on, instead of assuming Computer Science for everyone.
+function setStudentProgramme(progKey) {
+  if (!PROGRAMMES[progKey]) progKey = "cst";
+  const { degree, stream } = degreeStreamForProgramme(progKey);
+  STUDENT_PROGRAMME = progKey;
+  STUDENT_DEGREE = degree;
+  STUDENT_STREAM = stream;
+  browseProgramme = progKey;
+  browseDegree = degree;
+  browseStream = stream;
+  resultsStream = stream;
+  subjects = rebuildSubjects();
+  enrolledSet = rebuildEnrolledSet();
+  student.degree = PROGRAMMES[progKey].label;
+}
+
+// Fills the Register form's Degree Type / Stream selectors from the same
+// DEGREES/STREAMS data the rest of the app uses, so a new student can
+// actually choose Physics or Chemistry instead of being defaulted to CST.
+function populateRegProgrammeSelectors() {
+  const degSel = el("regDegree");
+  degSel.innerHTML = Object.entries(DEGREES).map(([k, d]) => `<option value="${k}">${escapeHtml(d.label)}</option>`).join("");
+  onRegDegreeChange();
+}
+function onRegDegreeChange() {
+  const degKey = DEGREES[el("regDegree").value] ? el("regDegree").value : "hons";
+  const streamSel = el("regStream");
+  const previousStream = streamSel.value; // keep it if it still exists under the newly picked degree type
+  streamSel.innerHTML = Object.entries(DEGREES[degKey].progs)
+    .map(([streamKey, progKey]) => `<option value="${streamKey}">${escapeHtml(STREAMS[streamKey].label)} — ${escapeHtml(PROGRAMMES[progKey].label)}</option>`)
+    .join("");
+  if (previousStream && DEGREES[degKey].progs[previousStream]) streamSel.value = previousStream;
+}
+function resetDemoData() {
+  try { localStorage.removeItem(USERS_KEY); localStorage.removeItem(SAVED_KEY); } catch (e) { /* unavailable */ }
+  showToast("Cleared saved test accounts. Please register again.");
+}
+
+function applyStudentIdentity(email, sid) {
   const m = STUDENT_ID_RE.exec(sid);
   const intakeYear = "20" + m[1];
-  let profile = null;
-  try {
-    profile = await apiFetch("/api/student/profile"); // resolved server-side from the JWT
-  } catch (e) {
-    // Backend unreachable, or this account only exists in the front-end demo —
-    // fall back to values derived from what the person actually typed, so
-    // nobody sees another student's phone, address, GPA etc.
-  }
-  if (profile) {
-    Object.assign(student, {
-      name: profile.name || nameFromEmail(email), registrationNo: profile.registrationNo,
-      dob: profile.dob, phone: profile.phone || "—", address: profile.address || "—",
-      photo: profile.photoUrl || null, degree: profile.degree || student.degree,
-      faculty: profile.faculty || student.faculty, department: profile.department || student.department,
-      academicAdvisor: profile.academicAdvisor || "—"
-    });
+  const acct = findUser(email);                 // the account created on the Register form
+  const known = MOCK_STUDENTS[sid];             // API HOOK: GET /api/student/profile — resolved server-side from the JWT
+  if (known) {
+    Object.assign(student, known);
   } else {
+    // Not one of the two demo profiles: build everything from what the person actually entered,
+    // and clear the sample details so nobody sees another student's phone, address, GPA etc.
     Object.assign(student, {
       name: nameFromEmail(email),
       registrationNo: intakeYear + "/" + m[2].toUpperCase() + "/" + sid.slice(-4),
       dob: null, phone: "—", address: "—", photo: null, academicAdvisor: "—", creditsEarned: "—"
     });
   }
+  // Whatever was actually entered on the Register form always takes priority
+  if (acct) {
+    if (acct.name) student.name = acct.name;
+    if (acct.dob) student.dob = acct.dob;
+  }
+  // The two demo profiles are shown in their original CST context; every other
+  // account uses the degree/stream the student actually chose when registering.
+  setStudentProgramme(known ? "cst" : ((acct && acct.programme) || "cst"));
   student.email = email;
   student.studentId = sid;
   student.intakeYear = intakeYear;
@@ -1845,7 +1898,7 @@ function enterApp() {
 }
 
 function handleLogout() {
-  localStorage.removeItem(STUDENT_TOKEN_KEY);
+  // API HOOK: clear JWT / session on the backend, then redirect to login
   document.getElementById("appShell").style.display = "none";
   document.getElementById("authScreen").style.display = "flex";
   document.getElementById("loginPassword").value = "";
@@ -1875,10 +1928,23 @@ const student = {
   academicAdvisor: "Dr. R. Perera",
   creditsEarned: "76 / 138"
 };
-// NOTE: this default profile is shown only until GET /api/student/profile
-// responds after login (see applyStudentIdentity above) — real accounts
-// always get their own name, registration no., contact details etc. from
-// the backend, never this placeholder.
+// NOTE: Registration No., DOB, Phone, Address, Photo, Academic Advisor, GPA and
+// Credits Earned are placeholder/demo values. Wire these to the real `users` /
+// `academic_records` tables once those fields are confirmed on the backend —
+// don't display invented data for a real student.
+
+// API HOOK: GET /api/student/profile — in production the backend resolves the
+// logged-in student from the JWT and returns exactly one profile; this
+// directory only exists so the frontend demo can show that two different
+// logins load two different students (never one hard-coded profile for all).
+const MOCK_STUDENTS = {
+  "22APP5678": { name: "W.A. Nimasha Perera", registrationNo: "2022/CST/078", dob: "2003-04-12",
+    phone: "+94 77 123 4567", address: "No. 45, Temple Road, Ratnapura", photo: null,
+    academicAdvisor: "Dr. R. Perera", creditsEarned: "76 / 138" },
+  "21APP3312": { name: "K.D. Sahan Madushanka", registrationNo: "2021/CST/031", dob: "2002-11-02",
+    phone: "+94 71 998 2234", address: "No. 12, Lake Road, Kandy", photo: null,
+    academicAdvisor: "Dr. M. Fernando", creditsEarned: "94 / 138" }
+};
 
 // API HOOK: GET /api/student/exams  (type: "exam" | "quiz")
 const exams = [
@@ -1923,18 +1989,10 @@ const assignments = [
 // API HOOK: GET /api/student/timetable
 // Slots are fixed lecture periods; each entry places one class in the weekly grid.
 const timetableSlots = ["08:30 - 10:30", "10:30 - 11:30", "11:30 - 12:30", "13:30 - 15:30", "15:30 - 17:00"];
-const timetableEntries = [
-  { day: "Mon", slot: 0, code: "PST 31224", title: "AI & Expert Systems", room: "LH B", kind: "lecture" },
-  { day: "Mon", slot: 3, code: "PST 31226", title: "Software Quality Assurances", room: "LH C", kind: "lecture" },
-  { day: "Tue", slot: 0, code: "PST 31225", title: "Software Project Management", room: "LH A", kind: "lecture" },
-  { day: "Tue", slot: 3, code: "PST 31128", title: "Computer Laboratory 3-I", room: "Comp Lab 1", kind: "lab" },
-  { day: "Wed", slot: 0, code: "PST 31227", title: "OO Analysis & Design", room: "LH B", kind: "lecture" },
-  { day: "Wed", slot: 3, code: "PST 31210", title: "Multimedia & Hypermedia Sys. Dev.", room: "LH C", kind: "lecture" },
-  { day: "Thu", slot: 0, code: "PST 31229", title: "Advanced DBMS", room: "LH A", kind: "lecture" },
-  { day: "Thu", slot: 2, code: "PST 31230", title: "Social & Prof. Issues in Computing", room: "LH A", kind: "lecture" },
-  { day: "Fri", slot: 0, code: "PST 31215", title: "Agile Software Development", room: "LH B", kind: "lecture" },
-  { day: "Fri", slot: 3, code: "PST-EBP-3101", title: "Business English", room: "LH D", kind: "lecture" }
-];
+// Timetable entries are now built dynamically from the student's actual
+// enrolled Y3S1 subjects (see buildTimetable(), called from renderTimetable())
+// instead of a fixed list, and use 3 of the 5 daily slots so each weekday
+// shows a fuller, more realistic schedule.
 
 /* ============================================================
    CURRICULUM — every course in the PST Curriculum handbook
@@ -2429,7 +2487,7 @@ const PROGRAMME_TABLES = {
   gphy:  { ...YEARS_1_2, y3s1: "T5",  y3s2: "T8" },
   gchem: { ...YEARS_1_2, y3s1: "T6",  y3s2: "T9" }
 };
-const STUDENT_PROGRAMME = "cst"; // API HOOK: comes from the student's profile
+let STUDENT_PROGRAMME = "cst"; // API HOOK: comes from the student's profile — set at login from the account's chosen programme
 
 // From Year 3 the degree splits into three streams. Years 1–2 are common to all.
 const STREAMS = {
@@ -2441,7 +2499,7 @@ const DEGREES = {
   hons: { label: "BSc Honours (4 years)",                 progs: { phys: "app",  chem: "chem",  cs: "cst" } },
   gen:  { label: "BSc General in Physical Sciences (3 years)", progs: { phys: "gphy", chem: "gchem", cs: "gcst" } }
 };
-const STUDENT_DEGREE = "hons", STUDENT_STREAM = "cs";
+let STUDENT_DEGREE = "hons", STUDENT_STREAM = "cs";
 const STREAM_SEMS = ["y3s1", "y3s2", "y4s1", "y4s2"];
 function isStreamSem(key) { return STREAM_SEMS.includes(key); }
 
@@ -2476,10 +2534,26 @@ function getMinCredits(prog, sem) {
 function semestersFor(prog) { return semesters.filter(s => PROGRAMME_TABLES[prog][s.key]); }
 
 // flat list of the student's own programme (used by results / enrolment)
-const subjects = semesters.flatMap(s => PROGRAMME_TABLES[STUDENT_PROGRAMME][s.key] ? getSemesterCourses(STUDENT_PROGRAMME, s.key) : []);
+// flat list of the student's own programme (used by results / enrolment)
+// — a function, not a fixed const, so it can be recomputed after the
+// student's chosen programme is known (see setStudentProgramme()).
+function rebuildSubjects() {
+  return semesters.flatMap(s => PROGRAMME_TABLES[STUDENT_PROGRAMME][s.key] ? getSemesterCourses(STUDENT_PROGRAMME, s.key) : []);
+}
+let subjects = rebuildSubjects();
 
 // Compulsory subjects for the current semester (Y3S1) are pre-enrolled; electives can be toggled.
-let enrolledSet = new Set(getSemesterCourses(STUDENT_PROGRAMME, "y3s1").filter(s => s.kind.startsWith("Compulsory")).map(s => s.code));
+// Completed past semesters are also seeded here (compulsory + enough electives to meet the
+// credit minimum) so every subject — including ones not auto-selected, e.g. a Physics/Chemistry
+// elective lab — still has a real, working Enroll/Unenroll button instead of a locked "View only".
+function rebuildEnrolledSet() {
+  const set = new Set(getSemesterCourses(STUDENT_PROGRAMME, "y3s1").filter(s => s.kind.startsWith("Compulsory")).map(s => s.code));
+  ["y1s1", "y1s2", "y2s1", "y2s2"].forEach(sem => {
+    defaultTakenCodes(STUDENT_PROGRAMME, sem).forEach(code => set.add(code));
+  });
+  return set;
+}
+let enrolledSet = rebuildEnrolledSet();
 
 // Demo stand-in for "what the student actually took" in completed semesters:
 // every compulsory course + the first electives needed to reach the minimum credits.
@@ -2684,7 +2758,7 @@ function renderIdentity() {
   document.getElementById("profileDegreeShort").textContent = student.degree;
   document.getElementById("profileBadges").innerHTML =
     `<span class="badge-pill badge-upcoming">${student.yearSemester.split("·")[0].trim()}</span>
-     <span class="badge-pill badge-progress">${student.department.includes("Technology") ? "CST" : "Student"}</span>`;
+     <span class="badge-pill badge-progress">${escapeHtml(STREAMS[STUDENT_STREAM].label)}</span>`;
   document.getElementById("profName").textContent = student.name;
   document.getElementById("profId").textContent = student.studentId;
   document.getElementById("profRegNo").textContent = student.registrationNo;
@@ -2693,6 +2767,7 @@ function renderIdentity() {
   document.getElementById("profPhone").textContent = student.phone;
   document.getElementById("profAddress").textContent = student.address;
   document.getElementById("profDegree").textContent = student.degree;
+  document.getElementById("profStream").textContent = STREAMS[STUDENT_STREAM].label + " (" + DEGREES[STUDENT_DEGREE].label + ")";
   document.getElementById("profFaculty").textContent = student.faculty;
   document.getElementById("profDept").textContent = student.department;
   document.getElementById("profYearSem").textContent = student.yearSemester;
@@ -2830,7 +2905,7 @@ function renderDashboard() {
 
   const dashTT = document.getElementById("dashTimetableList");
   const todayName = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date().getDay()];
-  const todays = timetableEntries.filter(e => e.day === todayName).sort((a,b) => a.slot - b.slot);
+  const todays = buildTimetable().filter(e => e.day === todayName).sort((a,b) => a.slot - b.slot);
   dashTT.innerHTML = todays.length ? todays.map(e => `
     <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)">
       <div style="flex:1">
@@ -2945,8 +3020,52 @@ function handleAssignmentUpload(id, input) {
 /* ============================================================
    RENDER: TIMETABLE
    ============================================================ */
+// Short display titles for the longer course names — falls back to the full name.
+const TT_SHORT_TITLES = {
+  "PST 31224": "AI & Expert Systems",
+  "PST 31226": "Software Quality Assurances",
+  "PST 31225": "Software Project Management",
+  "PST 31128": "Computer Laboratory 3-I",
+  "PST 31227": "OO Analysis & Design",
+  "PST 31210": "Multimedia & Hypermedia Sys. Dev.",
+  "PST 31229": "Advanced DBMS",
+  "PST 31230": "Social & Prof. Issues in Computing",
+  "PST 31215": "Agile Software Development",
+  "PST-EBP-3101": "Business English",
+  "PST 31211": "Mathematical Programming",
+  "PST 31212": "Numerical Methods"
+};
+
+// API HOOK: GET /api/student/timetable — built here from the student's live
+// enrollment (enrolledSet) instead of a fixed list, and spread across 3 of
+// the 5 daily slots so every enrolled subject gets a class and each weekday
+// shows a fuller schedule rather than just one or two sessions.
+function buildTimetable() {
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+  const slotsPerDay = [0, 1, 3];
+  const rooms = ["LH A", "LH B", "LH C", "LH D"];
+  const list = getSemesterCourses(STUDENT_PROGRAMME, "y3s1").filter(s => enrolledSet.has(s.code) && s.credits > 0);
+  if (!list.length) return [];
+
+  const entries = [];
+  let i = 0;
+  days.forEach(day => {
+    slotsPerDay.forEach(slot => {
+      const s = list[i % list.length]; i++;
+      const isLab = /laborator/i.test(s.name);
+      entries.push({
+        day, slot, code: s.code, title: TT_SHORT_TITLES[s.code] || s.name,
+        room: isLab ? "Comp Lab 1" : rooms[i % rooms.length],
+        kind: isLab ? "lab" : "lecture"
+      });
+    });
+  });
+  return entries;
+}
+
 function renderTimetable() {
   const days = ["Mon","Tue","Wed","Thu","Fri"];
+  const timetableEntries = buildTimetable();
   const lookup = {};
   timetableEntries.forEach(e => { lookup[e.day + "-" + e.slot] = e; });
 
@@ -2977,8 +3096,7 @@ function semStatus(prog, sem) {
 }
 function takenCodesFor(prog, sem) {
   const st = semStatus(prog, sem);
-  if (st === "current") return enrolledSet;
-  if (st === "completed") return defaultTakenCodes(prog, sem);
+  if (st === "current" || st === "completed") return enrolledSet;
   return null;
 }
 
@@ -3104,8 +3222,10 @@ function subjectCardHtml(s, sm) {
       : `<button class="enroll-btn unenroll" onclick="openEnrollConfirm('${s.code}','unenroll')"><i class="fas fa-xmark me-1"></i>Unenroll</button>`;
     else btn = `<button class="enroll-btn enroll" onclick="openEnrollConfirm('${s.code}','enroll')"><i class="fas fa-plus-circle me-1"></i>Enroll Now</button>`;
   } else if (own && sm.status === "completed") {
-    btn = enrolled ? `<button class="enroll-btn enrolled"><i class="fas fa-check-circle me-1"></i>Completed</button>`
-                   : `<button class="enroll-btn locked">Not taken</button>`;
+    if (enrolled) btn = isComp
+      ? `<button class="enroll-btn enrolled"><i class="fas fa-check-circle me-1"></i>Compulsory · Completed</button>`
+      : `<button class="enroll-btn unenroll" onclick="openEnrollConfirm('${s.code}','unenroll')"><i class="fas fa-xmark me-1"></i>Unenroll</button>`;
+    else btn = `<button class="enroll-btn enroll" onclick="openEnrollConfirm('${s.code}','enroll')"><i class="fas fa-plus-circle me-1"></i>Enroll Now</button>`;
   } else if (own) btn = `<button class="enroll-btn locked">Not Yet Open</button>`;
   else btn = `<button class="enroll-btn locked">View only</button>`;
 
@@ -3217,6 +3337,7 @@ function confirmEnrollAction() {
   else { enrolledSet.delete(code); showToast(`Successfully unenrolled from ${s.name}.`); }
   closeEnrollConfirm();
   renderEnrollPage();
+  renderTimetable();
   const after = creditSummary(STUDENT_PROGRAMME, s.sem);
   const label = semesters.find(x => x.key === s.sem).label;
   if (after.complete && !before.complete) setTimeout(() => showToast(`Credit requirement complete for ${label}: ${after.enrolledTotal} / ${after.min} GPA credits.`), 400);
@@ -3357,22 +3478,12 @@ function renderNotifications() {
    ============================================================ */
 let examState = null;
 
-async function startExam(examId) {
+function startExam(examId) {
   const exam = exams.find(e => e.id === examId);
   if (!exam || exam.status !== "available") { showToast("This is not currently available."); return; }
 
-  // API HOOK: GET /api/student/exams/<exam_id>. Real, gradable exams created in the
-  // backend (currently the seeded "Mid-Semester Examination", id 1) are fetched live;
-  // any other exam id falls back to the local demo question bank below.
-  let questions, isBackendExam = false;
-  try {
-    const data = await apiFetch("/api/student/exams/" + examId);
-    if (data.questions && data.questions.length) { questions = data.questions; isBackendExam = true; }
-    else questions = mockGetQuestions(examId, exam.totalQuestions);
-  } catch (e) {
-    questions = mockGetQuestions(examId, exam.totalQuestions);
-  }
-  examState = { exam, questions, isBackendExam, answers: {}, marked: new Set(), currentIndex: 0, secondsLeft: exam.duration * 60 };
+  const questions = mockGetQuestions(examId, exam.totalQuestions); // API HOOK
+  examState = { exam, questions, answers: {}, marked: new Set(), currentIndex: 0, secondsLeft: exam.duration * 60 };
 
   document.getElementById("examHeadTitle").textContent = exam.title;
   document.getElementById("examHeadSubject").textContent = exam.subject + " · " + exam.code;
@@ -3440,16 +3551,7 @@ function renderQuestion() {
 }
 function selectOption(key) {
   examState.answers[examState.currentIndex] = key;
-  const q = examState.questions[examState.currentIndex];
-  // API HOOK: POST /api/student/exams/<exam_id>/answers — autosave. Falls back to a
-  // no-op for exams that only exist in the local demo question bank.
-  if (examState.isBackendExam) {
-    apiFetch("/api/student/exams/" + examState.exam.id + "/answers", {
-      method: "POST", body: JSON.stringify({ questionId: q.id, optionKey: key })
-    }).catch(() => {});
-  } else {
-    mockSaveAnswer(examState.exam.id, q.id, key);
-  }
+  mockSaveAnswer(examState.exam.id, examState.questions[examState.currentIndex].id, key); // API HOOK
   renderQuestion();
 }
 function jumpToQuestion(i) { examState.currentIndex = i; renderQuestion(); }
@@ -3480,13 +3582,7 @@ function submitExam(auto) {
   const total = examState.questions.length;
   const answered = Object.keys(examState.answers).length;
 
-  // API HOOK: POST /api/student/exams/<exam_id>/submit — the backend marks the exam
-  // (never the browser) and returns the score. Demo exams fall back to mockSubmitExam.
-  const submitPromise = examState.isBackendExam
-    ? apiFetch("/api/student/exams/" + examState.exam.id + "/submit", { method: "POST" })
-    : mockSubmitExam(examState.exam.id, answered, total);
-
-  submitPromise.then(result => {
+  mockSubmitExam(examState.exam.id, answered, total).then(result => { // API HOOK
     exams.find(e => e.id === examState.exam.id).status = "completed";
     results.unshift({
       id: Date.now(), examId: examState.exam.id, title: examState.exam.title, type: examState.exam.type,
@@ -3500,8 +3596,6 @@ function submitExam(auto) {
     showPage("result", null);
     renderDashboard(); renderExamCards(); renderQuizCards(); renderHistory();
     examState = null;
-  }).catch(err => {
-    showToast(err.message || "Could not submit your exam. Please try again.");
   });
 }
 function renderResultPage(r) {
@@ -3537,6 +3631,7 @@ function initAuthWidgets() {
   el("resetMeter").innerHTML = pwMeterHtml("reset");
   updatePwMeter("reg"); updatePwMeter("reset");
   renderSavedAccounts();
+  populateRegProgrammeSelectors();
   // press Enter to submit on every auth screen
   const enterActions = { "view-login": handleLogin, "view-register": handleRegister, "view-verify": handleVerifyToken,
                          "view-forgot": handleForgotSend, "view-otp": handleOtpVerify, "view-newpass": handleResetPassword };
