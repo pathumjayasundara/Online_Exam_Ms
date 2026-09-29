@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 
 from database import get_db, verify_password
-from auth_utils import create_token
+from auth_utils import create_token, require_auth
 
 
 auth_bp = Blueprint(
@@ -143,4 +143,139 @@ def login():
             "role": user["role"],
             "department": user["department"]
         }
+        # =========================================================
+# UPDATE ACCOUNT DETAILS
+# =========================================================
+
+@auth_bp.route("/profile", methods=["PUT"])
+@require_auth
+def update_profile():
+
+    # -----------------------------------------------------
+    # GET CURRENT LOGGED-IN USER
+    # -----------------------------------------------------
+
+    user = g.current_user
+
+    user_id = user["id"]
+
+    # -----------------------------------------------------
+    # GET REQUEST DATA
+    # -----------------------------------------------------
+
+    data = request.get_json(
+        silent=True
+    ) or {}
+
+    name = str(
+        data.get("name", "")
+    ).strip()
+
+    email = str(
+        data.get("email", "")
+    ).strip().lower()
+
+    # -----------------------------------------------------
+    # VALIDATE NAME
+    # -----------------------------------------------------
+
+    if not name:
+
+        return jsonify({
+            "success": False,
+            "message": "Name is required."
+        }), 400
+
+    # -----------------------------------------------------
+    # VALIDATE EMAIL
+    # -----------------------------------------------------
+
+    if not email:
+
+        return jsonify({
+            "success": False,
+            "message": "Email is required."
+        }), 400
+
+    # -----------------------------------------------------
+    # CONNECT TO DATABASE
+    # -----------------------------------------------------
+
+    db = get_db()
+
+    # -----------------------------------------------------
+    # CHECK WHETHER EMAIL IS ALREADY USED
+    # -----------------------------------------------------
+
+    existing_user = db.execute(
+        """
+        SELECT id
+        FROM users
+        WHERE LOWER(email) = ?
+        AND id != ?
+        """,
+        (email, user_id)
+    ).fetchone()
+
+    if existing_user is not None:
+
+        return jsonify({
+            "success": False,
+            "message": "This email is already used by another account."
+        }), 409
+
+    # -----------------------------------------------------
+    # UPDATE USER
+    # -----------------------------------------------------
+
+    db.execute(
+        """
+        UPDATE users
+        SET
+            name = ?,
+            email = ?
+        WHERE id = ?
+        """,
+        (
+            name,
+            email,
+            user_id
+        )
+    )
+
+    db.commit()
+
+    # -----------------------------------------------------
+    # GET UPDATED USER
+    # -----------------------------------------------------
+
+    updated_user = db.execute(
+        """
+        SELECT
+            id,
+            name,
+            email,
+            role,
+            department
+        FROM users
+        WHERE id = ?
+        """,
+        (user_id,)
+    ).fetchone()
+
+    # -----------------------------------------------------
+    # RETURN UPDATED USER
+    # -----------------------------------------------------
+
+    return jsonify({
+        "success": True,
+        "message": "Account details updated successfully.",
+        "user": {
+            "id": updated_user["id"],
+            "name": updated_user["name"],
+            "email": updated_user["email"],
+            "role": updated_user["role"],
+            "department": updated_user["department"]
+        }
+    }), 200
     }), 200
