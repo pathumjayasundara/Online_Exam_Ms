@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Exam Portal</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+margin:0;
+padding:40px;
+background:#eef5f9;
+}
+
+h1{
+text-align:center;
+margin-bottom:40px;
+}
+
+.container{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:30px;
+max-width:900px;
+margin:auto;
+}
+
+.box{
+height:180px;
+border-radius:20px;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:30px;
+font-weight:bold;
+cursor:pointer;
+text-decoration:none;
+transition:0.3s;
+}
+
+.box:hover{
+transform:translateY(-8px);
+}
+
+.year1{
+background:linear-gradient(135deg,#00c6ff,#0072ff);
+}
+
+.year2{
+background:linear-gradient(135deg,#00d2a0,#00a86b);
+}
+
+.year3{
+background:linear-gradient(135deg,#ff5fd2,#a84dff);
+}
+
+.year4{
+background:linear-gradient(135deg,#ffb100,#ff6600);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Exam Portal</h1>
+
+<div class="container">
+
+<a href="subjects.html" class="box year1">
+First Year First Semester
+</a>
+
+<a href="Second_year.html" class="box year2">
+First Year Second Semester
+</a>
+
+<a href="Third_year.html" class="box year3">
+Year
+</a>
+
+<a href="Fourth_Year.html" class="box year4">
+Fourth Year
+</a>
+
+</div>
+
+</body>
+</html>

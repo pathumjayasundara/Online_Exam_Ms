@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ExamPortal Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+rel="stylesheet"
+/>
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h3>ExamPortal</h3>
+                <span>Administrator</span>
+            </div>
+        </div>
+
+        <nav>
+            <a class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a><i class="fa-solid fa-book"></i> Subjects</a>
+            <a><i class="fa-regular fa-file-lines"></i> Questions</a>
+            <a><i class="fa-solid fa-list-check"></i> Quizzes</a>
+            <a><i class="fa-solid fa-robot"></i> Auto Marking</a>
+            <a><i class="fa-solid fa-award"></i> Results</a>
+            <a><i class="fa-solid fa-chart-line"></i> Analytics</a>
+        </nav>
+
+        <div class="tip-card">
+            <h4>Pro Tip</h4>
+            <p>Schedule exams in batches to reduce server load.</p>
+        </div>
+
+        <button class="logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sign out
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Header -->
+        <header class="topbar">
+            <div>
+                <h1>Welcome back, Dr. Davis</h1>
+                <p>Here's what's happening across your university today.</p>
+            </div>
+
+            <div class="top-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search anything..." />
+                </div>
+
+                <button class="icon-btn">
+                    <i class="fa-regular fa-bell"></i>
+                </button>
+
+                <div class="profile">
+                    <div class="avatar">AD</div>
+                    <div>
+                        <strong>Dr. A. Davis</strong>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div>
+                    <span>Total Students</span>
+                    <h2>3,482</h2>
+                    <small>↑ 4.2% this month</small>
+                </div>
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <span>Total Questions</span>
+                    <h2>12,940</h2>
+                    <small>↑ 218 added</small>
+                </div>
+                <i class="fa-regular fa-file-lines"></i>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <span>Exams Conducted</span>
+                    <h2>186</h2>
+                    <small>↑ 12 this week</small>
+                </div>
+                <i class="fa-solid fa-clipboard-list"></i>
+            </div>
+
+            <div class="stat-card">
+                <div>
+                    <span>Average Score</span>
+                    <h2>78.4%</h2>
+                    <small>↑ 2.1% vs last term</small>
+                </div>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+            </div>
+
+        </section>
+
+        <!-- Middle -->
+        <section class="middle-grid">
+
+            <!-- Chart -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <div>
+                        <h3>Performance Trend</h3>
+                        <span>Average exam score over the past week</span>
+                    </div>
+                    <div class="tabs">
+                        <button class="active">7D</button>
+                        <button>30D</button>
+                        <button>Term</button>
+                    </div>
+                </div>
+
+                <div class="chart-placeholder">
+                    <div class="line"></div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3>Quick Actions</h3>
+
+
+                <div class="action-item">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <div>
+                        <strong>Create Question</strong>
+                        <span>Add MCQ to the bank</span>
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <i class="fa-solid fa-play"></i>
+                    <div>
+                        <strong>Launch Exam</strong>
+                        <span>Start live session</span>
+                    </div>
+                </div>
+
+                <div class="action-item">
+                    <i class="fa-solid fa-upload"></i>
+                    <div>
+                        <strong>Import Roster</strong>
+                        <span>Bulk CSV upload</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Bottom -->
+        <section class="bottom-grid">
+
+            <div class="card activity-card">
+                <div class="section-header">
+                    <h3>Recent Activity</h3>
+                    <a href="#">View all</a>
+                </div>
+
+                <ul class="activity-list">
+                    <li>
+                        <strong>Sarah Chen</strong> submitted Calculus II Midterm
+                        <span>2m ago</span>
+                    </li>
+
+                    <li>
+                        <strong>Mark Johnson</strong> created 14 new questions
+                        <span>18m ago</span>
+                    </li>
+
+                    <li>
+                        <strong>Exam Engine</strong> auto-marked 234 submissions
+                        <span>1h ago</span>
+                    </li>
+
+                    <li>
+                        <strong>Dr. Patel</strong> scheduled CS101 Final
+                        <span>3h ago</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="upcoming">
+                <span>UPCOMING</span>
+                <h2>CS101 Final Exam</h2>
+                <p>Friday, Dec 12 • 09:00 AM</p>
+
+                <div class="exam-stats">
+                    <div>
+                        <span>Enrolled</span>
+                        <strong>248</strong>
+                    </div>
+
+                    <div>
+                        <span>Questions</span>
+                        <strong>60 MCQs</strong>
+                    </div>
+
+                    <div>
+                        <span>Duration</span>
+                        <strong>120 min</strong>
+                    </div>
+                </div>
+
+                <button>View Details</button>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

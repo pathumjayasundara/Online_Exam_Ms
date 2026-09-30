@@ -1,0 +1,35 @@
+:root{
+
+/* Background */
+
+--body-bg:#f5f9fc;
+
+/* Sidebar */
+
+--sidebar-bg:#ffffff;
+
+--sidebar-shadow:#dfe8f1;
+
+/* Text */
+
+--title:#1d2939;
+
+--text:#667085;
+
+--light-text:#98a2b3;
+
+/* Buttons */
+
+--primary:#0ea5ff;
+
+--primary-dark:#0284c7;
+
+/* Borders */
+
+--border:#e4e7ec;
+
+/* Card */
+
+--card-bg:#ffffff;
+
+}

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Exam System</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+background:#dff5f7;
+}
+
+.topbar{
+height:70px;
+background:#fff;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 25px;
+border-bottom:1px solid #ddd;
+}
+
+.exam-info{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.logo{
+width:40px;
+height:40px;
+background:#0ea5e9;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#fff;
+font-weight:bold;
+}
+
+.header-right{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.timer{
+background:#0ea5e9;
+color:white;
+padding:10px 20px;
+border-radius:20px;
+font-weight:bold;
+}
+
+.wrapper{
+display:flex;
+gap:20px;
+padding:25px;
+}
+
+.question-box{
+flex:1;
+background:white;
+border-radius:20px;
+padding:25px;
+}
+
+.question-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.question-title{
+margin-top:25px;
+margin-bottom:25px;
+font-size:28px;
+}
+
+.option{
+display:flex;
+align-items:center;
+padding:18px;
+border:1px solid #d8e0ea;
+border-radius:18px;
+margin-bottom:15px;
+cursor:pointer;
+transition:.2s;
+}
+
+.option:hover{
+background:#f7fbff;
+}
+
+.option.selected{
+background:#e8f3ff;
+border:2px solid #0ea5e9;
+}
+
+.letter{
+width:38px;
+height:38px;
+border-radius:50%;
+background:#e5edf7;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+margin-right:15px;
+}
+
+.navigation{
+display:flex;
+justify-content:space-between;
+margin-top:30px;
+}
+
+.btn{
+border:none;
+padding:13px 25px;
+border-radius:25px;
+cursor:pointer;
+}
+
+.prev{
+background:#f1f5f9;
+}
+
+.next{
+background:#0ea5e9;
+color:white;
+}
+
+.review{
+background:#fff3cd;
+}
+
+.palette{
+width:260px;
+background:white;
+border-radius:20px;
+padding:20px;
+}
+
+.palette h4{
+margin-bottom:20px;
+}
+
+.palette-grid{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:10px;
+}
+
+.palette-grid button{
+height:38px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.current{
+background:#0ea5e9 !important;
+color:white;
+}
+
+.answered{
+background:#d1fae5 !important;
+color:#166534;
+}
+
+.marked{
+background:#fde68a !important;
+color:#92400e;
+}
+
+.notvisited{
+background:#edf2f7;
+}
+
+.legend{
+margin-top:20px;
+font-size:13px;
+}
+
+.legend div{
+margin-bottom:8px;
+}
+
+.dot{
+display:inline-block;
+width:10px;
+height:10px;
+border-radius:50%;
+margin-right:6px;
+}
+
+.submit{
+width:100%;
+margin-top:20px;
+padding:14px;
+background:#ef4444;
+color:white;
+border:none;
+border-radius:25px;
+cursor:pointer;
+font-weight:bold;
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+
+<div class="exam-info">
+<div class="logo">E</div>
+
+<div>
+<h3>CS101 - Data Structures Final</h3>
+<p>Greenwood University</p>
+</div>
+</div>
+
+<div class="header-right">
+<div class="timer" id="timer">
+01:00:00
+</div>
+</div>
+
+</div>
+
+<div class="wrapper">
+
+<div class="question-box">
+
+<div class="question-header">
+
+<div>
+<h5 id="counter"></h5>
+<p>4 Marks • No negative marking</p>
+</div>
+
+<button class="btn review"
+onclick="markReview()">
+Mark For Review
+</button>
+
+</div>
+
+<h2 class="question-title"
+id="questionText">
+</h2>
+
+<div class="option" onclick="selectOption(0)">
+<div class="letter">A</div>
+<span id="opt0"></span>
+</div>
+
+<div class="option" onclick="selectOption(1)">
+<div class="letter">B</div>
+<span id="opt1"></span>
+</div>
+
+<div class="option" onclick="selectOption(2)">
+<div class="letter">C</div>
+<span id="opt2"></span>
+</div>
+
+<div class="option" onclick="selectOption(3)">
+<div class="letter">D</div>
+<span id="opt3"></span>
+</div>
+
+<div class="navigation">
+
+<button class="btn prev"
+onclick="previousQuestion()">
+Previous
+</button>
+
+<button class="btn next"
+onclick="saveAndNext()">
+Save & Next
+</button>
+
+</div>
+
+</div>
+
+<div class="palette">
+
+<h4>
+Question Palette
+</h4>
+
+<div class="palette-grid"
+id="palette">
+</div>
+
+<div class="legend">
+
+<div>
+<span class="dot"
+style="background:#0ea5e9"></span>
+Current
+</div>
+
+<div>
+<span class="dot"
+style="background:#22c55e"></span>
+Answered
+</div>
+
+<div>
+<span class="dot"
+style="background:#facc15"></span>
+Marked
+</div>
+
+<div>
+<span class="dot"
+style="background:#cbd5e1"></span>
+Not Visited
+</div>
+
+</div>
+
+<button class="submit"
+onclick="submitExam()">
+Submit Exam
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const questions = [
+
+{
+question:"Which of the following best describes a Binary Search Tree (BST)?",
+options:[
+"A stack-based memory region used for static allocation",
+"A tree-based data structure where every parent node is ordered relative to its children",
+"A graph with no cycles and weighted edges",
+"A hash-based collection that allows duplicate keys"
+],
+correct:1
+},
+
+{
+question:"Which data structure follows FIFO?",
+options:[
+"Stack",
+"Queue",
+"Tree",
+"Heap"
+],
+correct:1
+},
+
+{
+question:"Which data structure follows LIFO?",
+options:[
+"Queue",
+"Stack",
+"Array",
+"Graph"
+],
+correct:1
+},
+
+{
+question:"What is the time complexity of Binary Search?",
+options:[
+"O(n)",
+"O(log n)",
+"O(n²)",
+"O(n log n)"
+],
+correct:1
+},
+
+{
+question:"Which structure stores key-value pairs?",
+options:[
+"Hash Table",
+"Queue",
+"Stack",
+"Tree"
+],
+correct:0
+}
+
+];
+
+let currentQuestion=0;
+
+let answers=
+new Array(
+questions.length
+).fill(null);
+
+let marked=
+new Array(
+questions.length
+).fill(false);
+
+const palette=
+document.getElementById("palette");
+
+function createPalette(){
+
+palette.innerHTML="";
+
+questions.forEach((q,index)=>{
+
+const btn=
+document.createElement("button");
+
+btn.innerText=index+1;
+
+btn.className="notvisited";
+
+btn.onclick=()=>{
+loadQuestion(index);
+};
+
+palette.appendChild(btn);
+
+});
+
+}
+
+function loadQuestion(index){
+
+currentQuestion=index;
+
+const q=
+questions[index];
+
+document.getElementById(
+"counter"
+).innerText=
+`QUESTION ${index+1} OF ${questions.length}`;
+
+document.getElementById(
+"questionText"
+).innerText=q.question;
+
+q.options.forEach((o,i)=>{
+
+document.getElementById(
+"opt"+i
+).innerText=o;
+
+});
+
+updatePalette();
+
+restoreAnswer();
+
+}
+
+function selectOption(index){
+
+answers[currentQuestion]=index;
+
+document
+.querySelectorAll(".option")
+.forEach(op=>{
+
+op.classList.remove(
+"selected"
+);
+
+});
+
+document
+.querySelectorAll(".option")
+[index]
+.classList.add(
+"selected"
+);
+
+}
+
+function restoreAnswer(){
+
+document
+.querySelectorAll(".option")
+.forEach(op=>{
+
+op.classList.remove(
+"selected"
+);
+
+});
+
+if(
+answers[currentQuestion]
+!==null
+){
+
+document
+.querySelectorAll(".option")
+[
+answers[currentQuestion]
+]
+.classList.add(
+"selected"
+);
+
+}
+
+}
+
+function saveAndNext(){
+
+updatePalette();
+
+if(
+currentQuestion<
+questions.length-1
+){
+
+loadQuestion(
+currentQuestion+1
+);
+
+}
+
+}
+
+function previousQuestion(){
+
+if(
+currentQuestion>0
+){
+
+loadQuestion(
+currentQuestion-1
+);
+
+}
+
+}
+
+function markReview(){
+
+marked[currentQuestion]
+=true;
+
+updatePalette();
+
+}
+
+function updatePalette(){
+
+const buttons=
+palette.querySelectorAll(
+"button"
+);
+
+buttons.forEach((btn,i)=>{
+
+btn.className="notvisited";
+
+if(
+answers[i]!==null
+){
+
+btn.className=
+"answered";
+
+}
+
+if(
+marked[i]
+){
+
+btn.className=
+"marked";
+
+}
+
+});
+
+buttons[currentQuestion]
+.classList.add(
+"current"
+);
+
+}
+
+function submitExam(){
+
+let score=0;
+
+questions.forEach((q,i)=>{
+
+if(
+answers[i]===q.correct
+){
+
+score++;
+
+}
+
+});
+
+alert(
+`Exam Submitted!\n\nScore : ${score}/${questions.length}`
+);
+
+}
+
+createPalette();
+loadQuestion(0);
+
+let totalSeconds=3600;
+
+setInterval(()=>{
+
+let h=
+Math.floor(
+totalSeconds/3600
+);
+
+let m=
+Math.floor(
+(totalSeconds%3600)/60
+);
+
+let s=
+totalSeconds%60;
+
+document.getElementById(
+"timer"
+).innerText=
+
+String(h)
+.padStart(2,"0")
++":"
+
++String(m)
+.padStart(2,"0")
++":"
+
++String(s)
+.padStart(2,"0");
+
+if(totalSeconds>0)
+totalSeconds--;
+
+},1000);
+
+</script>
+
+</body>
+</html>

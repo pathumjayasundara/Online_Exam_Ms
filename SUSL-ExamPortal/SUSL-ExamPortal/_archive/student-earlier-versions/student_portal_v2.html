@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal — Online Examination Management System | SUSL</title>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     TEAM 02 — STUDENT MODULE  (FRONTEND-ONLY PROTOTYPE)
+     Sabaragamuwa University of Sri Lanka
+     Faculty of Applied Sciences — Dept. of Physical Sciences & Technology
+     Online Examination Management System
+
+     This build is deliberately FRONTEND ONLY, as requested — every
+     "API HOOK" comment marks exactly where a fetch() call to the
+     Flask backend should replace the mock function next to it.
+     No exam answer keys or marking logic live in this file — real
+     scoring must always happen on the server.
+
+     Subject codes/titles/credits are taken from the uploaded
+     "PST Curriculum" handbook (BSc Hons in Computer Science &
+     Technology stream) so the Enroll Subjects / Timetable /
+     Assignments pages reflect real course data.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+/* ============================================================
+   DESIGN TOKENS — Sabaragamuwa University red & white identity
+   ============================================================ */
+:root{
+  --red:            #A31621;
+  --red-dark:        #7A0F1A;
+  --red-tint:        #FCEBEC;
+  --red-tint-strong: #F6D3D6;
+
+  --gold:            #B8862E;
+  --gold-tint:        #FBF1DF;
+
+  --green:           #1E7145;
+  --green-tint:       #E7F5EC;
+  --amber:           #B8862E;
+  --amber-tint:       #FBF1DF;
+  --gray-visit:      #9AA1AC;
+
+  --ink:             #22262B;
+  --ink-soft:        #4B535C;
+  --muted:           #8A929C;
+  --line:            #E6E8EC;
+  --surface:         #FFFFFF;
+  --bg:              #F5F6F8;
+
+  --sidebar-w: 264px;
+  --topbar-h: 68px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(24,28,33,0.06), 0 1px 2px rgba(24,28,33,0.04);
+  --shadow-md: 0 6px 20px rgba(24,28,33,0.08);
+  --ease: 0.2s ease;
+  --serif: 'Lora', Georgia, serif;
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font-family:inherit}
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-thumb{background:#D3D6DA;border-radius:10px}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+
+/* ============================================================
+   AUTH SCREENS (login / register / verify)
+   ============================================================ */
+#authScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-shell{width:100%;max-width:920px;background:var(--surface);border-radius:16px;box-shadow:var(--shadow-md);
+  display:grid;grid-template-columns:1fr 1.1fr;overflow:hidden;min-height:560px}
+.auth-hero{background:linear-gradient(160deg,var(--red-dark),var(--red));color:#fff;padding:40px 34px;
+  display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.auth-hero::after{content:'';position:absolute;bottom:-70px;left:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.06)}
+.auth-hero img{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:12px;padding:6px}
+.auth-hero .uni{font-family:var(--serif);font-size:18px;font-weight:600;margin-top:16px;line-height:1.35}
+.auth-hero .sys{font-size:12.5px;opacity:.85;margin-top:4px}
+.auth-hero .tagline{font-size:12.5px;opacity:.8;line-height:1.6;position:relative}
+.auth-form-panel{padding:40px 44px;overflow-y:auto}
+.auth-view{display:none}
+.auth-view.active{display:block}
+.auth-title{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:4px}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:26px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:6px}
+.form-input{width:100%;padding:10px 13px;border:1.5px solid var(--line);border-radius:var(--radius-sm);font-size:13.5px;
+  color:var(--ink);outline:none;transition:border-color var(--ease)}
+.form-input:focus{border-color:var(--red)}
+.form-hint{font-size:11.5px;color:var(--muted);margin-top:5px}
+.form-error{font-size:11.5px;color:var(--red);margin-top:5px;display:none}
+.form-error.show{display:block}
+.form-input.invalid{border-color:var(--red)}
+.auth-actions{margin-top:22px}
+.auth-switch{margin-top:20px;font-size:13px;color:var(--ink-soft);text-align:center}
+.auth-switch button{background:none;border:none;color:var(--red);font-weight:700;cursor:pointer}
+.demo-token-box{background:var(--gold-tint);border:1px dashed var(--gold);border-radius:var(--radius-sm);
+  padding:12px 14px;margin-bottom:18px;font-size:12.5px;color:#6E5320}
+.demo-token-box strong{font-family:var(--serif);font-size:20px;letter-spacing:3px;color:var(--gold)}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+#sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--surface);
+  border-right:1px solid var(--line);z-index:1040;display:flex;flex-direction:column;
+  transition:transform var(--ease);overflow-y:auto}
+.sidebar-brand{display:flex;align-items:center;gap:12px;padding:20px 18px;border-bottom:1px solid var(--line)}
+.sidebar-brand img{width:46px;height:46px;object-fit:contain;flex-shrink:0}
+.sidebar-brand-text{line-height:1.25;min-width:0}
+.sidebar-brand-text .uni{font-family:var(--serif);font-weight:600;font-size:13.5px;color:var(--ink);display:block}
+.sidebar-brand-text .sys{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+
+.sidebar-nav{padding:14px 12px;flex:1}
+.nav-section-label{color:var(--muted);font-size:10.5px;font-weight:700;letter-spacing:0.6px;padding:14px 10px 6px}
+.nav-item{margin-bottom:2px}
+.nav-link-item{display:flex;align-items:center;gap:12px;padding:10px 12px;color:var(--ink-soft);
+  border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;transition:background var(--ease),color var(--ease);
+  text-decoration:none;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent}
+.nav-link-item .icon{width:18px;text-align:center;font-size:14px;color:var(--muted)}
+.nav-link-item:hover{background:var(--bg);color:var(--ink)}
+.nav-link-item.active{background:var(--red-tint);color:var(--red-dark);border-left-color:var(--red);font-weight:700}
+.nav-link-item.active .icon{color:var(--red)}
+.nav-link-item .badge-count{margin-left:auto;background:var(--red);color:#fff;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700}
+
+.sidebar-footer{padding:14px;border-top:1px solid var(--line)}
+.logout-btn{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:13.5px;font-weight:600;cursor:pointer;
+  padding:10px 12px;border-radius:var(--radius-sm);border:none;background:none;width:100%;transition:background var(--ease),color var(--ease)}
+.logout-btn:hover{background:var(--red-tint);color:var(--red)}
+
+#sidebarOverlay{display:none;position:fixed;inset:0;background:rgba(20,20,22,0.45);z-index:1039}
+#sidebarOverlay.show{display:block}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+#topbar{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--topbar-h);background:var(--surface);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;z-index:1030;gap:16px;
+  transition:left var(--ease)}
+#sidebarToggle{display:none;background:none;border:none;font-size:20px;color:var(--ink-soft);cursor:pointer}
+.page-heading{font-family:var(--serif);font-size:17px;font-weight:600;color:var(--ink)}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.notif-btn{position:relative;width:38px;height:38px;border-radius:50%;border:none;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink-soft);cursor:pointer;transition:background var(--ease)}
+.notif-btn:hover{background:var(--line)}
+.notif-badge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;padding:0 3px;background:var(--red);
+  border-radius:20px;border:2px solid var(--surface);font-size:9px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.top-profile{display:flex;align-items:center;gap:10px;cursor:pointer;padding:6px 10px 6px 6px;border-radius:50px;border:none;background:none;transition:background var(--ease)}
+.top-profile:hover{background:var(--bg)}
+.top-avatar{width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px}
+.top-profile-name{font-size:13px;font-weight:700;color:var(--ink);line-height:1.2}
+.top-profile-id{font-size:11px;color:var(--muted)}
+
+/* ============================================================
+   MAIN LAYOUT
+   ============================================================ */
+#main{margin-left:var(--sidebar-w);margin-top:var(--topbar-h);padding:26px 28px;min-height:calc(100vh - var(--topbar-h));transition:margin-left var(--ease)}
+.page{display:none}
+.page.active{display:block}
+.page-intro{color:var(--muted);font-size:13px;margin-bottom:20px}
+
+/* WELCOME */
+.welcome-card{background:linear-gradient(135deg,var(--red-dark),var(--red));border-radius:var(--radius);
+  padding:26px 30px;color:#fff;margin-bottom:22px;position:relative;overflow:hidden}
+.welcome-card::after{content:'';position:absolute;top:-60px;right:-40px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.06)}
+.welcome-title{font-family:var(--serif);font-size:22px;font-weight:600}
+.welcome-sub{font-size:13.5px;opacity:.9;margin-top:4px}
+.welcome-meta{display:flex;gap:22px;margin-top:18px;flex-wrap:wrap;position:relative}
+.welcome-meta div{font-size:12px}
+.welcome-meta .label{opacity:.75;display:block;font-size:10.5px;letter-spacing:.4px;margin-bottom:2px}
+.welcome-meta .value{font-weight:600;font-size:13px}
+
+/* STAT CARDS */
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:14px;border-top:3px solid transparent;height:100%}
+.stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.stat-value{font-size:24px;font-weight:800;line-height:1;font-family:var(--serif)}
+.stat-label{font-size:12.5px;color:var(--muted);margin-top:4px}
+
+/* CONTENT CARDS */
+.content-card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:22px}
+.content-card-header{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.content-card-title{font-size:14.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:10px}
+.content-card-title .card-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--red-tint);color:var(--red)}
+.content-card-body{padding:18px 20px}
+.link-btn{background:none;border:none;color:var(--red);font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.link-btn:hover{text-decoration:underline}
+
+/* STATUS BADGES */
+.badge-pill{font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:5px}
+.badge-available{background:var(--green-tint);color:var(--green)}
+.badge-upcoming{background:#EEF1F5;color:var(--ink-soft)}
+.badge-progress{background:var(--red-tint);color:var(--red)}
+.badge-completed{background:#EEF1F5;color:var(--ink-soft)}
+.badge-expired{background:#F3F3F3;color:var(--muted)}
+.badge-pending{background:var(--amber-tint);color:var(--amber)}
+.badge-graded{background:var(--green-tint);color:var(--green)}
+.grade-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.grade-A{background:var(--green-tint);color:var(--green)}
+.grade-B{background:var(--gold-tint);color:var(--gold)}
+.grade-C{background:#F3ECE0;color:#8A6A20}
+.grade-F{background:#FCEBEC;color:var(--red)}
+
+/* EXAM / QUIZ CARDS */
+.exam-card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);
+  border:1px solid var(--line);height:100%;display:flex;flex-direction:column;gap:12px;transition:box-shadow var(--ease),transform var(--ease)}
+.exam-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.exam-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.exam-code{display:inline-block;background:var(--bg);color:var(--ink-soft);font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.exam-title{font-family:var(--serif);font-size:16px;font-weight:600;color:var(--ink);margin-top:8px}
+.exam-subject{font-size:12.5px;color:var(--muted);margin-top:2px}
+.exam-meta-row{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--ink-soft);padding-top:8px;border-top:1px solid var(--line)}
+.exam-meta-row span{display:flex;align-items:center;gap:6px}
+.exam-meta-row i{color:var(--muted);width:14px}
+.exam-card-actions{margin-top:auto;display:flex;gap:8px}
+
+.btn-red{background:var(--red);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:13.5px;padding:9px 18px;transition:background var(--ease)}
+.btn-red:hover{background:var(--red-dark);color:#fff}
+.btn-red:disabled{background:#D9D9D9;color:#8A8A8A;cursor:not-allowed}
+.btn-outline-red{background:#fff;color:var(--red);border:1.5px solid var(--red);border-radius:var(--radius-sm);font-weight:700;font-size:13px;padding:8px 16px;transition:all var(--ease)}
+.btn-outline-red:hover{background:var(--red-tint)}
+.btn-plain{background:var(--bg);color:var(--ink-soft);border:none;border-radius:var(--radius-sm);font-weight:600;font-size:13px;padding:8px 16px}
+.btn-block{width:100%}
+
+/* TABLES */
+.data-table{width:100%;border-collapse:separate;border-spacing:0}
+.data-table th{background:var(--bg);padding:11px 16px;font-size:11.5px;font-weight:700;color:var(--muted);
+  text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.data-table td{padding:13px 16px;font-size:13.5px;color:var(--ink-soft);border-bottom:1px solid var(--line);vertical-align:middle}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tr:hover td{background:#FAFAFB}
+.data-table .primary-cell{color:var(--ink);font-weight:600}
+
+/* NOTIFICATIONS */
+.notif-item{display:flex;gap:14px;padding:15px 16px;border-radius:var(--radius-sm);border:1px solid var(--line);margin-bottom:10px;background:var(--surface)}
+.notif-item.unread{border-left:3px solid var(--red);background:var(--red-tint)}
+.notif-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.notif-title{font-size:13.5px;font-weight:700;color:var(--ink)}
+.notif-text{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.notif-time{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* PROFILE */
+.profile-avatar-lg{width:88px;height:88px;border-radius:50%;background:var(--red);display:flex;align-items:center;
+  justify-content:center;font-size:32px;color:#fff;font-weight:700;margin:0 auto 14px}
+.profile-row{display:flex;padding:12px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.profile-row:last-child{border-bottom:none}
+.profile-label{color:var(--muted);width:170px;flex-shrink:0}
+.profile-value{color:var(--ink);font-weight:600}
+
+/* ASSIGNMENTS */
+.assignment-item{display:flex;align-items:center;gap:16px;padding:16px;border:1px solid var(--line);border-radius:var(--radius-sm);margin-bottom:12px;flex-wrap:wrap}
+.assignment-icon{width:42px;height:42px;border-radius:10px;background:var(--red-tint);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.assignment-info{flex:1;min-width:180px}
+.assignment-title{font-size:14px;font-weight:700;color:var(--ink)}
+.assignment-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.assignment-file-name{font-size:11.5px;color:var(--green);margin-top:4px}
+.assignment-actions{display:flex;align-items:center;gap:10px}
+.file-input-hidden{display:none}
+
+/* TIMETABLE */
+.timetable-wrap{overflow-x:auto}
+.timetable-table{width:100%;border-collapse:collapse;min-width:760px}
+.timetable-table th{background:var(--bg);padding:10px;font-size:11.5px;font-weight:700;color:var(--ink-soft);border:1px solid var(--line);text-align:center}
+.timetable-table td{border:1px solid var(--line);padding:8px;vertical-align:top;height:64px;font-size:11.5px}
+.timetable-table td.time-col{background:var(--bg);font-weight:700;color:var(--ink-soft);white-space:nowrap;text-align:center}
+.tt-slot{background:var(--red-tint);border-left:3px solid var(--red);border-radius:6px;padding:6px 8px;height:100%}
+.tt-slot .code{font-weight:700;color:var(--red-dark);display:block}
+.tt-slot .room{color:var(--ink-soft);display:block;margin-top:2px}
+.tt-slot.lab{background:var(--gold-tint);border-left-color:var(--gold)}
+.tt-slot.lab .code{color:#7A5A1E}
+.tt-slot.tut{background:#eff6ff;border-left-color:#2563eb}
+.tt-slot.tut .code{color:#1e40af}
+.tt-slot.proj{background:var(--green-tint);border-left-color:var(--green)}
+.tt-slot.proj .code{color:#14532d}
+.tt-slot.sem{background:#faf0ff;border-left-color:#7c3aed}
+.tt-slot.sem .code{color:#5b21b6}
+
+/* ENROLL SUBJECTS */
+.semester-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tt-sem-tab{padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--ink-soft);border:none;border-right:1px solid var(--line);background:#fff;cursor:pointer;transition:all var(--ease)}
+.tt-sem-tab:last-child{border-right:none}
+.tt-sem-tab:hover{background:var(--bg);color:var(--ink)}
+.tt-sem-tab.active{background:var(--red);color:#fff}
+.semester-tab{padding:8px 16px;border-radius:50px;border:1.5px solid var(--line);background:#fff;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all var(--ease)}
+.semester-tab.active{background:var(--red);color:#fff;border-color:var(--red)}
+.semester-tab:hover:not(.active){border-color:var(--red)}
+.subject-card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1.5px solid var(--line);height:100%}
+.subject-card.enrolled{border-color:var(--green);background:linear-gradient(180deg,var(--green-tint),#fff 40%)}
+.subj-code-badge{display:inline-block;background:var(--ink);color:#fff;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;margin-bottom:8px}
+.subj-name{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;min-height:38px}
+.subj-meta{font-size:11.5px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.enroll-btn{width:100%;padding:8px;border-radius:var(--radius-sm);border:none;font-size:12.5px;font-weight:700;cursor:pointer}
+.enroll-btn.enroll{background:var(--red);color:#fff}
+.enroll-btn.enrolled{background:var(--green-tint);color:var(--green);cursor:default}
+.enroll-btn.locked{background:var(--bg);color:var(--muted);cursor:not-allowed}
+
+/* ============================================================
+   EXAM-TAKING MODE (also used for Quizzes)
+   ============================================================ */
+#examMode{display:none;position:fixed;inset:0;background:var(--bg);z-index:2000;overflow-y:auto}
+#examMode.active{display:block}
+.exam-header{background:var(--surface);border-bottom:1px solid var(--line);padding:12px 24px;display:flex;
+  align-items:center;gap:16px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.exam-header img{width:38px;height:38px;object-fit:contain}
+.exam-header-info{line-height:1.3}
+.exam-header-info .t{font-family:var(--serif);font-weight:600;font-size:15px;color:var(--ink)}
+.exam-header-info .s{font-size:11.5px;color:var(--muted)}
+.exam-header-student{margin-left:auto;text-align:right;font-size:12px;color:var(--ink-soft)}
+.timer-box{background:var(--ink);color:#fff;border-radius:var(--radius-sm);padding:8px 18px;text-align:center;min-width:150px}
+.timer-box.warn{background:var(--red)}
+.timer-label{font-size:9.5px;letter-spacing:.6px;opacity:.75}
+.timer-value{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;font-family:var(--serif)}
+
+.exam-body{max-width:1200px;margin:0 auto;padding:22px 24px 100px;display:grid;grid-template-columns:1fr 300px;gap:22px}
+.question-panel{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}
+.question-progress{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.question-text{font-size:16px;font-weight:600;color:var(--ink);line-height:1.55;margin-bottom:22px}
+.option-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border:1.5px solid var(--line);border-radius:var(--radius-sm);
+  margin-bottom:10px;cursor:pointer;transition:border-color var(--ease),background var(--ease)}
+.option-row:hover{border-color:#C9CDD3}
+.option-row.selected{border-color:var(--red);background:var(--red-tint)}
+.option-letter{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:700;color:var(--ink-soft);flex-shrink:0}
+.option-row.selected .option-letter{background:var(--red);border-color:var(--red);color:#fff}
+.option-text{font-size:14px;color:var(--ink-soft)}
+.option-row.selected .option-text{color:var(--ink);font-weight:600}
+.option-row input{position:absolute;opacity:0;pointer-events:none}
+
+.exam-nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;flex-wrap:wrap;gap:10px}
+.exam-nav-row .left-group,.exam-nav-row .right-group{display:flex;gap:8px;flex-wrap:wrap}
+
+.palette-panel{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;align-self:start;
+  position:sticky;top:88px}
+.palette-title{font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.palette-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.palette-btn{aspect-ratio:1;border-radius:8px;border:none;font-size:12.5px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:transform var(--ease);color:#fff}
+.palette-btn:hover{transform:scale(1.06)}
+.palette-btn.not-visited{background:var(--gray-visit)}
+.palette-btn.answered{background:var(--green)}
+.palette-btn.marked{background:var(--amber)}
+.palette-btn.current{background:var(--red);box-shadow:0 0 0 3px var(--red-tint-strong)}
+.palette-legend{display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:14px}
+.palette-legend span{display:flex;align-items:center;gap:8px}
+.legend-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+
+.exam-submit-bar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:14px 24px;
+  display:flex;justify-content:flex-end;max-width:1200px;margin:0 auto}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(20,20,22,0.5);z-index:3000;display:flex;align-items:center;
+  justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--ease)}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal-box{background:var(--surface);border-radius:var(--radius);padding:28px;max-width:440px;width:92%;
+  box-shadow:0 20px 60px rgba(0,0,0,0.2);transform:scale(.96);transition:transform var(--ease)}
+.modal-overlay.show .modal-box{transform:scale(1)}
+.modal-title{font-family:var(--serif);font-size:18px;font-weight:600;margin-bottom:6px}
+.modal-text{font-size:13.5px;color:var(--ink-soft);margin-bottom:18px}
+.modal-summary{display:flex;gap:10px;margin-bottom:20px}
+.modal-summary .box{flex:1;text-align:center;padding:12px 8px;border-radius:var(--radius-sm);background:var(--bg)}
+.modal-summary .num{font-size:19px;font-weight:800;font-family:var(--serif)}
+.modal-summary .lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+/* RESULT PAGE */
+.result-hero{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:34px;text-align:center;margin-bottom:20px}
+.result-score{font-family:var(--serif);font-size:44px;font-weight:700;color:var(--red)}
+.result-score small{font-size:20px;color:var(--muted);font-weight:500}
+.result-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px;margin-top:26px}
+.result-stats .box{background:var(--bg);border-radius:var(--radius-sm);padding:16px}
+.result-stats .val{font-size:20px;font-weight:800;font-family:var(--serif)}
+.result-stats .lbl{font-size:11.5px;color:var(--muted);margin-top:4px}
+.status-pass{color:var(--green)}
+.status-fail{color:var(--red)}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:22px;right:22px;z-index:9999}
+.toast-item{background:var(--ink);color:#fff;border-radius:10px;padding:13px 18px;margin-top:10px;font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.2);transform:translateX(130%);
+  transition:transform 0.3s ease;min-width:250px}
+.toast-item.show{transform:translateX(0)}
+
+/* RESPONSIVE */
+@media(max-width:991px){
+  #sidebar{transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #topbar{left:0}
+  #main{margin-left:0}
+  #sidebarToggle{display:block}
+  .exam-body{grid-template-columns:1fr}
+  .palette-panel{position:static}
+  .auth-shell{grid-template-columns:1fr}
+  .auth-hero{display:none}
+}
+@media(max-width:575px){
+  #main{padding:18px 14px}
+  .welcome-card{padding:20px}
+  .palette-grid{grid-template-columns:repeat(6,1fr)}
+  .exam-header-student{display:none}
+  .auth-form-panel{padding:28px 22px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     AUTH SCREENS — Login / Register / Verify token
+     (frontend-only mock: replace with real /api/auth/* calls)
+     ═══════════════════════════════════════════════════════════ -->
+<div id="authScreen">
+  <div class="auth-shell">
+    <div class="auth-hero">
+      <div>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALoAAACUCAMAAAATdsOFAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjRhN2UzNjljLTBlYmUtNGE1ZC1iMTA0LWZjMDJhMzY3ZTE5YQAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNo0vCpmc17by5vgjO2WhUiJQAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6NTA3MWFiZTQtZWExMi00N2M3LTg4MGQtZmIyZDkwMzJjZWY4bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaIH6txmLQ1R96xIPZRAxA2UAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIFLZ+zzxbIOF+P7jpiXO07bfvSetpQorRZREa2CurKvCpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2ga7/iQEwbuE4+zX7yTsq65AAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFggjNFhHROTuTbyOVC5fzXgyy/NRRyIsA41dW1U7DnKDBtkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTo0YTdlMzY5Yy0wZWJlLTRhNWQtYjEwNC1mYzAyYTM2N2UxOWEvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoyYmY5NGFkNy1mYjQ4LTQ5MDYtYmNhZS0wZTFhNTk0OTBmNGZyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggUtn7PPFsg4X4/uOmJc7Ttt+9J62lCitFlERrYK6sq8KiY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIM0EZBWUjYIFpRpEIqRTHsVPn294oZ85PD31vG+wAXcJomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYIN9Lh7kvLaCxCAG57m3EMmtEwXjTAV/4i5gN8d/apfBxdGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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" alt="SUSL logo">
+        <div class="uni">Sabaragamuwa University<br>of Sri Lanka</div>
+        <div class="sys">Online Examination Management System</div>
+      </div>
+      <div class="tagline">Faculty of Applied Sciences<br>Department of Physical Sciences &amp; Technology<br><br>Sign in with your student account to view your exams, quizzes, assignments, timetable and results.</div>
+    </div>
+
+    <div class="auth-form-panel">
+
+      <!-- LOGIN -->
+      <div class="auth-view active" id="view-login">
+        <div class="auth-title">Student Login</div>
+        <div class="auth-sub">Enter your credentials to access the student portal.</div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="loginEmail" placeholder="you@std.sab.ac.lk">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="loginPassword" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Student ID</label>
+          <input type="text" class="form-input" id="loginStudentId" placeholder="e.g. 22APP5678" maxlength="9">
+          <div class="form-hint">Format: 2-digit intake year + 3-letter programme code + 4-digit number.</div>
+          <div class="form-error" id="loginIdError">Student ID must look like 22APP5678 (2 digits, 3 letters, 4 digits).</div>
+        </div>
+        <div style="text-align:right;margin-top:-8px;margin-bottom:12px">
+          <button style="background:none;border:none;color:var(--red);font-size:12px;font-weight:600;cursor:pointer" onclick="switchAuthView('forgot')">Forgot Password?</button>
+        </div>
+        <div class="auth-actions">
+          <button class="btn-red btn-block" onclick="handleLogin()">Sign In</button>
+        </div>
+        <div class="auth-switch">Don't have an account? <button onclick="switchAuthView('register')">Register here</button></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="auth-view" id="view-register">
+        <div class="auth-title">Create Student Account</div>
+        <div class="auth-sub">We'll email a confirmation code to verify your account.</div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="regName" placeholder="W.A. Nimasha Perera">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address (Gmail or university email)</label>
+          <input type="email" class="form-input" id="regEmail" placeholder="you@gmail.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Student ID</label>
+          <input type="text" class="form-input" id="regStudentId" placeholder="e.g. 22APP5678" maxlength="9">
+          <div class="form-hint">Format: 2-digit intake year + 3-letter programme code + 4-digit number.</div>
+          <div class="form-error" id="regIdError">Student ID must look like 22APP5678 (2 digits, 3 letters, 4 digits).</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="regPassword" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-input" id="regPassword2" placeholder="••••••••">
+          <div class="form-error" id="regPassError">Passwords do not match.</div>
+        </div>
+        <div class="auth-actions">
+          <button class="btn-red btn-block" onclick="handleRegister()">Create Account &amp; Send Code</button>
+        </div>
+        <div class="auth-switch">Already registered? <button onclick="switchAuthView('login')">Back to Login</button></div>
+      </div>
+
+      <!-- VERIFY TOKEN -->
+      <div class="auth-view" id="view-verify">
+        <div class="auth-title">Confirm Your Email</div>
+        <div class="auth-sub">Enter the 6-digit confirmation code we emailed to <span id="verifyEmailLabel" style="font-weight:700;color:var(--ink)"></span>.</div>
+        <div class="demo-token-box">
+          <i class="fas fa-circle-info me-1"></i> <strong>Frontend demo — no email server is wired up yet.</strong>
+          In production this code is sent by the Flask backend (e.g. Flask-Mail) to the student's inbox.
+          For now your code is shown here so you can test the flow:
+          <div><strong id="demoTokenDisplay">000000</strong></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmation Code</label>
+          <input type="text" class="form-input" id="verifyTokenInput" maxlength="6" placeholder="6-digit code">
+          <div class="form-error" id="verifyTokenError">Incorrect code — please try again.</div>
+        </div>
+        <div class="auth-actions">
+          <button class="btn-red btn-block" onclick="handleVerifyToken()">Confirm &amp; Activate Account</button>
+        </div>
+        <div class="auth-switch"><button onclick="switchAuthView('login')">Back to Login</button></div>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div class="auth-view" id="view-forgot">
+        <div class="auth-title">Reset Password</div>
+        <div class="auth-sub">Enter your Student ID and registered email. We'll send a reset link to your inbox.</div>
+        <div class="form-group">
+          <label class="form-label">Student ID</label>
+          <input type="text" class="form-input" id="forgotStudentId" placeholder="e.g. 22APP5678" maxlength="9">
+          <div class="form-hint">Format: 2-digit year + 3-letter code + 4-digit number.</div>
+          <div class="form-error" id="forgotIdError">Student ID must look like 22APP5678.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Registered Email Address</label>
+          <input type="email" class="form-input" id="forgotEmail" placeholder="you@std.sab.ac.lk">
+        </div>
+        <div class="auth-actions">
+          <button class="btn-red btn-block" onclick="handleForgotPassword()">Send Reset Link</button>
+        </div>
+        <div class="auth-switch"><button onclick="switchAuthView('login')">Back to Login</button></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     APP SHELL — hidden until login succeeds
+     ═══════════════════════════════════════════════════════════ -->
+<div id="appShell" style="display:none">
+
+<aside id="sidebar">
+  <div class="sidebar-brand">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALoAAACUCAMAAAATdsOFAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjRhN2UzNjljLTBlYmUtNGE1ZC1iMTA0LWZjMDJhMzY3ZTE5YQAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNo0vCpmc17by5vgjO2WhUiJQAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6NTA3MWFiZTQtZWExMi00N2M3LTg4MGQtZmIyZDkwMzJjZWY4bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaIH6txmLQ1R96xIPZRAxA2UAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIFLZ+zzxbIOF+P7jpiXO07bfvSetpQorRZREa2CurKvCpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2ga7/iQEwbuE4+zX7yTsq65AAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFggjNFhHROTuTbyOVC5fzXgyy/NRRyIsA41dW1U7DnKDBtkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTo0YTdlMzY5Yy0wZWJlLTRhNWQtYjEwNC1mYzAyYTM2N2UxOWEvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoyYmY5NGFkNy1mYjQ4LTQ5MDYtYmNhZS0wZTFhNTk0OTBmNGZyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggUtn7PPFsg4X4/uOmJc7Ttt+9J62lCitFlERrYK6sq8KiY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIM0EZBWUjYIFpRpEIqRTHsVPn294oZ85PD31vG+wAXcJomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYIN9Lh7kvLaCxCAG57m3EMmtEwXjTAV/4i5gN8d/apfBxdGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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" alt="Sabaragamuwa University of Sri Lanka logo">
+    <div class="sidebar-brand-text">
+      <span class="uni">Sabaragamuwa University<br>of Sri Lanka</span>
+      <span class="sys">Examination Management System</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">MAIN</div>
+    <div class="nav-item"><button class="nav-link-item active" data-page="dashboard" onclick="showPage('dashboard',this)"><span class="icon"><i class="fas fa-house"></i></span>Dashboard</button></div>
+    <div class="nav-item"><button class="nav-link-item" data-page="available-exams" onclick="showPage('available-exams',this)"><span class="icon"><i class="fas fa-file-circle-check"></i></span>Available Exams<span class="badge-count" id="navExamCount">1</span></button></div>
+    <div class="nav-item"><button class="nav-link-item" data-page="quizzes" onclick="showPage('quizzes',this)"><span class="icon"><i class="fas fa-bolt"></i></span>Quizzes<span class="badge-count" id="navQuizCount">1</span></button></div>
+    <div class="nav-item"><button class="nav-link-item" data-page="assignments" onclick="showPage('assignments',this)"><span class="icon"><i class="fas fa-file-pen"></i></span>Assignments<span class="badge-count" id="navAssignCount">2</span></button></div>
+    <div class="nav-item"><button class="nav-link-item" data-page="timetable" onclick="showPage('timetable',this)"><span class="icon"><i class="fas fa-calendar-week"></i></span>Timetable</button></div>
+    <div class="nav-section-label">ACADEMIC</div>
+    <div class="nav-item"><button class="nav-link-item" data-page="enroll" onclick="showPage('enroll',this)"><span class="icon"><i class="fas fa-book-open"></i></span>Enroll Subjects</button></div>
+    <div class="nav-item"><button class="nav-link-item" data-page="my-exams" onclick="showPage('my-exams',this)"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span>My Exams &amp; Results</button></div>
+    <div class="nav-section-label">ACCOUNT</div>
+    <div class="nav-item"><button class="nav-link-item" data-page="notifications" onclick="showPage('notifications',this)"><span class="icon"><i class="fas fa-bell"></i></span>Notifications<span class="badge-count" id="navNotifCount">2</span></button></div>
+    <div class="nav-item"><button class="nav-link-item" data-page="profile" onclick="showPage('profile',this)"><span class="icon"><i class="fas fa-user"></i></span>Profile</button></div>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-arrow-right-from-bracket"></i>Logout</button>
+  </div>
+</aside>
+<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<header id="topbar">
+  <button id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+  <span class="page-heading" id="pageHeading">Dashboard</span>
+  <div class="top-actions">
+    <button class="notif-btn" onclick="showPage('notifications',null)" aria-label="Notifications">
+      <i class="fas fa-bell"></i><span class="notif-badge" id="topNotifBadge">2</span>
+    </button>
+    <button class="top-profile" onclick="showPage('profile',null)">
+      <div class="top-avatar" id="topAvatarInitials">WP</div>
+      <div>
+        <div class="top-profile-name" id="topProfileName">—</div>
+        <div class="top-profile-id" id="topProfileId">—</div>
+      </div>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <section class="page active" id="page-dashboard">
+    <div class="welcome-card">
+      <div class="welcome-title" id="welcomeTitle">Welcome back,</div>
+      <div class="welcome-sub" id="welcomeSub"></div>
+      <div class="welcome-meta">
+        <div><span class="label">Student ID</span><span class="value" id="wmId">—</span></div>
+        <div><span class="label">Degree Programme</span><span class="value" id="wmDegree">—</span></div>
+        <div><span class="label">Faculty</span><span class="value" id="wmFaculty">—</span></div>
+        <div><span class="label">Department</span><span class="value" id="wmDept">—</span></div>
+        <div><span class="label">Academic Period</span><span class="value" id="wmPeriod">—</span></div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-2">
+      <div class="col-6 col-xl-3">
+        <div class="stat-card" style="border-top-color:var(--red)">
+          <div class="stat-icon" style="background:var(--red-tint);color:var(--red)"><i class="fas fa-file-circle-check"></i></div>
+          <div><div class="stat-value" id="statAvailable">0</div><div class="stat-label">Available Exams</div></div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card" style="border-top-color:var(--gold)">
+          <div class="stat-icon" style="background:var(--gold-tint);color:var(--gold)"><i class="fas fa-calendar-days"></i></div>
+          <div><div class="stat-value" id="statUpcoming">0</div><div class="stat-label">Upcoming Exams</div></div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card" style="border-top-color:var(--green)">
+          <div class="stat-icon" style="background:var(--green-tint);color:var(--green)"><i class="fas fa-square-check"></i></div>
+          <div><div class="stat-value" id="statCompleted">0</div><div class="stat-label">Completed Exams</div></div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card" style="border-top-color:var(--ink-soft)">
+          <div class="stat-icon" style="background:#EEF1F5;color:var(--ink-soft)"><i class="fas fa-chart-simple"></i></div>
+          <div><div class="stat-value" id="statAverage">—</div><div class="stat-label">Average Score</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-1">
+      <div class="col-lg-7">
+        <div class="content-card">
+          <div class="content-card-header">
+            <div class="content-card-title"><div class="card-icon"><i class="fas fa-file-circle-check"></i></div>Available Exams &amp; Quizzes</div>
+            <button class="link-btn" onclick="showPage('available-exams',null)">View all →</button>
+          </div>
+          <div class="content-card-body" id="dashAvailableList"></div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="content-card">
+          <div class="content-card-header">
+            <div class="content-card-title"><div class="card-icon"><i class="fas fa-trophy"></i></div>Recent Results</div>
+            <button class="link-btn" onclick="showPage('my-exams',null)">View all →</button>
+          </div>
+          <div class="content-card-body" id="dashResultsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="content-card">
+          <div class="content-card-header">
+            <div class="content-card-title"><div class="card-icon"><i class="fas fa-file-pen"></i></div>Pending Assignments</div>
+            <button class="link-btn" onclick="showPage('assignments',null)">View all →</button>
+          </div>
+          <div class="content-card-body" id="dashAssignList"></div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="content-card">
+          <div class="content-card-header">
+            <div class="content-card-title"><div class="card-icon"><i class="fas fa-calendar-week"></i></div>Today's Classes</div>
+            <button class="link-btn" onclick="showPage('timetable',null)">Full timetable →</button>
+          </div>
+          <div class="content-card-body" id="dashTimetableList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ AVAILABLE EXAMS ═══ -->
+  <section class="page" id="page-available-exams">
+    <h4 class="fw-bold mb-1" style="font-family:var(--serif)">Available Exams</h4>
+    <p class="page-intro">Formal, timed examinations for your enrolled subjects. Start an exam before its end time — once started, the countdown cannot be paused.</p>
+    <div class="row g-3" id="examCardsGrid"></div>
+  </section>
+
+  <!-- ═══ QUIZZES ═══ -->
+  <section class="page" id="page-quizzes">
+    <h4 class="fw-bold mb-1" style="font-family:var(--serif)">Quizzes</h4>
+    <p class="page-intro">Short, timed MCQ quizzes. These use the same exam engine as formal exams, just shorter.</p>
+    <div class="row g-3" id="quizCardsGrid"></div>
+  </section>
+
+  <!-- ═══ ASSIGNMENTS ═══ -->
+  <section class="page" id="page-assignments">
+    <h4 class="fw-bold mb-1" style="font-family:var(--serif)">Assignments</h4>
+    <p class="page-intro">Coursework set by your lecturers. Upload your completed draft before the due date.</p>
+    <div id="assignmentsList"></div>
+  </section>
+
+  <!-- ═══ TIMETABLE ═══ -->
+  <section class="page" id="page-timetable">
+    <h4 class="fw-bold mb-1" style="font-family:var(--serif)">Weekly Timetable</h4>
+    <p class="page-intro" id="ttPageIntro">BSc (Hons) Computer Science &amp; Technology &nbsp;|&nbsp; 08:00–10:00 &nbsp;·&nbsp; 10:00–12:00 &nbsp;·&nbsp; 13:00–15:00 &nbsp;·&nbsp; 15:00–17:00</p>
+
+    <!-- Semester selector tabs -->
+    <div style="display:flex;gap:0;margin-bottom:20px;border:1.5px solid var(--line);border-radius:var(--radius-sm);overflow:hidden;width:fit-content;flex-wrap:wrap" id="ttSemTabs">
+      <button class="tt-sem-tab active" onclick="switchTTSem('y1s1',this)">Y1 · S1</button>
+      <button class="tt-sem-tab" onclick="switchTTSem('y1s2',this)">Y1 · S2</button>
+      <button class="tt-sem-tab" onclick="switchTTSem('y2s1',this)">Y2 · S1</button>
+      <button class="tt-sem-tab" onclick="switchTTSem('y2s2',this)">Y2 · S2</button>
+      <button class="tt-sem-tab" onclick="switchTTSem('y3s1',this)">Y3 · S1</button>
+      <button class="tt-sem-tab" onclick="switchTTSem('y3s2',this)">Y3 · S2</button>
+      <button class="tt-sem-tab" onclick="switchTTSem('y4s1',this)">Y4 · S1</button>
+      <button class="tt-sem-tab" onclick="switchTTSem('y4s2',this)">Y4 · S2</button>
+    </div>
+
+    <!-- Legend -->
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;font-size:12px;color:var(--muted)">
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#A31621;flex-shrink:0;display:inline-block"></span>Lecture</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#B8862E;flex-shrink:0;display:inline-block"></span>Lab / Practical</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#2563eb;flex-shrink:0;display:inline-block"></span>Tutorial</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#1E7145;flex-shrink:0;display:inline-block"></span>Project / Training</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#7c3aed;flex-shrink:0;display:inline-block"></span>Seminar / English</span>
+    </div>
+
+    <!-- Project/Training notice (shown for Y3S2, Y4S2) -->
+    <div id="ttProjectNotice" style="display:none;background:var(--gold-tint);border:1px solid var(--gold);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:18px;font-size:13px;color:#6E5320">
+      <i class="fas fa-circle-info me-2"></i><span id="ttProjectNoticeText"></span>
+    </div>
+
+    <div class="content-card">
+      <div class="content-card-body timetable-wrap">
+        <table class="timetable-table" id="timetableTable"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ENROLL SUBJECTS ═══ -->
+  <section class="page" id="page-enroll">
+    <h4 class="fw-bold mb-1" style="font-family:var(--serif)">Enroll Subjects</h4>
+    <p class="page-intro">Course units from the BSc (Hons) Computer Science &amp; Technology curriculum. Compulsory subjects for your current semester are auto-enrolled.</p>
+    <div class="semester-tabs" id="semesterTabs"></div>
+    <div class="row g-3" id="subjectGrid"></div>
+  </section>
+
+  <!-- ═══ MY EXAMS & RESULTS (history) ═══ -->
+  <section class="page" id="page-my-exams">
+    <h4 class="fw-bold mb-1" style="font-family:var(--serif)">My Exams &amp; Results</h4>
+    <p class="page-intro">A record of every exam and quiz you have attempted, with your score, grade and pass status.</p>
+    <div class="content-card">
+      <div class="content-card-body" style="padding:0">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr>
+              <th>Title</th><th>Type</th><th>Subject</th><th>Date</th><th>Score</th><th>Percentage</th><th>Grade</th><th>Status</th><th>Action</th>
+            </tr></thead>
+            <tbody id="historyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ NOTIFICATIONS ═══ -->
+  <section class="page" id="page-notifications">
+    <h4 class="fw-bold mb-1" style="font-family:var(--serif)">Notifications</h4>
+    <p class="page-intro">Exam releases, reminders and result announcements.</p>
+    <div id="notifList"></div>
+  </section>
+
+  <!-- ═══ PROFILE ═══ -->
+  <section class="page" id="page-profile">
+    <h4 class="fw-bold mb-4" style="font-family:var(--serif)">My Profile</h4>
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="content-card">
+          <div class="content-card-body" style="text-align:center">
+            <div class="profile-avatar-lg" id="profileAvatar">—</div>
+            <div style="font-family:var(--serif);font-size:18px;font-weight:600" id="profileName">—</div>
+            <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Student</div>
+            <div style="text-align:left;margin-top:14px">
+              <div class="profile-row"><div class="profile-label">Student ID</div><div class="profile-value" id="profId">—</div></div>
+              <div class="profile-row"><div class="profile-label">Email</div><div class="profile-value" id="profEmail">—</div></div>
+              <div class="profile-row"><div class="profile-label">Degree Programme</div><div class="profile-value" id="profDegree">—</div></div>
+              <div class="profile-row"><div class="profile-label">Faculty</div><div class="profile-value" id="profFaculty">—</div></div>
+              <div class="profile-row"><div class="profile-label">Department</div><div class="profile-value" id="profDept">—</div></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">
+              <button class="btn-red" style="flex:1;min-width:120px" onclick="openEditProfile()"><i class="fas fa-pen me-2"></i>Edit Profile</button>
+              <button class="btn-outline-red" style="flex:1;min-width:120px" onclick="openChangePassword()"><i class="fas fa-key me-2"></i>Change Password</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="editProfileModal" style="display:none">
+    <div class="modal-box" style="max-width:480px">
+      <div class="modal-title">Edit Profile</div>
+      <div style="margin-top:16px">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" class="form-input" id="editName" placeholder="Full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="editEmail" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Student ID</label>
+          <input type="text" class="form-input" id="editStudentId" disabled style="background:#f5f5f5;cursor:not-allowed">
+          <div class="form-hint">Student ID cannot be changed. Contact the Registrar if there is an error.</div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:20px">
+        <button class="btn-plain" onclick="closeEditProfile()">Cancel</button>
+        <button class="btn-red" onclick="saveEditProfile()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div class="modal-overlay" id="changePasswordModal" style="display:none">
+    <div class="modal-box" style="max-width:440px">
+      <div class="modal-title">Change Password</div>
+      <div style="margin-top:16px">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" class="form-input" id="cpCurrent" placeholder="Current password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-input" id="cpNew" placeholder="New password (min. 8 chars)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" class="form-input" id="cpConfirm" placeholder="Re-enter new password">
+          <div class="form-error" id="cpError">Passwords do not match.</div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top:20px">
+        <button class="btn-plain" onclick="closeChangePassword()">Cancel</button>
+        <button class="btn-red" onclick="saveChangePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ EXAM RESULT ═══ -->
+  <section class="page" id="page-result">
+    <button class="btn-plain mb-3" onclick="showPage('my-exams',null)"><i class="fas fa-arrow-left me-2"></i>Back to My Exams</button>
+    <div class="result-hero">
+      <div style="color:var(--muted);font-size:12.5px;letter-spacing:.4px;margin-bottom:6px" id="resExamMeta">EXAM · SUBJECT</div>
+      <div class="result-score" id="resScore">0<small>/ 0</small></div>
+      <div style="margin-top:10px"><span class="badge-pill" id="resStatusBadge">—</span></div>
+      <div class="result-stats">
+        <div class="box"><div class="val" id="resPercentage">0%</div><div class="lbl">Percentage</div></div>
+        <div class="box"><div class="val" id="resGrade">—</div><div class="lbl">Grade</div></div>
+        <div class="box"><div class="val" id="resCorrect" style="color:var(--green)">0</div><div class="lbl">Correct</div></div>
+        <div class="box"><div class="val" id="resIncorrect" style="color:var(--red)">0</div><div class="lbl">Incorrect</div></div>
+        <div class="box"><div class="val" id="resUnanswered" style="color:var(--muted)">0</div><div class="lbl">Unanswered</div></div>
+      </div>
+    </div>
+    <div style="text-align:center;color:var(--muted);font-size:12px">Marking is performed by the server. This summary reflects the score returned by the Online Examination Management System.</div>
+  </section>
+
+</main>
+</div><!-- /#appShell -->
+
+<!-- EXAM / QUIZ TAKING MODE -->
+<div id="examMode">
+  <div class="exam-header">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALoAAACUCAMAAAATdsOFAAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOjRhN2UzNjljLTBlYmUtNGE1ZC1iMTA0LWZjMDJhMzY3ZTE5YQAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNo0vCpmc17by5vgjO2WhUiJQAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6NTA3MWFiZTQtZWExMi00N2M3LTg4MGQtZmIyZDkwMzJjZWY4bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaIH6txmLQ1R96xIPZRAxA2UAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIFLZ+zzxbIOF+P7jpiXO07bfvSetpQorRZREa2CurKvCpGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2ga7/iQEwbuE4+zX7yTsq65AAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFggjNFhHROTuTbyOVC5fzXgyy/NRRyIsA41dW1U7DnKDBtkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTo0YTdlMzY5Yy0wZWJlLTRhNWQtYjEwNC1mYzAyYTM2N2UxOWEvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoyYmY5NGFkNy1mYjQ4LTQ5MDYtYmNhZS0wZTFhNTk0OTBmNGZyY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggUtn7PPFsg4X4/uOmJc7Ttt+9J62lCitFlERrYK6sq8KiY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYIM0EZBWUjYIFpRpEIqRTHsVPn294oZ85PD31vG+wAXcJomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYIN9Lh7kvLaCxCAG57m3EMmtEwXjTAV/4i5gN8d/apfBxdGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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" alt="SUSL logo">
+    <div class="exam-header-info">
+      <div class="t" id="examHeadTitle">Exam Title</div>
+      <div class="s" id="examHeadSubject">Subject · Code</div>
+    </div>
+    <div class="timer-box" id="timerBox">
+      <div class="timer-label">TIME REMAINING</div>
+      <div class="timer-value" id="timerValue">00:00:00</div>
+    </div>
+    <div class="exam-header-student">
+      <div style="font-weight:700" id="examHeadStudent">—</div>
+      <div style="color:var(--muted);font-size:11px" id="examHeadStudentId">—</div>
+    </div>
+  </div>
+
+  <div class="exam-body">
+    <div class="question-panel">
+      <div class="question-progress" id="questionProgress">Question 1 of 10</div>
+      <div class="question-text" id="questionText">Question text goes here.</div>
+      <div id="optionsList"></div>
+
+      <div class="exam-nav-row">
+        <div class="left-group">
+          <button class="btn-plain" id="btnPrevious" onclick="goPrevious()"><i class="fas fa-arrow-left me-1"></i>Previous</button>
+          <button class="btn-outline-red" onclick="toggleMarkForReview()" id="btnMarkReview"><i class="fas fa-flag me-1"></i>Mark for Review</button>
+        </div>
+        <div class="right-group">
+          <button class="btn-red" onclick="saveAndNext()" id="btnSaveNext">Save &amp; Next<i class="fas fa-arrow-right ms-1"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="palette-panel">
+      <div class="palette-title">Question Palette</div>
+      <div class="palette-grid" id="paletteGrid"></div>
+      <div class="palette-legend">
+        <span><span class="legend-dot" style="background:var(--red)"></span>Current question</span>
+        <span><span class="legend-dot" style="background:var(--green)"></span>Answered</span>
+        <span><span class="legend-dot" style="background:var(--amber)"></span>Marked for review</span>
+        <span><span class="legend-dot" style="background:var(--gray-visit)"></span>Not visited</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-submit-bar">
+    <button class="btn-red" onclick="openSubmitModal()"><i class="fas fa-paper-plane me-2"></i>Submit</button>
+  </div>
+</div>
+
+<!-- SUBMIT CONFIRMATION MODAL -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <div class="modal-title">Submit now?</div>
+    <div class="modal-text">Once submitted, you cannot change your answers. Please review the summary below.</div>
+    <div class="modal-summary">
+      <div class="box"><div class="num" style="color:var(--green)" id="sumAnswered">0</div><div class="lbl">Answered</div></div>
+      <div class="box"><div class="num" style="color:var(--muted)" id="sumUnanswered">0</div><div class="lbl">Unanswered</div></div>
+      <div class="box"><div class="num" style="color:var(--amber)" id="sumMarked">0</div><div class="lbl">Marked</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-plain" onclick="closeSubmitModal()">Cancel</button>
+      <button class="btn-red" onclick="confirmSubmitExam()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   AUTH LAYER (frontend-only mock)
+   API HOOKs:
+     POST /api/auth/register   { name, email, studentId, password } -> sends email token
+     POST /api/auth/verify     { email, token } -> activates account
+     POST /api/auth/login      { email, password, studentId } -> returns JWT
+   Student ID format required by the university: 2-digit intake year +
+   3-letter programme code + 4-digit number, e.g. 22APP5678
+   ============================================================ */
+const STUDENT_ID_RE = /^(\d{2})([A-Za-z]{3})(\d{4})$/;
+let pendingRegistration = null; // { name, email, studentId } while awaiting token confirmation
+let currentToken = null;
+
+function switchAuthView(view) {
+  document.querySelectorAll(".auth-view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + view).classList.add("active");
+}
+
+function validateStudentId(id) { return STUDENT_ID_RE.test(id.trim()); }
+
+function handleLogin() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const sid = document.getElementById("loginStudentId").value.trim().toUpperCase();
+  const err = document.getElementById("loginIdError");
+  const input = document.getElementById("loginStudentId");
+
+  if (!validateStudentId(sid)) { err.classList.add("show"); input.classList.add("invalid"); return; }
+  err.classList.remove("show"); input.classList.remove("invalid");
+  if (!email || !password) { showToast("Please enter your email and password."); return; }
+
+  // API HOOK: POST /api/auth/login — for this frontend-only demo, any well-formed
+  // email + student ID logs you in and populates the profile from what you entered.
+  applyStudentIdentity(email, sid);
+  enterApp();
+}
+
+function handleRegister() {
+  const name = document.getElementById("regName").value.trim();
+  const email = document.getElementById("regEmail").value.trim();
+  const sid = document.getElementById("regStudentId").value.trim().toUpperCase();
+  const pw = document.getElementById("regPassword").value;
+  const pw2 = document.getElementById("regPassword2").value;
+  const idErr = document.getElementById("regIdError");
+  const idInput = document.getElementById("regStudentId");
+  const passErr = document.getElementById("regPassError");
+
+  let ok = true;
+  if (!validateStudentId(sid)) { idErr.classList.add("show"); idInput.classList.add("invalid"); ok = false; }
+  else { idErr.classList.remove("show"); idInput.classList.remove("invalid"); }
+  if (!pw || pw !== pw2) { passErr.classList.add("show"); ok = false; } else { passErr.classList.remove("show"); }
+  if (!name || !email) { showToast("Please fill in every field."); ok = false; }
+  if (!ok) return;
+
+  pendingRegistration = { name, email, studentId: sid };
+  currentToken = String(Math.floor(100000 + Math.random() * 900000)); // API HOOK: server generates & emails this
+
+  document.getElementById("verifyEmailLabel").textContent = email;
+  document.getElementById("demoTokenDisplay").textContent = currentToken;
+  document.getElementById("verifyTokenInput").value = "";
+  document.getElementById("verifyTokenError").classList.remove("show");
+  switchAuthView("verify");
+  showToast("Confirmation code sent to " + email + " (demo).");
+}
+
+function handleVerifyToken() {
+  const entered = document.getElementById("verifyTokenInput").value.trim();
+  const err = document.getElementById("verifyTokenError");
+  if (entered !== currentToken) { err.classList.add("show"); return; }
+  err.classList.remove("show");
+  showToast("Account confirmed! You can now log in.");
+  document.getElementById("loginEmail").value = pendingRegistration.email;
+  document.getElementById("loginStudentId").value = pendingRegistration.studentId;
+  switchAuthView("login");
+}
+
+function handleForgotPassword() {
+  const sid = document.getElementById("forgotStudentId").value.trim().toUpperCase();
+  const email = document.getElementById("forgotEmail").value.trim();
+  const err = document.getElementById("forgotIdError");
+  const input = document.getElementById("forgotStudentId");
+  if (!validateStudentId(sid)) { err.classList.add("show"); input.classList.add("invalid"); return; }
+  err.classList.remove("show"); input.classList.remove("invalid");
+  if (!email) { showToast("Please enter your registered email address."); return; }
+  // API HOOK: POST /api/auth/password-reset  { email, studentId }
+  showToast("Password reset link sent to " + email + " (demo — no email server wired yet).");
+  setTimeout(() => switchAuthView("login"), 1800);
+}
+
+function applyStudentIdentity(email, sid) {
+  const m = STUDENT_ID_RE.exec(sid);
+  const intakeYear = "20" + m[1];
+  student.name = (pendingRegistration && pendingRegistration.email === email && pendingRegistration.name) || student.name;
+  student.email = email;
+  student.studentId = sid;
+  student.intakeYear = intakeYear;
+  student.programCode = m[2].toUpperCase();
+}
+
+function enterApp() {
+  document.getElementById("authScreen").style.display = "none";
+  document.getElementById("appShell").style.display = "block";
+  renderIdentity();
+  renderDashboard();
+  renderExamCards();
+  renderQuizCards();
+  renderAssignments();
+  renderTimetable();
+  renderEnrollPage();
+  renderHistory();
+  renderNotifications();
+}
+
+function handleLogout() {
+  // API HOOK: clear JWT / session on the backend, then redirect to login
+  document.getElementById("appShell").style.display = "none";
+  document.getElementById("authScreen").style.display = "flex";
+  switchAuthView("login");
+  showToast("You have been signed out.");
+}
+
+/* ============================================================
+   MOCK DATA LAYER
+   ============================================================ */
+
+const student = {
+  name: "W.A. Nimasha Perera",
+  studentId: "22APP5678",
+  email: "nimasha.perera@std.sab.ac.lk",
+  degree: "BSc (Hons) in Computer Science & Technology",
+  faculty: "Faculty of Applied Sciences",
+  department: "Dept. of Physical Sciences & Technology",
+  yearSemester: "Year 3 · Semester I, 2026/2027"
+};
+
+// API HOOK: GET /api/student/exams  (type: "exam" | "quiz")
+const exams = [
+  { id: 1, type: "exam", title: "Mid-Semester Examination", subject: "Artificial Intelligence & Expert Systems", code: "PST 31224",
+    duration: 20, totalQuestions: 10, totalMarks: 50, start: "2026-09-05T08:00:00", end: "2026-09-06T23:59:00", status: "available" },
+  { id: 2, type: "exam", title: "Final Examination", subject: "Object Oriented Analysis and Design", code: "PST 31227",
+    duration: 90, totalQuestions: 10, totalMarks: 100, start: "2026-09-20T09:00:00", end: "2026-09-20T10:30:00", status: "upcoming" },
+  { id: 3, type: "quiz", title: "Quiz 01 — Normalisation & ER Modelling", subject: "Advanced Database Management Systems", code: "PST 31229",
+    duration: 10, totalQuestions: 5, totalMarks: 10, start: "2026-09-05T08:00:00", end: "2026-09-07T23:59:00", status: "available" },
+  { id: 4, type: "quiz", title: "Quiz 02 — Sprint Planning", subject: "Agile Software Development", code: "PST 31215",
+    duration: 10, totalQuestions: 5, totalMarks: 10, start: "2026-09-10T14:00:00", end: "2026-09-10T15:00:00", status: "upcoming" },
+  { id: 5, type: "exam", title: "Practical Test", subject: "Software Project Management", code: "PST 31225",
+    duration: 45, totalQuestions: 10, totalMarks: 50, start: "2026-08-20T09:00:00", end: "2026-08-20T10:30:00", status: "expired" }
+];
+
+// API HOOK: GET /api/student/results
+const results = [
+  { id: 101, examId: 6, title: "Computer Laboratory 3-I — Practical 3", type: "exam", subject: "Computer Laboratory 3-I · PST 31128", date: "2026-08-15",
+    score: 42, total: 50, percentage: 84, grade: "A", correct: 8, incorrect: 2, unanswered: 0, status: "Passed" },
+  { id: 102, examId: 7, title: "Quiz 01 — Hypermedia Basics", type: "quiz", subject: "Multimedia & Hypermedia Systems Development · PST 31210", date: "2026-08-01",
+    score: 9, total: 10, percentage: 90, grade: "A+", correct: 9, incorrect: 1, unanswered: 0, status: "Passed" },
+  { id: 103, examId: 8, title: "Mid-Semester Examination", type: "exam", subject: "Software Quality Assurances · PST 31226", date: "2026-07-20",
+    score: 22, total: 50, percentage: 44, grade: "F", correct: 4, incorrect: 5, unanswered: 1, status: "Failed" }
+];
+
+// API HOOK: GET /api/student/notifications
+const notifications = [
+  { id: 1, type: "exam", title: "New exam available", message: "Mid-Semester Examination for Artificial Intelligence & Expert Systems (PST 31224) is now open.", time: "2 hours ago", read: false },
+  { id: 2, type: "reminder", title: "Assignment due soon", message: "Software Project Management — Project Proposal is due in 2 days.", time: "Yesterday", read: false },
+  { id: 3, type: "result", title: "Result published", message: "Your result for Computer Laboratory 3-I Practical 3 has been published.", time: "3 days ago", read: true },
+  { id: 4, type: "system", title: "Scheduled maintenance", message: "The examination portal will be briefly unavailable on Sep 12, 1:00–2:00 AM.", time: "5 days ago", read: true }
+];
+
+// API HOOK: GET /api/student/assignments · POST /api/student/assignments/<id>/submit (multipart file upload)
+const assignments = [
+  { id: 1, title: "Sprint Report — Iteration 2", subject: "Agile Software Development · PST 31215", due: "2026-09-08", status: "pending", fileName: null },
+  { id: 2, title: "Project Proposal Document", subject: "Software Project Management · PST 31225", due: "2026-09-07", status: "pending", fileName: null },
+  { id: 3, title: "Practical 3 Lab Report", subject: "Computer Laboratory 3-I · PST 31128", due: "2026-08-14", status: "submitted", fileName: "practical3_report.pdf" },
+  { id: 4, title: "ER Diagram Assignment", subject: "Advanced Database Management Systems · PST 31229", due: "2026-08-05", status: "graded", fileName: "er_diagram_assignment.pdf", grade: "A" }
+];
+
+// API HOOK: GET /api/student/timetable
+// Slots are fixed lecture periods; each entry places one class in the weekly grid.
+const timetableSlots = ["08:00 – 10:00", "10:00 – 12:00", "13:00 – 15:00", "15:00 – 17:00"];
+
+// slot index: 0=08-10, 1=10-12, 2=13-15, 3=15-17
+// kind: "lecture" | "lab" | "tutorial" | "project" | "seminar"
+const allTimetableData = {
+
+  "y1s1": {
+    label: "Year 1 · Semester I — 2022/2023",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 11201", title:"Mechanics & Properties of Matter", room:"LH A", kind:"lecture" },
+      { day:"Mon", slot:2, code:"PST 11103", title:"Physics Laboratory 1-I", room:"Phy Lab 1", kind:"lab" },
+      { day:"Tue", slot:0, code:"PST 11204", title:"General Chemistry", room:"LH B", kind:"lecture" },
+      { day:"Tue", slot:1, code:"PST 11205", title:"Fundamentals of Organic Chemistry", room:"LH B", kind:"lecture" },
+      { day:"Tue", slot:2, code:"PST 11106", title:"Inorganic Chemistry Lab I", room:"Chem Lab", kind:"lab" },
+      { day:"Wed", slot:0, code:"PST 11208", title:"Computer Hardware & Software", room:"LH C", kind:"lecture" },
+      { day:"Wed", slot:1, code:"PST 11107", title:"Structured Programming", room:"LH C", kind:"lecture" },
+      { day:"Wed", slot:2, code:"PST 11109", title:"Computer Laboratory 1-I", room:"Comp Lab 1", kind:"lab" },
+      { day:"Thu", slot:0, code:"PST 11210", title:"Calculus & Differential Equations", room:"LH A", kind:"lecture" },
+      { day:"Thu", slot:1, code:"PST 11202", title:"Introduction to Electricity & Magnetism", room:"LH B", kind:"lecture" },
+      { day:"Fri", slot:0, code:"PST 11210", title:"Calculus — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Fri", slot:2, code:"PST-EGP-1101", title:"General English I", room:"LH D", kind:"seminar" },
+    ]
+  },
+
+  "y1s2": {
+    label: "Year 1 · Semester II — 2022/2023",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 12201", title:"Physics of Heat and Waves", room:"LH A", kind:"lecture" },
+      { day:"Mon", slot:1, code:"PST 12102", title:"Semi-Conductor Physics", room:"LH B", kind:"lecture" },
+      { day:"Mon", slot:2, code:"PST 12104", title:"Physics Laboratory 1-II", room:"Phy Lab 1", kind:"lab" },
+      { day:"Tue", slot:0, code:"PST 12205", title:"Fundamentals of Physical Chemistry", room:"LH B", kind:"lecture" },
+      { day:"Tue", slot:1, code:"PST 12206", title:"Fundamentals of Analytical Chemistry", room:"LH C", kind:"lecture" },
+      { day:"Tue", slot:2, code:"PST 12107", title:"Organic Chemistry Lab I", room:"Chem Lab", kind:"lab" },
+      { day:"Wed", slot:0, code:"PST 12108", title:"Object Oriented Programming", room:"LH C", kind:"lecture" },
+      { day:"Wed", slot:2, code:"PST 12110", title:"Computer Laboratory 1-II", room:"Comp Lab 1", kind:"lab" },
+      { day:"Thu", slot:0, code:"PST 12209", title:"Fundamentals of Statistics", room:"LH A", kind:"lecture" },
+      { day:"Thu", slot:1, code:"PST 12209", title:"Statistics — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Thu", slot:2, code:"PST 12211", title:"Database Management Systems", room:"LH B", kind:"lecture" },
+      { day:"Fri", slot:0, code:"PST 12201", title:"Physics H&W — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Fri", slot:2, code:"PST-EGP-1201", title:"General English II", room:"LH D", kind:"seminar" },
+    ]
+  },
+
+  "y2s1": {
+    label: "Year 2 · Semester I — 2023/2024",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 21207", title:"Data Structures & Algorithms", room:"LH A", kind:"lecture" },
+      { day:"Mon", slot:1, code:"PST 21207", title:"Data Structures — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Mon", slot:2, code:"PST 21103", title:"Physics Laboratory 2-I", room:"Phy Lab 2", kind:"lab" },
+      { day:"Tue", slot:0, code:"PST 21208", title:"Computer Architecture & Assembly Language", room:"LH B", kind:"lecture" },
+      { day:"Tue", slot:1, code:"PST 21208", title:"Comp. Arch. — Tutorial", room:"LH B", kind:"tutorial" },
+      { day:"Tue", slot:2, code:"PST 21110", title:"Computer Laboratory 2-I", room:"Comp Lab 1", kind:"lab" },
+      { day:"Wed", slot:0, code:"PST 21209", title:"Statistics for Experimental Analysis", room:"LH A", kind:"lecture" },
+      { day:"Wed", slot:1, code:"PST 21201", title:"Electronics", room:"LH C", kind:"lecture" },
+      { day:"Wed", slot:2, code:"PST 21106", title:"Organic Chemistry Lab II", room:"Chem Lab", kind:"lab" },
+      { day:"Thu", slot:0, code:"PST 21202", title:"Geometrical & Physical Optics", room:"LH B", kind:"lecture" },
+      { day:"Thu", slot:2, code:"PST 21204", title:"Organic Chemistry", room:"LH C", kind:"lecture" },
+      { day:"Fri", slot:0, code:"PST 21209", title:"Statistics — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Fri", slot:2, code:"PST-EAP-2101", title:"Academic English I", room:"LH D", kind:"seminar" },
+    ]
+  },
+
+  "y2s2": {
+    label: "Year 2 · Semester II — 2023/2024",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 22208", title:"Software Engineering", room:"LH A", kind:"lecture" },
+      { day:"Mon", slot:1, code:"PST 22208", title:"Software Engineering — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Mon", slot:2, code:"PST 22103", title:"Physics Lab 2-II", room:"Phy Lab 2", kind:"lab" },
+      { day:"Tue", slot:0, code:"PST 22211", title:"Operating Systems", room:"LH B", kind:"lecture" },
+      { day:"Tue", slot:1, code:"PST 22211", title:"Operating Systems — Tutorial", room:"LH B", kind:"tutorial" },
+      { day:"Tue", slot:2, code:"PST 22110", title:"Computer Laboratory 2-II", room:"Comp Lab 1", kind:"lab" },
+      { day:"Wed", slot:0, code:"PST 22218", title:"Management Information Systems", room:"LH A", kind:"lecture" },
+      { day:"Wed", slot:1, code:"PST 22209", title:"Statistical Methodology", room:"LH C", kind:"lecture" },
+      { day:"Thu", slot:0, code:"PST 22201", title:"Physics of EM Radiation & Laser", room:"LH B", kind:"lecture" },
+      { day:"Thu", slot:1, code:"PST 22202", title:"Quantum Physics, Atomic & Nuclear", room:"LH B", kind:"lecture" },
+      { day:"Thu", slot:2, code:"PST 22106", title:"Inorganic Chemistry Lab II", room:"Chem Lab", kind:"lab" },
+      { day:"Fri", slot:0, code:"PST 22218", title:"MIS — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Fri", slot:2, code:"PST-EAP-2201", title:"Academic English II", room:"LH D", kind:"seminar" },
+    ]
+  },
+
+  "y3s1": {
+    label: "Year 3 · Semester I — 2024/2025",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 31224", title:"AI & Expert Systems", room:"LH B", kind:"lecture" },
+      { day:"Mon", slot:2, code:"PST 31226", title:"Software Quality Assurances", room:"LH C", kind:"lecture" },
+      { day:"Tue", slot:0, code:"PST 31225", title:"Software Project Management", room:"LH A", kind:"lecture" },
+      { day:"Tue", slot:2, code:"PST 31128", title:"Computer Laboratory 3-I", room:"Comp Lab 1", kind:"lab" },
+      { day:"Wed", slot:0, code:"PST 31227", title:"OO Analysis & Design", room:"LH B", kind:"lecture" },
+      { day:"Wed", slot:2, code:"PST 31210", title:"Multimedia & Hypermedia Sys. Dev.", room:"LH C", kind:"lecture" },
+      { day:"Thu", slot:0, code:"PST 31229", title:"Advanced DBMS", room:"LH A", kind:"lecture" },
+      { day:"Thu", slot:1, code:"PST 31230", title:"Social & Prof. Issues in Computing", room:"LH A", kind:"lecture" },
+      { day:"Fri", slot:0, code:"PST 31215", title:"Agile Software Development", room:"LH B", kind:"lecture" },
+      { day:"Fri", slot:2, code:"PST-EBP-3101", title:"Business English", room:"LH D", kind:"seminar" },
+    ]
+  },
+
+  "y3s2": {
+    label: "Year 3 · Semester II — 2024/2025",
+    isProject: true,
+    projectNotice: "Semester II is dedicated to the <strong>Industrial Exposure Project (PST 32803 — 8 Credits)</strong>. Students carry out 15-week project work at an industry, research institution, or within the Faculty. Weekly supervisor meetings on Tuesday and Thursday afternoons.",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 32803", title:"Project Research Work", room:"Industry / Faculty", kind:"project" },
+      { day:"Mon", slot:1, code:"PST 32803", title:"Project Research Work", room:"Industry / Faculty", kind:"project" },
+      { day:"Tue", slot:0, code:"PST 32803", title:"Project Research Work", room:"Industry / Faculty", kind:"project" },
+      { day:"Tue", slot:2, code:"PST 32803", title:"Supervisor Meeting", room:"Supervisor Office", kind:"project" },
+      { day:"Wed", slot:0, code:"PST 32803", title:"Project Research Work", room:"Industry / Faculty", kind:"project" },
+      { day:"Wed", slot:1, code:"PST 32803", title:"Project Writing", room:"Self-directed", kind:"project" },
+      { day:"Thu", slot:0, code:"PST 32803", title:"Project Research Work", room:"Industry / Faculty", kind:"project" },
+      { day:"Thu", slot:2, code:"PST 32803", title:"Progress Presentation", room:"Seminar Room", kind:"project" },
+      { day:"Fri", slot:0, code:"PST 32803", title:"Project Research Work", room:"Industry / Faculty", kind:"project" },
+      { day:"Fri", slot:1, code:"PST 32803", title:"Project Writing", room:"Self-directed", kind:"project" },
+    ]
+  },
+
+  "y4s1": {
+    label: "Year 4 · Semester I — 2025/2026",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 41228", title:"Computer System Security", room:"LH A", kind:"lecture" },
+      { day:"Mon", slot:1, code:"PST 41231", title:"Natural Language Processing", room:"LH C", kind:"lecture" },
+      { day:"Mon", slot:2, code:"PST 41227", title:"Web Services — Lab", room:"Comp Lab 2", kind:"lab" },
+      { day:"Tue", slot:0, code:"PST 41229", title:"Advanced Computer Networks", room:"LH B", kind:"lecture" },
+      { day:"Tue", slot:1, code:"PST 41229", title:"Adv. Networks — Tutorial", room:"LH B", kind:"tutorial" },
+      { day:"Tue", slot:2, code:"PST 41230", title:"IoT — Practical", room:"Comp Lab 1", kind:"lab" },
+      { day:"Tue", slot:3, code:"PST 41805", title:"Research Project Supervision", room:"Supervisor Office", kind:"project" },
+      { day:"Wed", slot:0, code:"PST 41227", title:"Web Services", room:"LH A", kind:"lecture" },
+      { day:"Wed", slot:1, code:"PST 41230", title:"Internet of Things (IoT)", room:"LH B", kind:"lecture" },
+      { day:"Wed", slot:2, code:"PST 41215", title:"Industrial Management", room:"LH C", kind:"lecture" },
+      { day:"Thu", slot:0, code:"PST 41232", title:"Cloud Computing", room:"LH B", kind:"lecture" },
+      { day:"Thu", slot:1, code:"PST 41235", title:"Critical Thinking", room:"LH D", kind:"seminar" },
+      { day:"Thu", slot:2, code:"PST 41203", title:"Robotics — Lab", room:"Robotics Lab", kind:"lab" },
+      { day:"Fri", slot:0, code:"PST 41201", title:"Research Methodology & Sci. Comm.", room:"LH A", kind:"lecture" },
+      { day:"Fri", slot:1, code:"PST 41228", title:"System Security — Tutorial", room:"LH A", kind:"tutorial" },
+      { day:"Fri", slot:2, code:"PST 41232", title:"Cloud Computing — Lab", room:"Comp Lab 2", kind:"lab" },
+      { day:"Fri", slot:3, code:"PST 41805", title:"Research Project Discussion", room:"Supervisor Office", kind:"project" },
+    ]
+  },
+
+  "y4s2": {
+    label: "Year 4 · Semester II — 2025/2026",
+    isProject: true,
+    projectNotice: "Semester II is dedicated to the <strong>BSc Thesis (PST 41805 — 8 Credits)</strong> and <strong>Industrial Training (PST 42606 — 6 Credits)</strong>. No regular lecture sessions — students work full-time at industry placements (15 weeks) and attend weekly supervisor meetings on Tuesday & Thursday afternoons.",
+    entries: [
+      { day:"Mon", slot:0, code:"PST 42606", title:"Industrial Training", room:"Industry Site", kind:"project" },
+      { day:"Mon", slot:1, code:"PST 41805", title:"Thesis Research & Writing", room:"Self-directed", kind:"project" },
+      { day:"Tue", slot:0, code:"PST 42606", title:"Industrial Training", room:"Industry Site", kind:"project" },
+      { day:"Tue", slot:1, code:"PST 41805", title:"Thesis Research & Writing", room:"Self-directed", kind:"project" },
+      { day:"Tue", slot:2, code:"PST 41805", title:"Supervisor Meeting", room:"Supervisor Office", kind:"project" },
+      { day:"Wed", slot:0, code:"PST 42606", title:"Industrial Training", room:"Industry Site", kind:"project" },
+      { day:"Wed", slot:1, code:"PST 41805", title:"Thesis Research & Writing", room:"Self-directed", kind:"project" },
+      { day:"Thu", slot:0, code:"PST 42606", title:"Industrial Training", room:"Industry Site", kind:"project" },
+      { day:"Thu", slot:1, code:"PST 41805", title:"Thesis Research & Writing", room:"Self-directed", kind:"project" },
+      { day:"Thu", slot:2, code:"PST 41805", title:"Progress Presentation", room:"Seminar Room", kind:"project" },
+      { day:"Fri", slot:0, code:"PST 42606", title:"Industrial Training", room:"Industry Site", kind:"project" },
+      { day:"Fri", slot:1, code:"PST 41805", title:"Thesis Research & Writing", room:"Self-directed", kind:"project" },
+    ]
+  }
+
+};
+
+// Current active timetable semester
+let currentTTSem = "y3s1";
+
+// Backwards-compat: keep timetableEntries pointing at current sem for dashboard "Today's Classes"
+const timetableEntries = allTimetableData["y3s1"].entries;
+
+// API HOOK: GET /api/student/subjects  — sourced from the uploaded PST Curriculum handbook
+// (BSc Hons in Computer Science & Technology stream)
+const semesters = [
+  { key: "y1s1", label: "Year 1 · Sem I", status: "completed" },
+  { key: "y1s2", label: "Year 1 · Sem II", status: "completed" },
+  { key: "y2s1", label: "Year 2 · Sem I", status: "completed" },
+  { key: "y2s2", label: "Year 2 · Sem II", status: "completed" },
+  { key: "y3s1", label: "Year 3 · Sem I", status: "current" },
+  { key: "y3s2", label: "Year 3 · Sem II", status: "future" },
+  { key: "y4s1", label: "Year 4 · Sem I", status: "future" },
+  { key: "y4s2", label: "Year 4 · Sem II", status: "future" }
+];
+const subjects = [
+  // Year 1 Sem I
+  { code: "PST 11201", name: "Mechanics and Properties of Matter", credits: 2, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11202", name: "Introduction to Electricity and Magnetism", credits: 2, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11103", name: "Physics Laboratory 1-I", credits: 1, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11204", name: "General Chemistry", credits: 2, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11205", name: "Fundamentals of Organic Chemistry", credits: 2, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11106", name: "Inorganic Chemistry Laboratory I", credits: 1, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11107", name: "Structured Programming", credits: 1, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11208", name: "Computer Hardware and Software", credits: 2, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11109", name: "Computer Laboratory 1-I", credits: 1, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST 11210", name: "Calculus and Differential Equations", credits: 2, kind: "Compulsory", sem: "y1s1" },
+  { code: "PST-EGP-1101", name: "General English I", credits: 2, kind: "Compulsory (Non-GPA)", sem: "y1s1" },
+  // Year 1 Sem II
+  { code: "PST 12201", name: "Physics of Heat and Waves", credits: 2, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12102", name: "Semi-Conductor Physics", credits: 1, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12103", name: "AC Theory & Circuits", credits: 1, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12104", name: "Physics Laboratory 1-II", credits: 1, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12205", name: "Fundamentals of Physical Chemistry", credits: 2, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12206", name: "Fundamentals of Analytical Chemistry", credits: 2, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12107", name: "Organic Chemistry Laboratory I", credits: 1, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12108", name: "Object Oriented Programming", credits: 1, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12209", name: "Fundamentals of Statistics", credits: 2, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12110", name: "Computer Laboratory 1-II", credits: 1, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST 12211", name: "Database Management Systems", credits: 2, kind: "Compulsory", sem: "y1s2" },
+  { code: "PST-EGP-1201", name: "General English II", credits: 2, kind: "Compulsory (Non-GPA)", sem: "y1s2" },
+  // Year 2 Sem I
+  { code: "PST 21201", name: "Electronics", credits: 2, kind: "Compulsory", sem: "y2s1" },
+  { code: "PST 21202", name: "Geometrical and Physical Optics", credits: 2, kind: "Compulsory", sem: "y2s1" },
+  { code: "PST 21103", name: "Physics Laboratory 2-I", credits: 1, kind: "Compulsory", sem: "y2s1" },
+  { code: "PST 21207", name: "Data Structures & Algorithms", credits: 2, kind: "Compulsory", sem: "y2s1" },
+  { code: "PST 21208", name: "Computer Architecture and Assembly Language", credits: 2, kind: "Compulsory", sem: "y2s1" },
+  { code: "PST 21209", name: "Statistics for Experimental Analysis", credits: 2, kind: "Compulsory", sem: "y2s1" },
+  { code: "PST 21110", name: "Computer Laboratory 2-I", credits: 1, kind: "Compulsory", sem: "y2s1" },
+  { code: "PST-EAP-2101", name: "Academic English I", credits: 2, kind: "Compulsory (Non-GPA)", sem: "y2s1" },
+  // Year 2 Sem II
+  { code: "PST 22208", name: "Software Engineering", credits: 2, kind: "Compulsory", sem: "y2s2" },
+  { code: "PST 22209", name: "Statistical Methodology", credits: 2, kind: "Compulsory", sem: "y2s2" },
+  { code: "PST 22110", name: "Computer Laboratory 2-II", credits: 1, kind: "Compulsory", sem: "y2s2" },
+  { code: "PST 22211", name: "Operating Systems", credits: 2, kind: "Compulsory", sem: "y2s2" },
+  { code: "PST 22218", name: "Management Information Systems", credits: 2, kind: "Compulsory (CST)", sem: "y2s2" },
+  { code: "PST-EAP-2201", name: "Academic English II", credits: 2, kind: "Compulsory (Non-GPA)", sem: "y2s2" },
+  // Year 3 Sem I — Major in Computer Science & Technology
+  { code: "PST 31210", name: "Multimedia and Hypermedia Systems Development", credits: 2, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31211", name: "Mathematical Programming", credits: 2, kind: "Elective", sem: "y3s1" },
+  { code: "PST 31212", name: "Numerical Methods", credits: 2, kind: "Elective", sem: "y3s1" },
+  { code: "PST 31014", name: "Industrial Visit", credits: 0, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31215", name: "Agile Software Development", credits: 2, kind: "Elective", sem: "y3s1" },
+  { code: "PST 31224", name: "Artificial Intelligence & Expert Systems", credits: 2, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31225", name: "Software Project Management", credits: 2, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31226", name: "Software Quality Assurances", credits: 2, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31227", name: "Object Oriented Analysis and Design", credits: 2, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31128", name: "Computer Laboratory 3-I", credits: 1, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31229", name: "Advanced Database Management Systems", credits: 2, kind: "Compulsory", sem: "y3s1" },
+  { code: "PST 31230", name: "Social and Professional Issues in Computing", credits: 2, kind: "Elective", sem: "y3s1" },
+  { code: "PST-EBP-3101", name: "Business English", credits: 2, kind: "Compulsory (Non-GPA)", sem: "y3s1" },
+  // Year 3 Sem II — CST
+  { code: "PST 32803", name: "Project Work (Industrial Exposure): BSc Thesis in Physical Sciences (CST)", credits: 8, kind: "Compulsory", sem: "y3s2" },
+  // Year 4 Sem I — CST
+  { code: "PST 41201", name: "Research Methodology and Scientific Communication", credits: 2, kind: "Compulsory", sem: "y4s1" },
+  { code: "PST 41203", name: "Robotics", credits: 2, kind: "Elective", sem: "y4s1" },
+  { code: "PST 41215", name: "Industrial Management", credits: 2, kind: "Elective", sem: "y4s1" },
+  { code: "PST 41227", name: "Web Services", credits: 2, kind: "Compulsory", sem: "y4s1" },
+  { code: "PST 41228", name: "Computer System Security", credits: 2, kind: "Compulsory", sem: "y4s1" },
+  { code: "PST 41229", name: "Advanced Computer Networks", credits: 2, kind: "Compulsory", sem: "y4s1" },
+  { code: "PST 41230", name: "Internet of Things (IoT)", credits: 2, kind: "Elective", sem: "y4s1" },
+  { code: "PST 41231", name: "Natural Language Processing", credits: 2, kind: "Elective", sem: "y4s1" },
+  { code: "PST 41232", name: "Cloud Computing", credits: 2, kind: "Compulsory", sem: "y4s1" },
+  { code: "PST 41233", name: "Business Process Management Systems", credits: 2, kind: "Elective", sem: "y4s1" },
+  { code: "PST 41234", name: "Mobile Computing", credits: 2, kind: "Elective", sem: "y4s1" },
+  { code: "PST 41235", name: "Critical Thinking", credits: 2, kind: "Elective", sem: "y4s1" },
+  // Year 4 Sem II — CST
+  { code: "PST 41805", name: "Project: BSc Thesis in Computer Science & Technology", credits: 8, kind: "Compulsory", sem: "y4s2" },
+  { code: "PST 42606", name: "Industrial Training", credits: 6, kind: "Compulsory", sem: "y4s2" }
+];
+// Compulsory subjects for the current semester (Y3S1) are pre-enrolled; electives can be toggled.
+let enrolledSet = new Set(subjects.filter(s => s.sem === "y3s1" && s.kind.startsWith("Compulsory")).map(s => s.code));
+
+// API HOOK: GET /api/student/exams/<exam_id>  (question text & options only — never the correct answer)
+function mockGetQuestions(examId, count) {
+  const bank = [
+    "Which search strategy is guaranteed to find the shallowest goal node first?",
+    "In a rule-based expert system, the component that applies rules to the knowledge base is called the:",
+    "Which of the following best describes a heuristic function in informed search?",
+    "A production system in AI primarily consists of rules, working memory and:",
+    "Which uncertainty-handling technique represents belief as a degree between 0 and 1?",
+    "The A* search algorithm combines path cost with:",
+    "Which of these is a key component of a Bayesian network?",
+    "In first-order logic, a quantifier that asserts 'for all' is written as:",
+    "Which technique is commonly used to resolve conflicting rules in an expert system?",
+    "A knowledge base in an expert system primarily stores:"
+  ];
+  const opts = ["Breadth-first search", "Depth-first search", "Greedy best-first search", "Inference engine",
+    "Working memory", "Estimated cost to goal", "Conditional probability tables", "Universal quantifier (∀)",
+    "Rule ordering / conflict resolution strategy", "Facts and rules about the domain"];
+  return bank.slice(0, count || 10).map((q, i) => ({
+    id: i + 1,
+    text: q,
+    options: [
+      { key: "A", text: opts[(i) % opts.length] },
+      { key: "B", text: opts[(i + 2) % opts.length] },
+      { key: "C", text: opts[(i + 4) % opts.length] },
+      { key: "D", text: opts[(i + 6) % opts.length] }
+    ]
+  }));
+}
+
+// API HOOK: POST /api/student/exams/<exam_id>/answers
+function mockSaveAnswer(examId, questionId, optionKey) { return Promise.resolve({ saved: true }); }
+
+// API HOOK: POST /api/student/exams/<exam_id>/submit — server marks and returns the score.
+// This mock simulates that response only; no answer key is used here.
+function mockSubmitExam(examId, answeredCount, totalQuestions) {
+  const exam = exams.find(e => e.id === examId) || { totalMarks: 50 };
+  const correct = Math.max(0, Math.round(answeredCount * (0.6 + Math.random() * 0.3)));
+  const incorrect = answeredCount - correct;
+  const unanswered = totalQuestions - answeredCount;
+  const marksPerQ = exam.totalMarks / totalQuestions;
+  const score = Math.round(correct * marksPerQ);
+  const percentage = Math.round((score / exam.totalMarks) * 100);
+  const grade = percentage >= 75 ? "A" : percentage >= 65 ? "B" : percentage >= 55 ? "C" : percentage >= 35 ? "S" : "F";
+  const status = percentage >= 35 ? "Passed" : "Failed";
+  return Promise.resolve({ score, total: exam.totalMarks, percentage, grade, correct, incorrect, unanswered, status });
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+const pageTitles = {
+  "dashboard": "Dashboard", "available-exams": "Available Exams", "quizzes": "Quizzes",
+  "assignments": "Assignments", "timetable": "Timetable", "enroll": "Enroll Subjects",
+  "my-exams": "My Exams & Results", "notifications": "Notifications", "profile": "Profile", "result": "Result"
+};
+
+function showPage(id, navEl) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-" + id).classList.add("active");
+  document.getElementById("pageHeading").textContent = pageTitles[id] || "";
+  if (navEl) {
+    document.querySelectorAll(".nav-link-item").forEach(b => b.classList.remove("active"));
+    navEl.classList.add("active");
+  } else {
+    document.querySelectorAll(".nav-link-item").forEach(b => b.classList.toggle("active", b.dataset.page === id));
+  }
+  closeSidebar();
+  window.scrollTo(0, 0);
+}
+function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("sidebarOverlay").classList.toggle("show"); }
+function closeSidebar() { document.getElementById("sidebar").classList.remove("open"); document.getElementById("sidebarOverlay").classList.remove("show"); }
+
+/* ============================================================
+   RENDER: IDENTITY / PROFILE
+   ============================================================ */
+function initials(name) { return name.split(" ").filter(Boolean).slice(0, 2).map(w => (w.replace(/[^A-Za-z]/g,"")[0] || "")).join("").toUpperCase(); }
+
+function renderIdentity() {
+  const ini = initials(student.name);
+  document.getElementById("topAvatarInitials").textContent = ini;
+  document.getElementById("topProfileName").textContent = student.name;
+  document.getElementById("topProfileId").textContent = student.studentId;
+  document.getElementById("welcomeTitle").textContent = "Welcome back, " + student.name.split(" ")[0] + "!";
+  document.getElementById("welcomeSub").textContent = student.degree;
+  document.getElementById("wmId").textContent = student.studentId;
+  document.getElementById("wmDegree").textContent = student.degree;
+  document.getElementById("wmFaculty").textContent = student.faculty;
+  document.getElementById("wmDept").textContent = student.department;
+  document.getElementById("wmPeriod").textContent = student.yearSemester;
+  document.getElementById("profileAvatar").textContent = ini;
+  document.getElementById("profileName").textContent = student.name;
+  document.getElementById("profId").textContent = student.studentId;
+  document.getElementById("profEmail").textContent = student.email;
+  document.getElementById("profDegree").textContent = student.degree;
+  document.getElementById("profFaculty").textContent = student.faculty;
+  document.getElementById("profDept").textContent = student.department;
+}
+
+/* ============================================================
+   RENDER: DASHBOARD
+   ============================================================ */
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { day:"2-digit", month:"short", year:"numeric" }) + " · " +
+         d.toLocaleTimeString(undefined, { hour:"2-digit", minute:"2-digit" });
+}
+function fmtDate(iso) { return new Date(iso).toLocaleDateString(undefined, { day:"2-digit", month:"short", year:"numeric" }); }
+
+function statusBadge(status) {
+  const map = {
+    available: ["badge-available", "fa-circle-play", "Available"],
+    upcoming: ["badge-upcoming", "fa-clock", "Upcoming"],
+    completed: ["badge-completed", "fa-circle-check", "Completed"],
+    expired: ["badge-expired", "fa-ban", "Expired"]
+  };
+  const m = map[status] || map.upcoming;
+  return `<span class="badge-pill ${m[0]}"><i class="fas ${m[1]}"></i>${m[2]}</span>`;
+}
+
+function renderDashboard() {
+  const availableItems = exams.filter(e => e.status === "available");
+  const availableExamsOnly = exams.filter(e => e.status === "available" && e.type === "exam");
+  const upcoming = exams.filter(e => e.status === "upcoming" && e.type === "exam");
+  const completed = results.length;
+  const avg = results.length ? Math.round(results.reduce((s,r) => s + r.percentage, 0) / results.length) : null;
+
+  document.getElementById("statAvailable").textContent = availableExamsOnly.length;
+  document.getElementById("statUpcoming").textContent = upcoming.length;
+  document.getElementById("statCompleted").textContent = completed;
+  document.getElementById("statAverage").textContent = avg !== null ? avg + "%" : "—";
+  document.getElementById("navExamCount").textContent = exams.filter(e => e.status === "available" && e.type === "exam").length;
+  document.getElementById("navQuizCount").textContent = exams.filter(e => e.status === "available" && e.type === "quiz").length;
+
+  const dashList = document.getElementById("dashAvailableList");
+  dashList.innerHTML = availableItems.length ? availableItems.map(e => `
+    <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13.5px">${e.title} <span class="badge-pill ${e.type === 'quiz' ? 'badge-progress' : 'badge-upcoming'}" style="margin-left:4px">${e.type === 'quiz' ? 'Quiz' : 'Exam'}</span></div>
+        <div style="font-size:12px;color:var(--muted)">${e.subject} · ${e.code} · ${e.duration} min</div>
+      </div>
+      <button class="btn-red" style="padding:7px 14px;font-size:12.5px" onclick="startExam(${e.id})">Start</button>
+    </div>`).join("") : `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">Nothing available right now.</div>`;
+
+  const resList = document.getElementById("dashResultsList");
+  const recent = results.slice(0, 3);
+  resList.innerHTML = recent.length ? recent.map(r => `
+    <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13.5px">${r.title}</div>
+        <div style="font-size:11.5px;color:var(--muted)">${r.subject}</div>
+      </div>
+      <span class="grade-badge grade-${r.grade[0]}">${r.grade} · ${r.percentage}%</span>
+    </div>`).join("") : `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">No results yet.</div>`;
+
+  const dashAssign = document.getElementById("dashAssignList");
+  const pending = assignments.filter(a => a.status === "pending").slice(0, 3);
+  dashAssign.innerHTML = pending.length ? pending.map(a => `
+    <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13.5px">${a.title}</div>
+        <div style="font-size:11.5px;color:var(--muted)">${a.subject}</div>
+      </div>
+      <span class="badge-pill badge-pending"><i class="fas fa-clock"></i>Due ${fmtDate(a.due)}</span>
+    </div>`).join("") : `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">No pending assignments.</div>`;
+
+  const dashTT = document.getElementById("dashTimetableList");
+  const todayName = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][new Date().getDay()];
+  const todays = timetableEntries.filter(e => e.day === todayName).sort((a,b) => a.slot - b.slot);
+  dashTT.innerHTML = todays.length ? todays.map(e => `
+    <div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)">
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13.5px">${e.title}</div>
+        <div style="font-size:11.5px;color:var(--muted)">${e.code} · ${e.room} · ${timetableSlots[e.slot]}</div>
+      </div>
+    </div>`).join("") : `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0">No classes scheduled today.</div>`;
+}
+
+/* ============================================================
+   RENDER: EXAM / QUIZ CARDS
+   ============================================================ */
+function examCardHtml(e) {
+  const canStart = e.status === "available";
+  return `<div class="col-md-6 col-xl-4">
+    <div class="exam-card">
+      <div class="exam-card-top"><span class="exam-code">${e.code}</span>${statusBadge(e.status)}</div>
+      <div><div class="exam-title">${e.title}</div><div class="exam-subject">${e.subject}</div></div>
+      <div class="exam-meta-row">
+        <span><i class="fas fa-stopwatch"></i>${e.duration} min</span>
+        <span><i class="fas fa-list-ol"></i>${e.totalQuestions} Qs</span>
+        <span><i class="fas fa-star"></i>${e.totalMarks} marks</span>
+      </div>
+      <div class="exam-meta-row" style="border-top:none;padding-top:0"><span><i class="fas fa-calendar"></i>Starts: ${fmtDateTime(e.start)}</span></div>
+      <div class="exam-card-actions">
+        <button class="btn-red" style="flex:1" ${canStart ? "" : "disabled"} onclick="startExam(${e.id})">
+          ${canStart ? '<i class="fas fa-play me-1"></i>Start ' + (e.type === 'quiz' ? 'Quiz' : 'Exam') : e.status === "upcoming" ? "Not Yet Open" : "Expired"}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderExamCards() {
+  document.getElementById("examCardsGrid").innerHTML = exams.filter(e => e.type === "exam").map(examCardHtml).join("");
+}
+function renderQuizCards() {
+  document.getElementById("quizCardsGrid").innerHTML = exams.filter(e => e.type === "quiz").map(examCardHtml).join("");
+}
+
+/* ============================================================
+   RENDER: ASSIGNMENTS
+   ============================================================ */
+const assignStatusMap = {
+  pending: ["badge-pending", "Pending"],
+  submitted: ["badge-progress", "Submitted"],
+  graded: ["badge-graded", "Graded"]
+};
+function renderAssignments() {
+  const list = document.getElementById("assignmentsList");
+  list.innerHTML = assignments.map(a => {
+    const sm = assignStatusMap[a.status];
+    return `<div class="assignment-item">
+      <div class="assignment-icon"><i class="fas fa-file-pen"></i></div>
+      <div class="assignment-info">
+        <div class="assignment-title">${a.title}</div>
+        <div class="assignment-sub">${a.subject} · Due ${fmtDate(a.due)}</div>
+        ${a.fileName ? `<div class="assignment-file-name"><i class="fas fa-paperclip me-1"></i>${a.fileName}${a.grade ? ' · Grade: ' + a.grade : ''}</div>` : ''}
+      </div>
+      <span class="badge-pill ${sm[0]}">${sm[1]}</span>
+      <div class="assignment-actions">
+        <input type="file" class="file-input-hidden" id="file-${a.id}" onchange="handleAssignmentUpload(${a.id}, this)">
+        ${a.status === "graded"
+          ? `<button class="btn-plain" disabled>Graded</button>`
+          : `<button class="btn-outline-red" onclick="document.getElementById('file-${a.id}').click()"><i class="fas fa-upload me-1"></i>${a.status === 'submitted' ? 'Replace Draft' : 'Upload Draft'}</button>`}
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("navAssignCount").textContent = assignments.filter(a => a.status === "pending").length;
+}
+function handleAssignmentUpload(id, input) {
+  // API HOOK: POST /api/student/assignments/<id>/submit  (multipart/form-data)
+  if (!input.files || !input.files[0]) return;
+  const a = assignments.find(x => x.id === id);
+  a.fileName = input.files[0].name;
+  a.status = "submitted";
+  renderAssignments();
+  renderDashboard();
+  showToast("Draft \"" + a.fileName + "\" uploaded for " + a.title + ".");
+}
+
+/* ============================================================
+   RENDER: TIMETABLE
+   ============================================================ */
+// Switch timetable semester
+function switchTTSem(semKey, btn) {
+  currentTTSem = semKey;
+  document.querySelectorAll(".tt-sem-tab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderTimetable();
+}
+
+function renderTimetable() {
+  const days = ["Mon","Tue","Wed","Thu","Fri"];
+  const semData = allTimetableData[currentTTSem];
+  const entries = semData ? semData.entries : [];
+
+  // Update subtitle
+  if (semData) {
+    document.getElementById("ttPageIntro").textContent =
+      semData.label + " — BSc (Hons) Computer Science & Technology";
+  }
+
+  // Project notice
+  const notice = document.getElementById("ttProjectNotice");
+  if (semData && semData.isProject) {
+    document.getElementById("ttProjectNoticeText").innerHTML = semData.projectNotice;
+    notice.style.display = "block";
+  } else {
+    notice.style.display = "none";
+  }
+
+  // Build lookup — support multiple entries in same cell (stacked)
+  const lookup = {};
+  entries.forEach(e => {
+    const key = e.day + "-" + e.slot;
+    if (!lookup[key]) lookup[key] = [];
+    lookup[key].push(e);
+  });
+
+  // kind → colour class
+  const kindClass = {
+    lecture:"",lab:" lab",tutorial:" tut",project:" proj",seminar:" sem"
+  };
+
+  let tableHtml = "<thead><tr><th style=\"white-space:nowrap;min-width:110px\">Time</th>" +
+    days.map(d => `<th style="min-width:140px">${d}</th>`).join("") +
+    "</tr></thead><tbody>";
+
+  timetableSlots.forEach((slotLabel, slotIdx) => {
+    // Lunch break separator
+    if (slotIdx === 2) {
+      tableHtml += `<tr style="background:#fafafa;height:28px">
+        <td colspan="6" style="text-align:center;font-size:10.5px;font-weight:600;color:#9ca3af;letter-spacing:.8px;border-top:1px dashed #e5e7eb;border-bottom:1px dashed #e5e7eb">
+          ☕ &nbsp;LUNCH BREAK &nbsp; 12:00 – 13:00
+        </td></tr>`;
+    }
+    tableHtml += `<tr><td class="time-col" style="white-space:nowrap;font-size:12px">${slotLabel}</td>`;
+    days.forEach(d => {
+      const cells = lookup[d + "-" + slotIdx];
+      if (cells && cells.length > 0) {
+        // Multiple entries in same slot → stack them
+        tableHtml += `<td style="padding:4px;vertical-align:top">` +
+          cells.map(e => {
+            const cls = kindClass[e.kind] || "";
+            return `<div class="tt-slot${cls}" style="margin-bottom:${cells.length>1?'4px':'0'}">
+              <span class="code">${e.code}</span>${e.title}<span class="room">${e.room}</span>
+            </div>`;
+          }).join("") +
+          `</td>`;
+      } else {
+        tableHtml += "<td></td>";
+      }
+    });
+    tableHtml += "</tr>";
+  });
+  tableHtml += "</tbody>";
+  document.getElementById("timetableTable").innerHTML = tableHtml;
+}
+
+/* ============================================================
+   RENDER: ENROLL SUBJECTS
+   ============================================================ */
+let currentSemFilter = "y3s1";
+function renderSemesterTabs() {
+  document.getElementById("semesterTabs").innerHTML = semesters.map(s =>
+    `<button class="semester-tab ${s.key === currentSemFilter ? 'active' : ''}" onclick="filterSemester('${s.key}', this)">${s.label}${s.status === 'current' ? ' · Current' : ''}</button>`
+  ).join("");
+}
+function filterSemester(key, btn) {
+  currentSemFilter = key;
+  document.querySelectorAll(".semester-tab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderSubjectGrid();
+}
+function renderSubjectGrid() {
+  const semInfo = semesters.find(s => s.key === currentSemFilter);
+  const list = subjects.filter(s => s.sem === currentSemFilter);
+  const grid = document.getElementById("subjectGrid");
+  grid.innerHTML = list.map(s => {
+    const enrolled = enrolledSet.has(s.code);
+    const locked = semInfo.status !== "current";
+    let btnHtml;
+    if (locked) {
+      btnHtml = `<button class="enroll-btn locked">${semInfo.status === 'completed' ? 'Completed' : 'Not Yet Open'}</button>`;
+    } else if (enrolled) {
+      btnHtml = s.kind.startsWith("Compulsory")
+        ? `<button class="enroll-btn enrolled"><i class="fas fa-check-circle me-1"></i>Compulsory · Enrolled</button>`
+        : `<button class="enroll-btn enrolled" onclick="toggleEnroll('${s.code}')"><i class="fas fa-check-circle me-1"></i>Enrolled</button>`;
+    } else {
+      btnHtml = `<button class="enroll-btn enroll" onclick="toggleEnroll('${s.code}')"><i class="fas fa-plus-circle me-1"></i>Enroll Now</button>`;
+    }
+    return `<div class="col-md-6 col-lg-4">
+      <div class="subject-card ${enrolled ? 'enrolled' : ''}">
+        <span class="subj-code-badge">${s.code}</span>
+        <div class="subj-name">${s.name}</div>
+        <div class="subj-meta"><span><i class="fas fa-layer-group"></i> ${s.credits} Cr</span><span>${s.kind}</span></div>
+        ${btnHtml}
+      </div>
+    </div>`;
+  }).join("");
+}
+function toggleEnroll(code) {
+  if (enrolledSet.has(code)) enrolledSet.delete(code); else enrolledSet.add(code);
+  renderSubjectGrid();
+}
+function renderEnrollPage() { renderSemesterTabs(); renderSubjectGrid(); }
+
+/* ============================================================
+   RENDER: HISTORY / NOTIFICATIONS
+   ============================================================ */
+function renderHistory() {
+  const body = document.getElementById("historyTableBody");
+  body.innerHTML = results.map(r => `
+    <tr>
+      <td class="primary-cell">${r.title}</td>
+      <td><span class="badge-pill ${r.type === 'quiz' ? 'badge-progress' : 'badge-upcoming'}">${r.type === 'quiz' ? 'Quiz' : 'Exam'}</span></td>
+      <td>${r.subject}</td>
+      <td>${r.date}</td>
+      <td>${r.score} / ${r.total}</td>
+      <td>${r.percentage}%</td>
+      <td><span class="grade-badge grade-${r.grade[0]}">${r.grade}</span></td>
+      <td><span class="${r.status === 'Passed' ? 'status-pass' : 'status-fail'}" style="font-weight:700;font-size:12.5px">${r.status}</span></td>
+      <td><button class="link-btn" onclick="viewResult(${r.id})">View Details</button></td>
+    </tr>`).join("");
+}
+function viewResult(resultId) {
+  const r = results.find(x => x.id === resultId);
+  if (!r) return;
+  renderResultPage(r);
+  showPage("result", null);
+}
+
+const notifIcons = {
+  exam: ["fa-file-circle-check", "var(--red-tint)", "var(--red)"],
+  reminder: ["fa-bell", "var(--gold-tint)", "var(--gold)"],
+  result: ["fa-trophy", "var(--green-tint)", "var(--green)"],
+  system: ["fa-gear", "#EEF1F5", "var(--ink-soft)"]
+};
+function renderNotifications() {
+  const list = document.getElementById("notifList");
+  list.innerHTML = notifications.map(n => {
+    const ic = notifIcons[n.type] || notifIcons.system;
+    return `<div class="notif-item ${n.read ? "" : "unread"}">
+      <div class="notif-icon" style="background:${ic[1]};color:${ic[2]}"><i class="fas ${ic[0]}"></i></div>
+      <div>
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-text">${n.message}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+    </div>`;
+  }).join("");
+  const unread = notifications.filter(n => !n.read).length;
+  document.getElementById("navNotifCount").textContent = unread;
+  document.getElementById("topNotifBadge").textContent = unread;
+  document.getElementById("navNotifCount").style.display = unread ? "" : "none";
+  document.getElementById("topNotifBadge").style.display = unread ? "" : "none";
+}
+
+/* ============================================================
+   EXAM / QUIZ ENGINE (shared)
+   ============================================================ */
+let examState = null;
+
+function startExam(examId) {
+  const exam = exams.find(e => e.id === examId);
+  if (!exam || exam.status !== "available") { showToast("This is not currently available."); return; }
+
+  const questions = mockGetQuestions(examId, exam.totalQuestions); // API HOOK
+  examState = { exam, questions, answers: {}, marked: new Set(), currentIndex: 0, secondsLeft: exam.duration * 60 };
+
+  document.getElementById("examHeadTitle").textContent = exam.title;
+  document.getElementById("examHeadSubject").textContent = exam.subject + " · " + exam.code;
+  document.getElementById("examHeadStudent").textContent = student.name;
+  document.getElementById("examHeadStudentId").textContent = student.studentId;
+
+  buildPalette();
+  renderQuestion();
+  document.getElementById("examMode").classList.add("active");
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(examState.timerInterval);
+  updateTimerDisplay();
+  examState.timerInterval = setInterval(() => {
+    examState.secondsLeft--;
+    updateTimerDisplay();
+    if (examState.secondsLeft <= 0) {
+      clearInterval(examState.timerInterval);
+      showToast("Time is up — submitting automatically.");
+      submitExam(true);
+    }
+  }, 1000);
+}
+function updateTimerDisplay() {
+  const s = Math.max(0, examState.secondsLeft);
+  const h = String(Math.floor(s / 3600)).padStart(2, "0");
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+  const sec = String(s % 60).padStart(2, "0");
+  document.getElementById("timerValue").textContent = `${h}:${m}:${sec}`;
+  document.getElementById("timerBox").classList.toggle("warn", s <= 300);
+}
+
+function buildPalette() {
+  const grid = document.getElementById("paletteGrid");
+  grid.innerHTML = examState.questions.map((q, i) => `<button class="palette-btn" id="pal-${i}" onclick="jumpToQuestion(${i})">${i + 1}</button>`).join("");
+  refreshPaletteStates();
+}
+function paletteClassFor(i) {
+  if (i === examState.currentIndex) return "current";
+  if (examState.marked.has(i)) return "marked";
+  if (examState.answers[i] !== undefined) return "answered";
+  return "not-visited";
+}
+function refreshPaletteStates() {
+  examState.questions.forEach((q, i) => { document.getElementById("pal-" + i).className = "palette-btn " + paletteClassFor(i); });
+}
+
+function renderQuestion() {
+  const i = examState.currentIndex;
+  const q = examState.questions[i];
+  document.getElementById("questionProgress").textContent = `Question ${i + 1} of ${examState.questions.length}`;
+  document.getElementById("questionText").textContent = q.text;
+  const selected = examState.answers[i];
+  document.getElementById("optionsList").innerHTML = q.options.map(o => `
+    <label class="option-row ${selected === o.key ? "selected" : ""}" onclick="selectOption('${o.key}')">
+      <input type="radio" name="q${q.id}" ${selected === o.key ? "checked" : ""}>
+      <span class="option-letter">${o.key}</span><span class="option-text">${o.text}</span>
+    </label>`).join("");
+  document.getElementById("btnPrevious").disabled = i === 0;
+  document.getElementById("btnMarkReview").innerHTML = examState.marked.has(i) ? '<i class="fas fa-flag me-1"></i>Unmark Review' : '<i class="fas fa-flag me-1"></i>Mark for Review';
+  document.getElementById("btnSaveNext").innerHTML = i === examState.questions.length - 1 ? 'Save<i class="fas fa-check ms-1"></i>' : 'Save &amp; Next<i class="fas fa-arrow-right ms-1"></i>';
+  refreshPaletteStates();
+}
+function selectOption(key) {
+  examState.answers[examState.currentIndex] = key;
+  mockSaveAnswer(examState.exam.id, examState.questions[examState.currentIndex].id, key); // API HOOK
+  renderQuestion();
+}
+function jumpToQuestion(i) { examState.currentIndex = i; renderQuestion(); }
+function goPrevious() { if (examState.currentIndex > 0) { examState.currentIndex--; renderQuestion(); } }
+function saveAndNext() {
+  if (examState.currentIndex < examState.questions.length - 1) { examState.currentIndex++; renderQuestion(); }
+  else { showToast("This is the last question. Use Submit when you're ready."); }
+}
+function toggleMarkForReview() {
+  const i = examState.currentIndex;
+  if (examState.marked.has(i)) examState.marked.delete(i); else examState.marked.add(i);
+  renderQuestion();
+}
+function openSubmitModal() {
+  const total = examState.questions.length;
+  const answered = Object.keys(examState.answers).length;
+  document.getElementById("sumAnswered").textContent = answered;
+  document.getElementById("sumUnanswered").textContent = total - answered;
+  document.getElementById("sumMarked").textContent = examState.marked.size;
+  document.getElementById("submitModal").classList.add("show");
+}
+function closeSubmitModal() { document.getElementById("submitModal").classList.remove("show"); }
+function confirmSubmitExam() { closeSubmitModal(); submitExam(false); }
+
+function submitExam(auto) {
+  if (!examState) return;
+  clearInterval(examState.timerInterval);
+  const total = examState.questions.length;
+  const answered = Object.keys(examState.answers).length;
+
+  mockSubmitExam(examState.exam.id, answered, total).then(result => { // API HOOK
+    exams.find(e => e.id === examState.exam.id).status = "completed";
+    results.unshift({
+      id: Date.now(), examId: examState.exam.id, title: examState.exam.title, type: examState.exam.type,
+      subject: examState.exam.subject + " · " + examState.exam.code,
+      date: new Date().toISOString().slice(0, 10),
+      score: result.score, total: result.total, percentage: result.percentage, grade: result.grade,
+      correct: result.correct, incorrect: result.incorrect, unanswered: result.unanswered, status: result.status
+    });
+    document.getElementById("examMode").classList.remove("active");
+    renderResultPage({ title: examState.exam.title, subject: examState.exam.subject + " · " + examState.exam.code, ...result });
+    showPage("result", null);
+    renderDashboard(); renderExamCards(); renderQuizCards(); renderHistory();
+    examState = null;
+  });
+}
+function renderResultPage(r) {
+  document.getElementById("resExamMeta").textContent = (r.title + " · " + r.subject).toUpperCase();
+  document.getElementById("resScore").innerHTML = `${r.score}<small>/ ${r.total}</small>`;
+  document.getElementById("resPercentage").textContent = r.percentage + "%";
+  document.getElementById("resGrade").textContent = r.grade;
+  document.getElementById("resCorrect").textContent = r.correct;
+  document.getElementById("resIncorrect").textContent = r.incorrect;
+  document.getElementById("resUnanswered").textContent = r.unanswered;
+  const badge = document.getElementById("resStatusBadge");
+  badge.textContent = r.status;
+  badge.className = "badge-pill " + (r.status === "Passed" ? "badge-available" : "badge-expired");
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+/* ============================================================
+   PROFILE — Edit & Change Password
+   ============================================================ */
+function openEditProfile() {
+  document.getElementById("editName").value = student.name;
+  document.getElementById("editEmail").value = student.email;
+  document.getElementById("editStudentId").value = student.studentId;
+  document.getElementById("editProfileModal").style.display = "flex";
+}
+function closeEditProfile() {
+  document.getElementById("editProfileModal").style.display = "none";
+}
+function saveEditProfile() {
+  const name = document.getElementById("editName").value.trim();
+  const email = document.getElementById("editEmail").value.trim();
+  if (!name || !email) { showToast("Please fill in all fields."); return; }
+  // API HOOK: PUT /api/student/profile  { name, email }
+  student.name = name;
+  student.email = email;
+  renderIdentity();
+  closeEditProfile();
+  showToast("Profile updated successfully.");
+}
+
+function openChangePassword() {
+  document.getElementById("cpCurrent").value = "";
+  document.getElementById("cpNew").value = "";
+  document.getElementById("cpConfirm").value = "";
+  document.getElementById("cpError").classList.remove("show");
+  document.getElementById("changePasswordModal").style.display = "flex";
+}
+function closeChangePassword() {
+  document.getElementById("changePasswordModal").style.display = "none";
+}
+function saveChangePassword() {
+  const cur = document.getElementById("cpCurrent").value;
+  const nw = document.getElementById("cpNew").value;
+  const cf = document.getElementById("cpConfirm").value;
+  const err = document.getElementById("cpError");
+  if (!cur) { showToast("Please enter your current password."); return; }
+  if (nw.length < 8) { showToast("New password must be at least 8 characters."); return; }
+  if (nw !== cf) { err.classList.add("show"); return; }
+  err.classList.remove("show");
+  // API HOOK: POST /api/auth/change-password  { currentPassword, newPassword }
+  closeChangePassword();
+  showToast("Password changed successfully.");
+}
+
+// Close modals on overlay click
+document.addEventListener("DOMContentLoaded", () => {
+  ["editProfileModal","changePasswordModal"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("click", function(e) { if (e.target === this) this.style.display = "none"; });
+  });
+});
+
+function showToast(msg) {
+  const c = document.getElementById("toastContainer");
+  const t = document.createElement("div");
+  t.className = "toast-item";
+  t.innerHTML = `<i class="fas fa-circle-info"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.classList.add("show"), 40);
+  setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 3800);
+}
+</script>
+</body>
+</html>
