@@ -1,195 +1,488 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ExamPortal - Administrator Dashboard</title>
-  <link rel="icon" href="../assets/susl-logo.png">
-  <link rel="stylesheet" href="style.css">
-  <script src="../assets/session.js"></script>
-  <script>SUSLSession.require("admin");</script>
-</head>
-<body>
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-icon"><img src="../assets/susl-logo.png" alt="SUSL emblem"></div>
-        <div>
-          <h2>ExamPortal</h2>
-          <span>Sabaragamuwa University of Sri Lanka</span>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <p class="nav-label">MAIN</p>
-        <button class="nav-item active" data-page="dashboard"><span>⌂</span> Dashboard</button>
-        <button class="nav-item" data-page="exams"><span>▣</span> Exams</button>
-        <button class="nav-item" data-page="questions"><span>?</span> Question Bank</button>
-        <button class="nav-item" data-page="students"><span>♙</span> Students</button>
-        <button class="nav-item" data-page="lecturers"><span>♙</span> Lecturers</button>
-        <button class="nav-item" data-page="results"><span>▤</span> Results</button>
-
-        <p class="nav-label">SYSTEM</p>
-        <button class="nav-item" data-page="reports"><span>◫</span> Reports</button>
-        <button class="nav-item" data-page="settings"><span>⚙</span> Settings</button>
-      </nav>
-
-      <div class="sidebar-bottom">
-        <div class="security-card">
-          <div class="security-icon">✓</div>
-          <div>
-            <strong>System Secure</strong>
-            <small>All systems operational</small>
-          </div>
-        </div>
-        <button class="logout" id="logoutBtn"><span>↪</span> Sign out</button>
-      </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <button class="menu-btn" id="menuBtn">☰</button>
-        <div class="breadcrumb">Administrator <span>/</span> <strong id="pageTitle">Dashboard</strong></div>
-        <div class="top-actions">
-          <button class="icon-btn" title="Notifications" id="notificationBtn">♧<i></i></button>
-          <div class="profile">
-            <div class="avatar" id="avatar">A</div>
-            <div class="profile-text">
-              <strong id="profileName">Administrator</strong>
-              <small>System Admin</small>
-            </div>
-            <span>⌄</span>
-          </div>
-        </div>
-      </header>
-
-      <section class="content">
-        <div class="page" id="dashboardPage">
-          <div class="page-heading">
-            <div>
-              <p class="eyebrow">OVERVIEW</p>
-              <h1 id="greeting">Welcome, Administrator</h1>
-              <p>Manage examinations, users and academic results from one place.</p>
-            </div>
-            <button class="primary-btn" id="createExamBtn">＋ Create New Exam</button>
-          </div>
-
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-icon blue">▣</div>
-              <div><span>Total Exams</span><h2 id="examCount">24</h2><small class="positive">↑ 8.2% this month</small></div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon cyan">♙</div>
-              <div><span>Students</span><h2 id="studentCount">1,248</h2><small class="positive">↑ 12.5% this month</small></div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon purple">▤</div>
-              <div><span>Completed Exams</span><h2 id="completedCount">18</h2><small class="positive">↑ 5.4% this month</small></div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon orange">◷</div>
-              <div><span>Pending Results</span><h2 id="pendingCount">06</h2><small class="warning">Requires attention</small></div>
-            </div>
-          </div>
-
-          <div class="dashboard-grid">
-            <div class="panel">
-              <div class="panel-header">
-                <div><h3>Recent Examinations</h3><p>Latest examination activity</p></div>
-                <button class="text-btn" data-page-link="exams">View all →</button>
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>ExamPortal - Administrator Dashboard</title> 
+  <link rel="icon" href="../assets/susl-logo.png"> 
+  <link rel="stylesheet" href="style.css"> 
+  <script src="../assets/session.js"></script> 
+  <script>SUSLSession.require("admin");</script> 
+</head> 
+<body> 
+  <div class="app"> 
+    <aside class="sidebar" id="sidebar"> 
+      <div class="brand"> 
+        <div class="brand-icon"><img src="../assets/susl-logo.png" alt="SUSL emblem"></div> 
+        <div> 
+          <h2>ExamPortal</h2> 
+          <span>Sabaragamuwa University of Sri Lanka</span> 
+        </div> 
+      </div> 
+ 
+      <nav class="nav"> 
+        <p class="nav-label">MAIN</p> 
+        <button class="nav-item active" data-page="dashboard"><span>⌂</span> Dashboard</button> 
+        <button class="nav-item" data-page="exams"><span>▣</span> Exams</button> 
+        <button class="nav-item" data-page="questions"><span>?</span> Question Bank</button> 
+        <button class="nav-item" data-page="students"><span>♙</span> Students</button> 
+        <button class="nav-item" data-page="lecturers"><span>♙</span> Lecturers</button> 
+        <button class="nav-item" data-page="results"><span>▤</span> Results</button> 
+ 
+      <p class="nav-label">SYSTEM</p> 
+        <button class="nav-item" data-page="reports"><span>◫</span> Reports</button> 
+        <button class="nav-item" data-page="settings"><span>⚙</span> Settings</button> 
+      </nav> 
+ 
+      <div class="sidebar-bottom"> 
+        <div class="security-card"> 
+          <div class="security-icon">✓</div> 
+          <div> 
+            <strong>System Secure</strong> 
+            <small>All systems operational</small> 
+          </div> 
+        </div> 
+        <button class="logout" id="logoutBtn"><span>↪</span> Sign out</button> 
+      </div> 
+    </aside> 
+ 
+    <main class="main"> 
+      <header class="topbar"> 
+        <button class="menu-btn" id="menuBtn">☰</button> 
+        <div class="breadcrumb">Administrator <span>/</span> <strong id="pageTitle">Dashboard</strong></div> 
+        <div class="top-actions"> 
+          <div style="position: relative;">
+            <button class="icon-btn" title="Notifications" id="notificationBtn">♧<i id="notifBadge"></i></button> 
+            <div id="notificationDropdown" class="hidden" style="position: absolute; right: 0; top: 120%; width: 340px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; overflow: hidden;">
+              <div style="padding: 12px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-size: 14px; color: #1e293b;">Notifications</strong>
+                <button id="clearNotifs" style="background: none; border: none; font-size: 11px; color: #64748b; cursor: pointer; text-decoration: underline;">Clear all</button>
               </div>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>EXAMINATION</th><th>DATE</th><th>STUDENTS</th><th>STATUS</th><th></th></tr></thead>
-                  <tbody id="recentExams"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="panel activity-panel">
-              <div class="panel-header"><div><h3>System Activity</h3><p>Recent administrator actions</p></div></div>
-              <div class="activity-list" id="activityList">
-                <div class="activity"><b class="dot blue-dot"></b><div><strong>New exam created</strong><p>Software Engineering - Year 2</p><small>12 minutes ago</small></div></div>
-                <div class="activity"><b class="dot cyan-dot"></b><div><strong>Student account added</strong><p>Registration: SUSL/CS/24/081</p><small>35 minutes ago</small></div></div>
-                <div class="activity"><b class="dot purple-dot"></b><div><strong>Results published</strong><p>Database Management Systems</p><small>1 hour ago</small></div></div>
-                <div class="activity"><b class="dot orange-dot"></b><div><strong>Question bank updated</strong><p>25 new questions added</p><small>2 hours ago</small></div></div>
+              <div id="notificationList" style="max-height: 380px; overflow-y: auto;">
+                <div class="notif-item" style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 10px;">
+                  <span style="color: #ef4444; font-size: 16px;">⚠</span>
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: #0f172a;">Failed Login Attempt</div>
+                    <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">IP 192.168.1.104 attempted login with wrong password.</p>
+                    <small style="font-size: 10px; color: #94a3b8;">5 minutes ago</small>
+                  </div>
+                </div>
+                <div class="notif-item" style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 10px;">
+                  <span style="color: #10b981; font-size: 16px;">✓</span>
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: #0f172a;">Admin Login Successful</div>
+                    <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">Session initiated for Administrator.</p>
+                    <small style="font-size: 10px; color: #94a3b8;">15 minutes ago</small>
+                  </div>
+                </div>
+                <div class="notif-item" style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 10px;">
+                  <span style="color: #f59e0b; font-size: 16px;">⏱</span>
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: #0f172a;">Session Alert</div>
+                    <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">Inactivity timeout scheduled in 20 minutes.</p>
+                    <small style="font-size: 10px; color: #94a3b8;">25 minutes ago</small>
+                  </div>
+                </div>
+                <div class="notif-item" style="padding: 12px 16px; display: flex; gap: 10px;">
+                  <span style="color: #3b82f6; font-size: 16px;">ℹ</span>
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: #0f172a;">System Update Alert</div>
+                    <p style="margin: 2px 0 0; font-size: 11px; color: #475569;">Scheduled database backup executed safely.</p>
+                    <small style="font-size: 10px; color: #94a3b8;">1 hour ago</small>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          <div class="profile" id="profileBtn" role="button" tabindex="0"> 
+            <div class="avatar" id="avatar" style="overflow:hidden; display:flex; align-items:center; justify-content:center;">A</div> 
+            <div class="profile-text"> 
+              <strong id="profileName">Administrator</strong> 
+              <small>System Admin</small> 
+            </div> 
+          </div> 
+        </div> 
+      </header> 
+ 
+      <section class="content"> 
+        <div class="page" id="dashboardPage"> 
+          <div class="page-heading"> 
+            <div> 
+              <p class="eyebrow">OVERVIEW</p> 
+              <h1 id="greeting">Welcome, Administrator</h1> 
+              <p>Manage examinations, users and academic results from one place.</p> 
+            </div> 
+            <button class="primary-btn" id="createExamBtn">＋ Create New Exam</button> 
+          </div> 
+ 
+          <div class="stats-grid"> 
+            <div class="stat-card"> 
+              <div class="stat-icon blue">▣</div> 
+              <div><span>Total Exams</span><h2 id="examCount">24</h2><small class="positive">↑ 8.2% this month</small></div> 
+            </div> 
+            <div class="stat-card"> 
+              <div class="stat-icon cyan">♙</div> 
+              <div><span>Students</span><h2 id="studentCount">1,248</h2><small class="positive">↑ 12.5% this month</small></div> 
+            </div> 
+            <div class="stat-card"> 
+              <div class="stat-icon purple">▤</div> 
+              <div><span>Completed Exams</span><h2 id="completedCount">18</h2><small class="positive">↑ 5.4% this month</small></div> 
+            </div> 
+            <div class="stat-card"> 
+              <div class="stat-icon orange">◷</div> 
+              <div><span>Pending Results</span><h2 id="pendingCount">06</h2><small class="warning">Requires attention</small></div> 
+            </div> 
+          </div> 
+ 
+          <div class="dashboard-grid"> 
+            <div class="panel"> 
+              <div class="panel-header"> 
+                <div><h3>Recent Examinations</h3><p>Latest examination activity</p></div> 
+                <button class="text-btn" data-page-link="exams">View all →</button> 
+              </div> 
+              <div class="table-wrap"> 
+                <table> 
+                  <thead><tr><th>EXAMINATION</th><th>DATE</th><th>STUDENTS</th><th>STATUS</th><th></th></tr></thead> 
+                  <tbody id="recentExams"></tbody> 
+                </table> 
+              </div> 
+            </div> 
+ 
+            <div class="panel activity-panel"> 
+              <div class="panel-header"><div><h3>System Activity</h3><p>Recent administrator actions</p></div></div> 
+              <div class="activity-list" id="activityList"> 
+                <div class="activity"><b class="dot blue-dot"></b><div><strong>New exam created</strong><p>Software Engineering - Year 2</p><small>12 minutes ago</small></div></div> 
+                <div class="activity"><b class="dot cyan-dot"></b><div><strong>Student account added</strong><p>Registration: SUSL/CS/24/081</p><small>35 minutes ago</small></div></div> 
+                <div class="activity"><b class="dot purple-dot"></b><div><strong>Results published</strong><p>Database Management Systems</p><small>1 hour ago</small></div></div> 
+                <div class="activity"><b class="dot orange-dot"></b><div><strong>Question bank updated</strong><p>25 new questions added</p><small>2 hours ago</small></div></div> 
+              </div> 
+            </div> 
+          </div> 
+ 
+          <div class="panel quick-panel"> 
+            <div class="panel-header"><div><h3>Quick Actions</h3><p>Frequently used administrator functions</p></div></div> 
+            <div class="quick-actions"> 
+              <button data-action="exam">＋<span><strong>Create Examination</strong><small>Set up a new online exam</small></span></button> 
+              <button data-action="student">♙<span><strong>Add Student</strong><small>Create a student account</small></span></button> 
+              <button data-action="lecturer">♙<span><strong>Add Lecturer</strong><small>Create a lecturer account</small></span></button> 
+              <button data-action="report">▤<span><strong>Generate Report</strong><small>View academic reports</small></span></button> 
+            </div> 
+        </div> 
+        </div> 
+ 
+        <div class="page hidden" id="examsPage"> 
+          <div class="page-heading"><div><p class="eyebrow">MANAGEMENT</p><h1>Examinations</h1><p>Create, schedule and monitor university examinations.</p></div><button class="primary-btn" id="addExam">＋ Create Exam</button></div> 
+          <div class="toolbar"><input id="examSearch" placeholder="Search examinations..."><select id="examStatus"><option>All Status</option><option>Scheduled</option><option>Live</option><option>Completed</option></select></div> 
+          <div class="panel"><div class="table-wrap"><table><thead><tr><th>EXAMINATION</th><th>COURSE</th><th>DATE</th><th>STUDENTS</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="examTable"></tbody></table></div></div> 
+        </div> 
+ 
+        <div class="page hidden" id="questionsPage"> 
+          <div class="page-heading"><div><p class="eyebrow">ACADEMIC CONTENT</p><h1>Question Bank</h1><p>Manage questions used in online examinations.</p></div><button class="primary-btn" id="addQuestion">＋ Add Question</button></div> 
+          <div class="stats-grid mini"><div class="stat-card"><div class="stat-icon blue">?</div><div><span>Total Questions</span><h2 id="qTotal">1,864</h2></div></div><div class="stat-card"><div class="stat-icon cyan">▣</div><div><span>Courses</span><h2 id="qCourses">32</h2></div></div><div class="stat-card"><div class="stat-icon purple">✓</div><div><span>MCQ</span><h2 id="qMcq">1,420</h2></div></div><div class="stat-card"><div class="stat-icon orange">✎</div><div><span>Written</span><h2 id="qWritten">444</h2></div></div></div> 
+          <div class="panel"><div class="panel-header"><div><h3>Recent Questions</h3><p>Questions recently added to the system</p></div><input class="small-search" id="questionSearch" placeholder="Search questions" aria-label="Search questions"></div><div class="question-list" id="questionList"></div></div> 
+        </div> 
+ 
+        <div class="page hidden" id="studentsPage"> 
+          <div class="page-heading"><div><p class="eyebrow">USER MANAGEMENT</p><h1>Students</h1><p>View and manage registered student accounts.</p></div><button class="primary-btn" id="addStudent">＋ Add Student</button></div> 
+          <div class="panel"><div class="toolbar"><input id="studentSearch" placeholder="Search by name or registration number..." aria-label="Search students"><select id="studentProgram"><option>All Programs</option><option>Computer Science</option><option>Information Technology</option></select></div><div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>REGISTRATION NO.</th><th>PROGRAM</th><th>YEAR</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="studentTable"></tbody></table></div></div> 
+        </div> 
+ 
+        <div class="page hidden" id="lecturersPage"> 
+          <div class="page-heading"><div><p class="eyebrow">USER MANAGEMENT</p><h1>Lecturers</h1><p>Manage lecturer accounts and examination access.</p></div><button class="primary-btn" id="addLecturer">＋ Add Lecturer</button></div> 
+          <div class="panel"><div class="toolbar"><input id="lecturerSearch" placeholder="Search by name, email or department..." aria-label="Search lecturers"></div><div class="table-wrap"><table><thead><tr><th>LECTURER</th><th>EMAIL</th><th>DEPARTMENT</th><th>COURSES</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="lecturerTable"></tbody></table></div></div> 
+        </div> 
+ 
+        <div class="page hidden" id="resultsPage"> 
+          <div class="page-heading"><div><p class="eyebrow">ACADEMIC RESULTS</p><h1>Results</h1><p>Review, publish and export examination results.</p></div><button class="primary-btn" id="exportResults">⇩ Export Results</button></div> 
+          <div class="panel"><div class="toolbar"><input id="resultSearch" placeholder="Search examination results..." aria-label="Search results"><select id="resultFilter"><option>All Results</option><option>Published</option><option>Pending</option></select></div><div class="table-wrap"><table><thead><tr><th>EXAMINATION</th><th>COURSE</th><th>SUBMITTED</th><th>GRADED</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="resultTable"></tbody></table></div></div> 
+        </div> 
+ 
+        <div class="page hidden" id="reportsPage"> 
+          <div class="page-heading"><div><p class="eyebrow">ANALYTICS</p><h1>Reports</h1><p>Generate academic and system performance reports.</p></div></div> 
+          <div class="report-grid"> 
+            <button class="report-card" data-report="exam"><span>▤</span><strong>Examination Report</strong><small>Exam participation, completion and status</small><b>Generate →</b></button> 
+            <button class="report-card" data-report="student"><span>♙</span><strong>Student Performance</strong><small>Grades and performance by course</small><b>Generate →</b></button> 
+            <button class="report-card" data-report="activity"><span>◷</span><strong>System Activity</strong><small>Administrator and platform activity</small><b>Generate →</b></button> 
+            <button class="report-card" data-report="course"><span>▣</span><strong>Course Report</strong><small>Course-wise examination statistics</small><b>Generate →</b></button> 
+          </div> 
+        </div> 
+ 
+        <div class="page hidden" id="settingsPage"> 
+          <div class="page-heading"><div><p class="eyebrow">SYSTEM</p><h1>Settings</h1><p>Configure administrator and examination system preferences.</p></div></div> 
+          <div class="settings-grid"> 
+            <div class="panel setting-box"> 
+              <h3>Admin Profile Details</h3> 
+              <label>Profile Picture<input id="adminAvatarInput" type="file" accept="image/*"></label> 
+              <label>Admin Full Name<input id="setAdminName" value="Administrator"></label> 
+              <label>Admin Email<input id="setAdminEmail" type="email" value="admin@sab.ac.lk"></label> 
+              <label>Admin Role<input id="setAdminRole" value="System Admin"></label> 
+              <label>Switch Active Admin 
+                <select id="switchAdminSelect"> 
+                  <option value="admin1">Main Admin (admin@sab.ac.lk)</option> 
+                  <option value="admin2">Super Admin (superadmin@sab.ac.lk)</option> 
+                  <option value="admin3">Exam Coordinator (exams@sab.ac.lk)</option> 
+                </select> 
+              </label> 
+              <button class="primary-btn save" id="saveAdminProfileBtn">Save Admin Profile</button> 
+            </div> 
+            <div class="panel setting-box"> 
+              <h3>Change Password</h3> 
+              <label>Current Password<input id="currentPassword" type="password" placeholder="Enter current password"></label> 
+              <label>New Password<input id="newPassword" type="password" placeholder="Enter new password"></label> 
+              <label>Confirm New Password<input id="confirmPassword" type="password" placeholder="Confirm new password"></label> 
+              <button class="primary-btn save" id="changePasswordBtn">Update Password</button> 
+            </div> 
+            <div class="panel setting-box"><h3>Institution Details</h3><label>University Name<input id="setUni" value="Sabaragamuwa University of Sri Lanka"></label><label>System Name<input id="setSys" value="ExamPortal"></label><label>Support Email<input id="setMail" type="email" value="support@sab.ac.lk"></label><button class="primary-btn save" id="saveInstitutionBtn">Save Changes</button></div> 
+            <div class="panel setting-box"><h3>Examination Settings</h3><label>Default Exam Duration<select id="setDuration"><option>60 minutes</option><option>90 minutes</option><option>120 minutes</option></select></label><label>Auto-submit enabled <input id="setAuto" type="checkbox" checked></label><label>Result publication requires approval <input id="setApprove" type="checkbox" checked></label><button class="primary-btn save" id="saveExamSettingsBtn">Save Settings</button></div> 
+          </div> 
+        </div> 
+      </section> 
+    </main> 
+  </div> 
+ 
+  <div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"> 
+    <div class="modal-box"> 
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button> 
+      <h2 id="modalTitle">Create Examination</h2> 
+      <p id="modalSubtitle">Enter the required details below.</p> 
+      <form id="modalForm" novalidate> 
+        <div id="modalFields"></div> 
+        <button class="primary-btn full" type="submit">Save</button> 
+      </form>  
+    </div> 
+  </div>  
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>   
+  <div class="row-menu hidden" id="rowMenu" role="menu"></div> 
 
-          <div class="panel quick-panel">
-            <div class="panel-header"><div><h3>Quick Actions</h3><p>Frequently used administrator functions</p></div></div>
-            <div class="quick-actions">
-              <button data-action="exam">＋<span><strong>Create Examination</strong><small>Set up a new online exam</small></span></button>
-              <button data-action="student">♙<span><strong>Add Student</strong><small>Create a student account</small></span></button>
-              <button data-action="lecturer">♙<span><strong>Add Lecturer</strong><small>Create a lecturer account</small></span></button>
-              <button data-action="report">▤<span><strong>Generate Report</strong><small>View academic reports</small></span></button>
-            </div>
-          </div>
-        </div>
-
-        <div class="page hidden" id="examsPage">
-          <div class="page-heading"><div><p class="eyebrow">MANAGEMENT</p><h1>Examinations</h1><p>Create, schedule and monitor university examinations.</p></div><button class="primary-btn" id="addExam">＋ Create Exam</button></div>
-          <div class="toolbar"><input id="examSearch" placeholder="Search examinations..."><select id="examStatus"><option>All Status</option><option>Scheduled</option><option>Live</option><option>Completed</option></select></div>
-          <div class="panel"><div class="table-wrap"><table><thead><tr><th>EXAMINATION</th><th>COURSE</th><th>DATE</th><th>STUDENTS</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="examTable"></tbody></table></div></div>
-        </div>
-
-        <div class="page hidden" id="questionsPage">
-          <div class="page-heading"><div><p class="eyebrow">ACADEMIC CONTENT</p><h1>Question Bank</h1><p>Manage questions used in online examinations.</p></div><button class="primary-btn" id="addQuestion">＋ Add Question</button></div>
-          <div class="stats-grid mini"><div class="stat-card"><div class="stat-icon blue">?</div><div><span>Total Questions</span><h2 id="qTotal">1,864</h2></div></div><div class="stat-card"><div class="stat-icon cyan">▣</div><div><span>Courses</span><h2 id="qCourses">32</h2></div></div><div class="stat-card"><div class="stat-icon purple">✓</div><div><span>MCQ</span><h2 id="qMcq">1,420</h2></div></div><div class="stat-card"><div class="stat-icon orange">✎</div><div><span>Written</span><h2 id="qWritten">444</h2></div></div></div>
-          <div class="panel"><div class="panel-header"><div><h3>Recent Questions</h3><p>Questions recently added to the system</p></div><input class="small-search" id="questionSearch" placeholder="Search questions" aria-label="Search questions"></div><div class="question-list" id="questionList"></div></div>
-        </div>
-
-        <div class="page hidden" id="studentsPage">
-          <div class="page-heading"><div><p class="eyebrow">USER MANAGEMENT</p><h1>Students</h1><p>View and manage registered student accounts.</p></div><button class="primary-btn" id="addStudent">＋ Add Student</button></div>
-          <div class="panel"><div class="toolbar"><input id="studentSearch" placeholder="Search by name or registration number..." aria-label="Search students"><select id="studentProgram"><option>All Programs</option><option>Computer Science</option><option>Information Technology</option></select></div><div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>REGISTRATION NO.</th><th>PROGRAM</th><th>YEAR</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="studentTable"></tbody></table></div></div>
-        </div>
-
-        <div class="page hidden" id="lecturersPage">
-          <div class="page-heading"><div><p class="eyebrow">USER MANAGEMENT</p><h1>Lecturers</h1><p>Manage lecturer accounts and examination access.</p></div><button class="primary-btn" id="addLecturer">＋ Add Lecturer</button></div>
-          <div class="panel"><div class="toolbar"><input id="lecturerSearch" placeholder="Search by name, email or department..." aria-label="Search lecturers"></div><div class="table-wrap"><table><thead><tr><th>LECTURER</th><th>EMAIL</th><th>DEPARTMENT</th><th>COURSES</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="lecturerTable"></tbody></table></div></div>
-        </div>
-
-        <div class="page hidden" id="resultsPage">
-          <div class="page-heading"><div><p class="eyebrow">ACADEMIC RESULTS</p><h1>Results</h1><p>Review, publish and export examination results.</p></div><button class="primary-btn" id="exportResults">⇩ Export Results</button></div>
-          <div class="panel"><div class="toolbar"><input id="resultSearch" placeholder="Search examination results..." aria-label="Search results"><select id="resultFilter"><option>All Results</option><option>Published</option><option>Pending</option></select></div><div class="table-wrap"><table><thead><tr><th>EXAMINATION</th><th>COURSE</th><th>SUBMITTED</th><th>GRADED</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="resultTable"></tbody></table></div></div>
-        </div>
-
-        <div class="page hidden" id="reportsPage">
-          <div class="page-heading"><div><p class="eyebrow">ANALYTICS</p><h1>Reports</h1><p>Generate academic and system performance reports.</p></div></div>
-          <div class="report-grid">
-            <button class="report-card" data-report="exam"><span>▤</span><strong>Examination Report</strong><small>Exam participation, completion and status</small><b>Generate →</b></button>
-            <button class="report-card" data-report="student"><span>♙</span><strong>Student Performance</strong><small>Grades and performance by course</small><b>Generate →</b></button>
-            <button class="report-card" data-report="activity"><span>◷</span><strong>System Activity</strong><small>Administrator and platform activity</small><b>Generate →</b></button>
-            <button class="report-card" data-report="course"><span>▣</span><strong>Course Report</strong><small>Course-wise examination statistics</small><b>Generate →</b></button>
-          </div>
-        </div>
-
-        <div class="page hidden" id="settingsPage">
-          <div class="page-heading"><div><p class="eyebrow">SYSTEM</p><h1>Settings</h1><p>Configure administrator and examination system preferences.</p></div></div>
-          <div class="settings-grid">
-            <div class="panel setting-box"><h3>Institution Details</h3><label>University Name<input id="setUni" value="Sabaragamuwa University of Sri Lanka"></label><label>System Name<input id="setSys" value="ExamPortal"></label><label>Support Email<input id="setMail" type="email" value="support@sab.ac.lk"></label><button class="primary-btn save">Save Changes</button></div>
-            <div class="panel setting-box"><h3>Examination Settings</h3><label>Default Exam Duration<select id="setDuration"><option>60 minutes</option><option>90 minutes</option><option>120 minutes</option></select></label><label>Auto-submit enabled <input id="setAuto" type="checkbox" checked></label><label>Result publication requires approval <input id="setApprove" type="checkbox" checked></label><button class="primary-btn save">Save Settings</button></div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-box">
-      <button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button>
-      <h2 id="modalTitle">Create Examination</h2>
-      <p id="modalSubtitle">Enter the required details below.</p>
-      <form id="modalForm" novalidate>
-        <div id="modalFields"></div>
-        <button class="primary-btn full" type="submit">Save</button>
-      </form>
-    </div>
-  </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <div class="row-menu hidden" id="rowMenu" role="menu"></div>
   <script src="script.js"></script>
-</body>
+
+  <script>
+    document.getElementById("profileBtn").addEventListener("click", function () {
+      const settingsBtn = document.querySelector('.nav-item[data-page="settings"]');
+      if (settingsBtn) {
+        settingsBtn.click();
+      }
+    });
+
+    const notificationBtn = document.getElementById("notificationBtn");
+    const notificationDropdown = document.getElementById("notificationDropdown");
+    const notifBadge = document.getElementById("notifBadge");
+    const clearNotifs = document.getElementById("clearNotifs");
+    const notificationList = document.getElementById("notificationList");
+
+    if (notificationBtn && notificationDropdown) {
+      notificationBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle("hidden");
+        if (notifBadge) {
+          notifBadge.style.display = "none";
+        }
+      });
+
+      document.addEventListener("click", function (e) {
+        if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+          notificationDropdown.classList.add("hidden");
+        }
+      });
+    }
+
+    if (clearNotifs && notificationList) {
+      clearNotifs.addEventListener("click", function () {
+        notificationList.innerHTML = '<div style="padding: 24px; text-align: center; color: #94a3b8; font-size: 13px;">No new alerts</div>';
+      });
+    }
+
+    window.addNotification = function (type, title, desc, time) {
+      if (!notificationList) return;
+      const icons = {
+        security: { icon: '⚠', color: '#ef4444' },
+        success: { icon: '✓', color: '#10b981' },
+        delete: { icon: '🗑', color: '#ef4444' },
+        session: { icon: '⏱', color: '#f59e0b' },
+        info: { icon: 'ℹ', color: '#3b82f6' },
+        update: { icon: '★', color: '#6366f1' }
+      };
+      const conf = icons[type] || icons.info;
+      const item = document.createElement("div");
+      item.className = "notif-item";
+      item.style.cssText = "padding: 12px 16px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 10px;";
+      item.innerHTML = '<span style="color:' + conf.color + '; font-size: 16px;">' + conf.icon + '</span><div><div style="font-size: 12px; font-weight: 600; color: #0f172a;">' + title + '</div><p style="margin: 2px 0 0; font-size: 11px; color: #475569;">' + desc + '</p><small style="font-size: 10px; color: #94a3b8;">' + (time || "Just now") + '</small></div>';
+      notificationList.prepend(item);
+      if (notifBadge) notifBadge.style.display = "block";
+    };
+
+    const adminAvatarInput = document.getElementById("adminAvatarInput");
+    const avatar = document.getElementById("avatar");
+    if (adminAvatarInput && avatar) {
+      adminAvatarInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (evt) {
+            avatar.innerHTML = '<img src="' + evt.target.result + '" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+            window.addNotification("info", "Profile Photo Updated", "New avatar loaded for active administrator account.");
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    const saveAdminProfileBtn = document.getElementById("saveAdminProfileBtn");
+    if (saveAdminProfileBtn) {
+      saveAdminProfileBtn.addEventListener("click", function () {
+        const newName = document.getElementById("setAdminName").value;
+        const newRole = document.getElementById("setAdminRole").value;
+        if (newName) {
+          const pName = document.getElementById("profileName");
+          const greeting = document.getElementById("greeting");
+          if (pName) pName.textContent = newName;
+          if (greeting) greeting.textContent = "Welcome, " + newName;
+        }
+        if (newRole) {
+          const profileRole = document.querySelector(".profile-text small");
+          if (profileRole) profileRole.textContent = newRole;
+        }
+        window.addNotification("success", "Profile Saved", "Admin settings updated for " + (newName || "Administrator"));
+        alert("Admin details updated successfully!");
+      });
+    }
+
+    const changePasswordBtn = document.getElementById("changePasswordBtn");
+    if (changePasswordBtn) {
+      changePasswordBtn.addEventListener("click", function () {
+        const curr = document.getElementById("currentPassword").value;
+        const next = document.getElementById("newPassword").value;
+        const confirm = document.getElementById("confirmPassword").value;
+        if (!curr || !next || !confirm) {
+          alert("Please fill all password fields.");
+          return;
+        }
+        if (next !== confirm) {
+          window.addNotification("security", "Password Change Failed", "New passwords did not match.");
+          alert("New passwords do not match!");
+          return;
+        }
+        document.getElementById("currentPassword").value = "";
+        document.getElementById("newPassword").value = "";
+        document.getElementById("confirmPassword").value = "";
+        window.addNotification("success", "Password Changed Successfully", "Administrator account credentials were updated.");
+        alert("Password changed successfully!");
+      });
+    }
+
+    const saveInstitutionBtn = document.getElementById("saveInstitutionBtn");
+    if (saveInstitutionBtn) {
+      saveInstitutionBtn.addEventListener("click", function () {
+        const uni = document.getElementById("setUni").value;
+        window.addNotification("success", "Institution Settings Saved", "Configured settings for " + (uni || "University") + ".");
+        alert("Institution details saved successfully!");
+      });
+    }
+
+    const saveExamSettingsBtn = document.getElementById("saveExamSettingsBtn");
+    if (saveExamSettingsBtn) {
+      saveExamSettingsBtn.addEventListener("click", function () {
+        const dur = document.getElementById("setDuration").value;
+        window.addNotification("success", "Exam Settings Updated", "Default duration set to " + dur + " with auto-submit rules.");
+        alert("Examination settings saved successfully!");
+      });
+    }
+
+    const switchAdminSelect = document.getElementById("switchAdminSelect");
+    if (switchAdminSelect) {
+      switchAdminSelect.addEventListener("change", function () {
+        const accounts = {
+          admin1: { name: "Administrator", role: "System Admin", email: "admin@sab.ac.lk", initial: "A" },
+          admin2: { name: "Super Admin", role: "Root Admin", email: "superadmin@sab.ac.lk", initial: "S" },
+          admin3: { name: "Exam Coordinator", role: "Exam Officer", email: "exams@sab.ac.lk", initial: "E" }
+        };
+        const selected = accounts[this.value];
+        if (selected) {
+          document.getElementById("setAdminName").value = selected.name;
+          document.getElementById("setAdminRole").value = selected.role;
+          document.getElementById("setAdminEmail").value = selected.email;
+          document.getElementById("profileName").textContent = selected.name;
+          const greeting = document.getElementById("greeting");
+          if (greeting) greeting.textContent = "Welcome, " + selected.name;
+          const profileRole = document.querySelector(".profile-text small");
+          if (profileRole) profileRole.textContent = selected.role;
+          avatar.textContent = selected.initial;
+          window.addNotification("session", "Admin Account Switched", "Active session switched to " + selected.name);
+        }
+      });
+    }
+
+    document.querySelectorAll(".report-card").forEach(function (card) {
+      card.addEventListener("click", function () {
+        const strongEl = this.querySelector("strong");
+        const rName = strongEl ? strongEl.textContent : "Academic Report";
+        window.addNotification("success", "Report Generated", rName + " generated and ready to download.");
+      });
+    });
+
+    const exportResultsBtn = document.getElementById("exportResults");
+    if (exportResultsBtn) {
+      exportResultsBtn.addEventListener("click", function () {
+        window.addNotification("success", "Results Exported", "Academic examination results exported as CSV/PDF.");
+      });
+    }
+
+    const modalForm = document.getElementById("modalForm");
+    if (modalForm) {
+      modalForm.addEventListener("submit", function () {
+        const title = document.getElementById("modalTitle") ? document.getElementById("modalTitle").textContent : "";
+        const isEdit = title.toLowerCase().includes("edit") || title.toLowerCase().includes("update");
+        const actionWord = isEdit ? "Updated" : "Added";
+
+        if (title.includes("Exam")) {
+          window.addNotification("success", "Exam " + actionWord + " Successfully", "Examination schedule and settings have been saved.");
+        } else if (title.includes("Question") || title.includes("Quiz")) {
+          window.addNotification("success", "Question / Quiz " + actionWord + " Successfully", "Academic assessment question stored in Question Bank.");
+        } else if (title.includes("Student")) {
+          window.addNotification("success", "Student " + actionWord + " Successfully", "Student details and academic program assigned.");
+        } else if (title.includes("Lecturer")) {
+          window.addNotification("success", "Lecturer " + actionWord + " Successfully", "Lecturer profile and course assignments updated.");
+        } else if (title.includes("Result")) {
+          window.addNotification("success", "Results " + actionWord + " Successfully", "Academic marks and grading records recorded.");
+        } else {
+          window.addNotification("success", "Record Saved", title + " completed successfully.");
+        }
+      });
+    }
+
+    document.addEventListener("click", function (e) {
+      const delBtn = e.target.closest(".delete-btn, .btn-delete, [data-action='delete'], .row-menu [data-action='delete']");
+      if (delBtn) {
+        const row = delBtn.closest("tr");
+        const itemText = row && row.children[0] ? row.children[0].textContent.trim() : "Record";
+        const activePage = document.querySelector(".page:not(.hidden)");
+        const pageId = activePage ? activePage.id : "";
+        let category = "Item";
+
+        if (pageId === "examsPage") category = "Exam";
+        else if (pageId === "questionsPage") category = "Question";
+        else if (pageId === "studentsPage") category = "Student";
+        else if (pageId === "lecturersPage") category = "Lecturer";
+        else if (pageId === "resultsPage") category = "Result";
+
+        window.addNotification("delete", category + " Deleted", itemText + " was permanently removed from records.");
+      }
+
+      const pubBtn = e.target.closest("[data-action='publish'], .publish-btn");
+      if (pubBtn) {
+        const row = pubBtn.closest("tr");
+        const examTitle = row && row.children[0] ? row.children[0].textContent.trim() : "Examination";
+        window.addNotification("update", "Results Published", "Final examination results published for " + examTitle + ".");
+      }
+    });
+
+    const resultFilter = document.getElementById("resultFilter");
+    if (resultFilter) {
+      resultFilter.addEventListener("change", function () {
+        window.addNotification("info", "Results Filter Applied", "Showing results filtered by: " + this.value);
+      });
+    }
+  </script>
+
+</body> 
 </html>
