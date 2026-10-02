@@ -957,10 +957,116 @@ tbody tr:hover{
   transform:translateY(0);
   opacity:1;
 }
+  /* ================= PROFILE BUTTON ================= */
+
+.profile-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  background:transparent;
+  border:none;
+  outline:none;
+  box-shadow:none;
+
+  cursor:pointer;
+  padding:5px 8px;
+  border-radius:8px;
+
+  font-family:Arial,Helvetica,sans-serif;
+  appearance:none;
+  -webkit-appearance:none;
+}
+
+.profile-btn:hover{
+  background:#fdf1f3;
+}
+
+.profile-btn:focus{
+  outline:none;
+  box-shadow:none;
+}
+
+.profile-btn .meta{
+  text-align:right;
+  line-height:1.2;
+}
+
+.profile-btn .meta .n{
+  font-size:13.5px;
+  font-weight:700;
+  color:var(--ink);
+}
+
+.profile-btn .meta .r{
+  font-size:11.5px;
+  color:var(--ink-soft);
+}
+
+.profile-btn .avatar{
+  width:42px;
+  height:42px;
+  min-width:42px;
+
+  border-radius:50%;
+  background:var(--maroon-600);
+  color:#ffffff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:16px;
+  font-weight:700;
+
+  border:none;
+  box-shadow:none;
+}
+
+
+/* ================= ACCOUNT AVATAR ================= */
+
+.account-avatar{
+  width:80px;
+  height:80px;
+  min-width:80px;
+
+  border-radius:50%;
+  background:var(--maroon-600);
+  color:#ffffff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:28px;
+  font-weight:700;
+
+  margin:0 auto 20px;
+}
+
+
+/* ================= ACCOUNT FORM ================= */
+
+.account-form{
+  width:100%;
+}
+
+.account-form .field{
+  width:100%;
+}
+
+.account-form input{
+  width:100%;
+}
+
 
 /* ================= RESPONSIVE ================= */
 
 @media(max-width:1000px){
+
   .stat-grid{
     grid-template-columns:1fr 1fr;
   }
@@ -970,7 +1076,9 @@ tbody tr:hover{
   }
 }
 
+
 @media(max-width:880px){
+
   .sidebar{
     display:none;
   }
@@ -984,7 +1092,9 @@ tbody tr:hover{
   }
 }
 
+
 @media(max-width:600px){
+
   .stat-grid{
     grid-template-columns:1fr;
   }
@@ -1000,60 +1110,7 @@ tbody tr:hover{
   .dashboard-welcome{
     align-items:flex-start;
   }
-  .profile-btn{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:transparent;
-  border:none;
-  outline:none;
-  box-shadow:none;
-  cursor:pointer;
-  padding:5px 8px;
-  border-radius:8px;
-  font-family:Arial,Helvetica,sans-serif;
-}
 
-.profile-btn:hover{
-  background:#fdf1f3;
-}
-
-.profile-btn .meta{
-  text-align:right;
-}
-
-.profile-btn .avatar{
-  width:42px;
-  height:42px;
-  min-width:42px;
-  border-radius:50%;
-  background:#b01838;
-  color:#ffffff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-family:Arial,Helvetica,sans-serif;
-  font-size:16px;
-  font-weight:700;
-  border:none;
-  box-shadow:none;
-}
-  .account-avatar{
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  background:var(--maroon-600);
-  color:#fff;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-family:Arial,sans-serif;
-  font-size:28px;
-  font-weight:700;
-
-  margin:0 auto 20px;
 }
 }
 </style>
