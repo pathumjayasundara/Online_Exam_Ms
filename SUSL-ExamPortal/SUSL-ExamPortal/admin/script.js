@@ -80,7 +80,7 @@ document.querySelectorAll("[data-page-link]").forEach(b => b.addEventListener("c
 $("menuBtn").onclick = () => $("sidebar").classList.toggle("open");
 
 /* ---------- rendering ---------- */
-const q = id => ($(id) ? $(id).value.trim() : "");
+const q = id => ($(id) ?$(id).value.trim() : "");
 function render() {
   const eq = q("examSearch"), es = $("examStatus").value;
   const exams = db.exams.map((e, i) => ({ e, i })).filter(({ e }) => (!eq || has(e, eq)) && (es === "All Status" || e.status === es));
@@ -123,7 +123,7 @@ const PROGRAMS = ["Computer Science", "Information Technology"];
 const FORMS = {
   exam: { list: "exams", title: "Examination", fields: [
     { k: "name", label: "Examination Name", req: 1 },
-    { k: "course", label: "Course Code", req: 1, pattern: "[A-Za-z]{2,4}[0-9]{3,4}", hint: "e.g. CS205" },
+    { k: "course", label: "Course Code", req: 1, pattern: "[A-Za-z]{3}[0-9]{5}", hint: "e.g. PST 31001" },
     { k: "date", label: "Examination Date", type: "date", req: 1 },
     { k: "duration", label: "Duration", type: "select", opts: ["60 minutes", "90 minutes", "120 minutes", "180 minutes"] },
     { k: "students", label: "Registered Students", type: "number", min: 0, def: 0 },
@@ -145,7 +145,7 @@ const FORMS = {
     { k: "type", label: "Question Type", type: "select", opts: ["Multiple Choice", "True / False", "Short Answer", "Essay"] },
     { k: "marks", label: "Marks", type: "number", min: 1, def: 2, req: 1 } ] }
 };
-let editing = null; // { type, index }
+let editing = null;
 const modal = $("modal");
 
 function openModal(type, index) {
@@ -317,7 +317,6 @@ document.querySelectorAll(".save").forEach(b => b.onclick = async () => {
     toast("Settings saved successfully.");
   } catch (err) { toast(err.message || "Could not save settings."); }
 });
-$("notificationBtn").onclick = () => { const p = db.results.filter(r => r.status === "Pending").length; toast(p ? p + " result set(s) awaiting approval." : "No pending notifications."); };
 $("logoutBtn").onclick = () => { if (confirm("Sign out of the administrator dashboard?")) SUSLSession.signOut(); };
 
 /* ---------- init ---------- */
