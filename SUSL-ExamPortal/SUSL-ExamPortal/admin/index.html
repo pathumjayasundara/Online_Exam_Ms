@@ -11,7 +11,18 @@
     .nav .nav-label, 
     .nav .nav-item, 
     .nav .nav-item span {
-      color: rgb(249, 247, 247) !important;
+      color: rgb(255, 250, 250) !important;
+    }
+    /* Added to change the dashboard menu color to button color (maroon) */
+    .sidebar, .nav, .sidebar-bottom, .brand {
+      background-color: maroon !important;
+    }
+    /* Added to make dashboard menu items transparent on hover and active state */
+    .nav .nav-item:hover,
+    .nav .nav-item.active {
+      background-color: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
     }
   </style>
   <script src="../assets/session.js"></script> 
@@ -50,7 +61,6 @@
             <small>All systems operational</small> 
           </div> 
         </div> 
-        <button class="logout" id="logoutBtn"><span>↪</span> Sign out</button> 
       </div> 
     </aside> 
  
@@ -109,6 +119,7 @@
               <small>System Admin</small> 
             </div> 
           </div> 
+          <button class="logout" id="logoutBtn" style="margin-left: 15px; cursor: pointer; background-color: maroon; color: white; border: none; padding: 6px 12px; border-radius: 4px;"><span>↪</span> Sign out</button>
         </div> 
       </header> 
  
