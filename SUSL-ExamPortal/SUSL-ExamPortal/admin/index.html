@@ -7,17 +7,17 @@
   <link rel="icon" href="../assets/susl-logo.png"> 
   <link rel="stylesheet" href="style.css"> 
   <style>
-    /* Added to change the dashboard menu wording to white */
+    /* Dashboard menu wording to white */
     .nav .nav-label, 
     .nav .nav-item, 
     .nav .nav-item span {
       color: rgb(255, 250, 250) !important;
     }
-    /* Added to change the dashboard menu color to button color (maroon) */
+    /* Dashboard menu and sidebar to maroon */
     .sidebar, .nav, .sidebar-bottom, .brand {
       background-color: maroon !important;
     }
-    /* Added to make dashboard menu items transparent on hover and active state */
+    /* Transparent navigation item states */
     .nav .nav-item:hover,
     .nav .nav-item.active {
       background-color: transparent !important;
@@ -38,7 +38,7 @@
           <span>Sabaragamuwa University of Sri Lanka</span> 
         </div> 
       </div> 
- 
+
       <nav class="nav"> 
         <p class="nav-label">MAIN</p> 
         <button class="nav-item active" data-page="dashboard"><span>⌂</span> Dashboard</button> 
@@ -47,12 +47,12 @@
         <button class="nav-item" data-page="students"><span>♙</span> Students</button> 
         <button class="nav-item" data-page="lecturers"><span>♙</span> Lecturers</button> 
         <button class="nav-item" data-page="results"><span>▤</span> Results</button> 
- 
-      <p class="nav-label">SYSTEM</p> 
+
+        <p class="nav-label">SYSTEM</p> 
         <button class="nav-item" data-page="reports"><span>◫</span> Reports</button> 
         <button class="nav-item" data-page="settings"><span>⚙</span> Settings</button> 
       </nav> 
- 
+
       <div class="sidebar-bottom"> 
         <div class="security-card"> 
           <div class="security-icon">✓</div> 
@@ -63,7 +63,7 @@
         </div> 
       </div> 
     </aside> 
- 
+
     <main class="main"> 
       <header class="topbar"> 
         <button class="menu-btn" id="menuBtn">☰</button> 
@@ -109,9 +109,9 @@
                     <small style="font-size: 10px; color: #94a3b8;">1 hour ago</small>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              </div> 
+            </div> 
+          </div> 
           <div class="profile" id="profileBtn" role="button" tabindex="0"> 
             <div class="avatar" id="avatar" style="overflow:hidden; display:flex; align-items:center; justify-content:center;">A</div> 
             <div class="profile-text"> 
@@ -119,10 +119,10 @@
               <small>System Admin</small> 
             </div> 
           </div> 
-          <button class="logout" id="logoutBtn" style="margin-left: 15px; cursor: pointer; background-color: maroon; color: white; border: none; padding: 6px 12px; border-radius: 4px;"><span>↪</span> Sign out</button>
+          <button class="logout" id="logoutBtn" style="margin-left: 15px; cursor: pointer; background-color: maroon; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: 500;"><span>↪</span> Sign out</button>
         </div> 
       </header> 
- 
+
       <section class="content"> 
         <div class="page" id="dashboardPage"> 
           <div class="page-heading"> 
@@ -133,7 +133,7 @@
             </div> 
             <button class="primary-btn" id="createExamBtn">＋ Create New Exam</button> 
           </div> 
- 
+
           <div class="stats-grid"> 
             <div class="stat-card"> 
               <div class="stat-icon blue">▣</div> 
@@ -152,7 +152,7 @@
               <div><span>Pending Results</span><h2 id="pendingCount">06</h2><small class="warning">Requires attention</small></div> 
             </div> 
           </div> 
- 
+
           <div class="dashboard-grid"> 
             <div class="panel"> 
               <div class="panel-header"> 
@@ -166,7 +166,7 @@
                 </table> 
               </div> 
             </div> 
- 
+
             <div class="panel activity-panel"> 
               <div class="panel-header"><div><h3>System Activity</h3><p>Recent administrator actions</p></div></div> 
               <div class="activity-list" id="activityList"> 
@@ -177,7 +177,7 @@
               </div> 
             </div> 
           </div> 
- 
+
           <div class="panel quick-panel"> 
             <div class="panel-header"><div><h3>Quick Actions</h3><p>Frequently used administrator functions</p></div></div> 
             <div class="quick-actions"> 
@@ -186,36 +186,36 @@
               <button data-action="lecturer">♙<span><strong>Add Lecturer</strong><small>Create a lecturer account</small></span></button> 
               <button data-action="report">▤<span><strong>Generate Report</strong><small>View academic reports</small></span></button> 
             </div> 
+          </div> 
         </div> 
-        </div> 
- 
+
         <div class="page hidden" id="examsPage"> 
           <div class="page-heading"><div><p class="eyebrow">MANAGEMENT</p><h1>Examinations</h1><p>Create, schedule and monitor university examinations.</p></div><button class="primary-btn" id="addExam">＋ Create Exam</button></div> 
           <div class="toolbar"><input id="examSearch" placeholder="Search examinations..."><select id="examStatus"><option>All Status</option><option>Scheduled</option><option>Live</option><option>Completed</option></select></div> 
           <div class="panel"><div class="table-wrap"><table><thead><tr><th>EXAMINATION</th><th>COURSE</th><th>DATE</th><th>STUDENTS</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="examTable"></tbody></table></div></div> 
         </div> 
- 
+
         <div class="page hidden" id="questionsPage"> 
           <div class="page-heading"><div><p class="eyebrow">ACADEMIC CONTENT</p><h1>Question Bank</h1><p>Manage questions used in online examinations.</p></div><button class="primary-btn" id="addQuestion">＋ Add Question</button></div> 
           <div class="stats-grid mini"><div class="stat-card"><div class="stat-icon blue">?</div><div><span>Total Questions</span><h2 id="qTotal">1,864</h2></div></div><div class="stat-card"><div class="stat-icon cyan">▣</div><div><span>Courses</span><h2 id="qCourses">32</h2></div></div><div class="stat-card"><div class="stat-icon purple">✓</div><div><span>MCQ</span><h2 id="qMcq">1,420</h2></div></div><div class="stat-card"><div class="stat-icon orange">✎</div><div><span>Written</span><h2 id="qWritten">444</h2></div></div></div> 
           <div class="panel"><div class="panel-header"><div><h3>Recent Questions</h3><p>Questions recently added to the system</p></div><input class="small-search" id="questionSearch" placeholder="Search questions" aria-label="Search questions"></div><div class="question-list" id="questionList"></div></div> 
         </div> 
- 
+
         <div class="page hidden" id="studentsPage"> 
           <div class="page-heading"><div><p class="eyebrow">USER MANAGEMENT</p><h1>Students</h1><p>View and manage registered student accounts.</p></div><button class="primary-btn" id="addStudent">＋ Add Student</button></div> 
           <div class="panel"><div class="toolbar"><input id="studentSearch" placeholder="Search by name or registration number..." aria-label="Search students"><select id="studentProgram"><option>All Programs</option><option>Computer Science</option><option>Information Technology</option></select></div><div class="table-wrap"><table><thead><tr><th>STUDENT</th><th>REGISTRATION NO.</th><th>PROGRAM</th><th>YEAR</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="studentTable"></tbody></table></div></div> 
         </div> 
- 
+
         <div class="page hidden" id="lecturersPage"> 
           <div class="page-heading"><div><p class="eyebrow">USER MANAGEMENT</p><h1>Lecturers</h1><p>Manage lecturer accounts and examination access.</p></div><button class="primary-btn" id="addLecturer">＋ Add Lecturer</button></div> 
           <div class="panel"><div class="toolbar"><input id="lecturerSearch" placeholder="Search by name, email or department..." aria-label="Search lecturers"></div><div class="table-wrap"><table><thead><tr><th>LECTURER</th><th>EMAIL</th><th>DEPARTMENT</th><th>COURSES</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="lecturerTable"></tbody></table></div></div> 
         </div> 
- 
+
         <div class="page hidden" id="resultsPage"> 
           <div class="page-heading"><div><p class="eyebrow">ACADEMIC RESULTS</p><h1>Results</h1><p>Review, publish and export examination results.</p></div><button class="primary-btn" id="exportResults">⇩ Export Results</button></div> 
           <div class="panel"><div class="toolbar"><input id="resultSearch" placeholder="Search examination results..." aria-label="Search results"><select id="resultFilter"><option>All Results</option><option>Published</option><option>Pending</option></select></div><div class="table-wrap"><table><thead><tr><th>EXAMINATION</th><th>COURSE</th><th>SUBMITTED</th><th>GRADED</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody id="resultTable"></tbody></table></div></div> 
         </div> 
- 
+
         <div class="page hidden" id="reportsPage"> 
           <div class="page-heading"><div><p class="eyebrow">ANALYTICS</p><h1>Reports</h1><p>Generate academic and system performance reports.</p></div></div> 
           <div class="report-grid"> 
@@ -225,13 +225,18 @@
             <button class="report-card" data-report="course"><span>▣</span><strong>Course Report</strong><small>Course-wise examination statistics</small><b>Generate →</b></button> 
           </div> 
         </div> 
- 
+
         <div class="page hidden" id="settingsPage"> 
           <div class="page-heading"><div><p class="eyebrow">SYSTEM</p><h1>Settings</h1><p>Configure administrator and examination system preferences.</p></div></div> 
           <div class="settings-grid"> 
             <div class="panel setting-box"> 
               <h3>Admin Profile Details</h3> 
-              <label>Profile Picture<input id="adminAvatarInput" type="file" accept="image/*"></label> 
+              <label>Profile Picture
+                <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                  <input id="adminAvatarInput" type="file" accept="image/*" style="flex: 1;">
+                  <button type="button" id="deleteAvatarBtn" title="Remove Profile Picture" style="padding: 6px 12px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;">🗑 Delete Photo</button>
+                </div>
+              </label> 
               <label>Admin Full Name<input id="setAdminName" value="Administrator"></label> 
               <label>Admin Email<input id="setAdminEmail" type="email" value="admin@sab.ac.lk"></label> 
               <label>Admin Role<input id="setAdminRole" value="System Admin"></label> 
@@ -258,7 +263,7 @@
       </section> 
     </main> 
   </div> 
- 
+
   <div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"> 
     <div class="modal-box"> 
       <button class="modal-close" id="modalClose" type="button" aria-label="Close">×</button> 
@@ -276,13 +281,166 @@
   <script src="script.js"></script>
 
   <script>
-    document.getElementById("profileBtn").addEventListener("click", function () {
-      const settingsBtn = document.querySelector('.nav-item[data-page="settings"]');
-      if (settingsBtn) {
-        settingsBtn.click();
+    const avatarEl = document.getElementById("avatar");
+
+    // Dynamic Avatar Pop-up Modal Creation
+    const avatarModalOverlay = document.createElement("div");
+    avatarModalOverlay.id = "avatarModalOverlay";
+    avatarModalOverlay.style.cssText = "position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(8px); cursor: pointer;";
+
+    const avatarModalClose = document.createElement("button");
+    avatarModalClose.innerHTML = "&times;";
+    avatarModalClose.setAttribute("aria-label", "Close");
+    avatarModalClose.setAttribute("title", "Close preview");
+    avatarModalClose.style.cssText = "position: fixed; top: 20px; right: 24px; width: 40px; height: 40px; border-radius: 8px; background: rgba(255, 255, 255, 0.12); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.25); font-size: 24px; font-weight: 300; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.25); z-index: 10000; transition: all 0.2s ease;";
+
+    avatarModalClose.addEventListener("mouseenter", function () {
+      avatarModalClose.style.background = "rgba(255, 255, 255, 0.25)";
+      avatarModalClose.style.borderColor = "rgba(255, 255, 255, 0.5)";
+      avatarModalClose.style.transform = "scale(1.05)";
+    });
+    avatarModalClose.addEventListener("mouseleave", function () {
+      avatarModalClose.style.background = "rgba(255, 255, 255, 0.12)";
+      avatarModalClose.style.borderColor = "rgba(255, 255, 255, 0.25)";
+      avatarModalClose.style.transform = "scale(1)";
+    });
+
+    const avatarModalContainer = document.createElement("div");
+    avatarModalContainer.style.cssText = "display: flex; flex-direction: column; align-items: center; gap: 18px; transform: scale(0.85); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);";
+
+    const avatarModalCircle = document.createElement("div");
+    avatarModalCircle.style.cssText = "width: 190px; height: 190px; border-radius: 50%; background: #ffffff; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); border: 3px solid rgba(255, 255, 255, 0.9); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 68px; font-weight: 600; color: #1e293b; cursor: default;";
+
+    const modalDeleteBtn = document.createElement("button");
+    modalDeleteBtn.id = "modalDeleteAvatarBtn";
+    modalDeleteBtn.innerHTML = "🗑 Remove Photo";
+    modalDeleteBtn.style.cssText = "padding: 8px 16px; background: rgba(239, 68, 68, 0.9); color: #ffffff; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); display: none; transition: background-color 0.2s ease, transform 0.15s ease;";
+
+    modalDeleteBtn.addEventListener("mouseenter", function () {
+      modalDeleteBtn.style.background = "#dc2626";
+      modalDeleteBtn.style.transform = "scale(1.05)";
+    });
+    modalDeleteBtn.addEventListener("mouseleave", function () {
+      modalDeleteBtn.style.background = "rgba(239, 68, 68, 0.9)";
+      modalDeleteBtn.style.transform = "scale(1)";
+    });
+
+    avatarModalContainer.appendChild(avatarModalCircle);
+    avatarModalContainer.appendChild(modalDeleteBtn);
+    avatarModalOverlay.appendChild(avatarModalClose);
+    avatarModalOverlay.appendChild(avatarModalContainer);
+    document.body.appendChild(avatarModalOverlay);
+
+    function closeAvatarModal() {
+      avatarModalContainer.style.transform = "scale(0.85)";
+      setTimeout(() => {
+        avatarModalOverlay.style.display = "none";
+      }, 150);
+    }
+
+    avatarModalClose.addEventListener("click", function (e) {
+      e.stopPropagation();
+      closeAvatarModal();
+    });
+
+    function removeProfilePhoto() {
+      const name = document.getElementById("setAdminName") ? document.getElementById("setAdminName").value : "Administrator";
+      const initial = (name.trim()[0] || "A").toUpperCase();
+      if (avatarEl) {
+        avatarEl.innerHTML = initial;
+      }
+      avatarModalCircle.innerHTML = initial;
+      modalDeleteBtn.style.display = "none";
+      const input = document.getElementById("adminAvatarInput");
+      if (input) input.value = "";
+      if (window.addNotification) {
+        window.addNotification("delete", "Profile Photo Removed", "Avatar picture has been removed and reset to default initials.");
+      }
+    }
+
+    const deleteAvatarBtn = document.getElementById("deleteAvatarBtn");
+    if (deleteAvatarBtn) {
+      deleteAvatarBtn.addEventListener("click", function () {
+        if (!avatarEl.querySelector("img")) {
+          alert("No profile photo uploaded to remove.");
+          return;
+        }
+        removeProfilePhoto();
+        alert("Profile photo removed successfully!");
+      });
+    }
+
+    modalDeleteBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      removeProfilePhoto();
+      closeAvatarModal();
+    });
+
+    if (avatarEl) {
+      avatarEl.style.cursor = "pointer";
+      avatarEl.addEventListener("click", function (e) {
+        e.stopPropagation();
+        avatarModalCircle.innerHTML = avatarEl.innerHTML;
+        modalDeleteBtn.style.display = avatarEl.querySelector("img") ? "inline-block" : "none";
+        avatarModalOverlay.style.display = "flex";
+        setTimeout(() => {
+          avatarModalContainer.style.transform = "scale(1)";
+        }, 10);
+      });
+    }
+
+    avatarModalOverlay.addEventListener("click", function (e) {
+      if (e.target === avatarModalOverlay) {
+        closeAvatarModal();
       }
     });
 
+    // Profile Click to Settings
+    const profileTextEl = document.querySelector(".profile-text");
+    const profileNameEl = document.getElementById("profileName");
+
+    if (profileTextEl) {
+      profileTextEl.style.cursor = "pointer";
+      profileTextEl.addEventListener("mouseenter", function () {
+        if (profileNameEl) profileNameEl.style.textDecoration = "underline";
+      });
+      profileTextEl.addEventListener("mouseleave", function () {
+        if (profileNameEl) profileNameEl.style.textDecoration = "none";
+      });
+    }
+
+    const profileBtn = document.getElementById("profileBtn");
+    if (profileBtn) {
+      profileBtn.addEventListener("click", function () {
+        if (profileNameEl) profileNameEl.style.color = "#ef4444";
+        const settingsBtn = document.querySelector('.nav-item[data-page="settings"]');
+        if (settingsBtn) settingsBtn.click();
+      });
+    }
+
+    document.querySelectorAll(".nav-item").forEach(function(item) {
+      item.addEventListener("click", function() {
+        if (this.getAttribute("data-page") !== "settings" && profileNameEl) {
+          profileNameEl.style.color = "";
+        }
+      });
+    });
+
+    // Sign out button handler
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", function () {
+        if (typeof SUSLSession !== "undefined" && typeof SUSLSession.logout === "function") {
+          SUSLSession.logout();
+        } else {
+          sessionStorage.clear();
+          localStorage.removeItem("currentUser");
+          window.location.href = "../index.html";
+        }
+      });
+    }
+
+    // Notifications System
     const notificationBtn = document.getElementById("notificationBtn");
     const notificationDropdown = document.getElementById("notificationDropdown");
     const notifBadge = document.getElementById("notifBadge");
@@ -330,6 +488,7 @@
       if (notifBadge) notifBadge.style.display = "block";
     };
 
+    // Avatar Upload Handler
     const adminAvatarInput = document.getElementById("adminAvatarInput");
     const avatar = document.getElementById("avatar");
     if (adminAvatarInput && avatar) {
@@ -346,6 +505,7 @@
       });
     }
 
+    // Save Admin Profile
     const saveAdminProfileBtn = document.getElementById("saveAdminProfileBtn");
     if (saveAdminProfileBtn) {
       saveAdminProfileBtn.addEventListener("click", function () {
@@ -356,6 +516,9 @@
           const greeting = document.getElementById("greeting");
           if (pName) pName.textContent = newName;
           if (greeting) greeting.textContent = "Welcome, " + newName;
+          if (!avatar.querySelector("img")) {
+            avatar.textContent = (newName.trim()[0] || "A").toUpperCase();
+          }
         }
         if (newRole) {
           const profileRole = document.querySelector(".profile-text small");
@@ -366,6 +529,7 @@
       });
     }
 
+    // Change Password
     const changePasswordBtn = document.getElementById("changePasswordBtn");
     if (changePasswordBtn) {
       changePasswordBtn.addEventListener("click", function () {
@@ -389,6 +553,7 @@
       });
     }
 
+    // Institution Settings
     const saveInstitutionBtn = document.getElementById("saveInstitutionBtn");
     if (saveInstitutionBtn) {
       saveInstitutionBtn.addEventListener("click", function () {
@@ -398,6 +563,7 @@
       });
     }
 
+    // Exam Settings
     const saveExamSettingsBtn = document.getElementById("saveExamSettingsBtn");
     if (saveExamSettingsBtn) {
       saveExamSettingsBtn.addEventListener("click", function () {
@@ -407,6 +573,7 @@
       });
     }
 
+    // Switch Admin Account
     const switchAdminSelect = document.getElementById("switchAdminSelect");
     if (switchAdminSelect) {
       switchAdminSelect.addEventListener("change", function () {
@@ -431,6 +598,7 @@
       });
     }
 
+    // Academic Reports
     document.querySelectorAll(".report-card").forEach(function (card) {
       card.addEventListener("click", function () {
         const strongEl = this.querySelector("strong");
@@ -439,6 +607,7 @@
       });
     });
 
+    // Export Results
     const exportResultsBtn = document.getElementById("exportResults");
     if (exportResultsBtn) {
       exportResultsBtn.addEventListener("click", function () {
@@ -446,6 +615,7 @@
       });
     }
 
+    // Modal Form Submit
     const modalForm = document.getElementById("modalForm");
     if (modalForm) {
       modalForm.addEventListener("submit", function () {
@@ -469,6 +639,7 @@
       });
     }
 
+    // Dynamic Row Actions & Deletions
     document.addEventListener("click", function (e) {
       const delBtn = e.target.closest(".delete-btn, .btn-delete, [data-action='delete'], .row-menu [data-action='delete']");
       if (delBtn) {
@@ -502,6 +673,5 @@
       });
     }
   </script>
-
 </body> 
 </html>
