@@ -7,17 +7,28 @@
   <link rel="icon" href="../assets/susl-logo.png"> 
   <link rel="stylesheet" href="style.css"> 
   <style>
-    /* Dashboard menu wording to white */
+ Temp-Admin
+    /* Added to change the dashboard menu wording to white */
+=======
+    /* Dashb                       main
     .nav .nav-label, 
     .nav .nav-item, 
     .nav .nav-item span {
       color: rgb(255, 250, 250) !important;
     }
+Temp-Admin
+    /* Added to change the dashboard menu color to button color (maroon) */
+    .sidebar, .nav, .sidebar-bottom, .brand {
+      background-color: maroon !important;
+    }
+    /* Added to make dashboard menu items transparent on hover and active state */
+=======
     /* Dashboard menu and sidebar to maroon */
     .sidebar, .nav, .sidebar-bottom, .brand {
       background-color: maroon !important;
     }
     /* Transparent navigation item states */
+main
     .nav .nav-item:hover,
     .nav .nav-item.active {
       background-color: transparent !important;
@@ -119,6 +130,9 @@
               <small>System Admin</small> 
             </div> 
           </div> 
+ Temp-Admin
+          <button class="logout" id="logoutBtn" style="margin-left: 15px; cursor: pointer; background-color: maroon; color: white; border: none; padding: 6px 12px; border-radius: 4px;"><span>↪</span> Sign out</button>
+=======
           <button class="logout" id="logoutBtn" style="margin-left: 15px; cursor: pointer; background-color: maroon; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: 500;"><span>↪</span> Sign out</button>
         </div> 
       </header> 
